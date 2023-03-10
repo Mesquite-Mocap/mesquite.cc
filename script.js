@@ -71,9 +71,11 @@ button.addEventListener("click", async () => {
           const message = decoder.decode(value);
 
           // console.log('Received message:', new Date(), message);
-          var obj = JSON.parse(message);
-          console.log('Received message:', new Date(), obj);
-          handleWSMessage(obj);
+          // var obj = JSON.parse(message);
+          // console.log('Received message:', new Date(), obj);
+
+          console.log(message);
+          // handleWSMessage(obj);
         });
     });
 
