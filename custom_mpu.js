@@ -1,10 +1,4 @@
 var rigPrefix = "mixamorig";
-var velocityArray = []
-var dist = [0, 0, 0]
-var mov = []
-const freq = 0.015
-var counter=0
-var u = [0,0,0]
 
 function calibrate() {
   var keys = Object.keys(mac2Bones);
@@ -25,46 +19,47 @@ function handleWSMessage(obj) {
   var bone = mac2Bones[obj.id].id;
   var x = model.getObjectByName(rigPrefix + bone);
 
-  var mpuQ = new THREE.Quaternion(obj.w, obj.x, obj.y, obj.z);
-  var bnoQ = mpuToBnoFrame(mpuQ);
+  // var mpuQ = new THREE.Quaternion(obj.w, obj.x, obj.y, obj.z);
+  // var bnoQ = mpuToBnoFrame(mpuQ);
 
-  var q = new Quaternion(bnoQ.x, bnoQ.y, bnoQ.z, bnoQ.w);
+  var currentQuaternion = new THREE.Quaternion(obj.x, obj.y, obj.z, obj.w);
   
-  var qC = new Quaternion(
+  var calibratedQuaternion = new THREE.Quaternion(
     mac2Bones[obj.id].calibration.x,
     mac2Bones[obj.id].calibration.y,
     mac2Bones[obj.id].calibration.z,
     mac2Bones[obj.id].calibration.w
   );
 
-  var qR = q.mul(qC.inverse());
+  var localQuaternion = currentQuaternion.multiply(calibratedQuaternion.invert());
 
-  var e = qte(qR)
-  var e1 = getParentQuat(obj.id);
+  var currentLocalEuler = quaternionToEuler(localQuaternion)
+  var parentQuaternion = getParentQuaternion(obj.id);
 
-  if(e1 == null) {
-    x.quaternion.set(qR.z, qR.x, -qR.y, qR.w);
-    setLocal(obj.id, qR.x, qR.y, qR.z, qR.w)
-    setGlobal(obj.id, qR.x, qR.y, qR.z, qR.w)
+  if(parentQuaternion == null) {
+    console.log("currentLocalEuler " + 180 * currentLocalEuler.x / Math.PI, 180 * currentLocalEuler.y / Math.PI, 180 * currentLocalEuler.z / Math.PI);
+    x.quaternion.set(localQuaternion.y, -localQuaternion.z, -localQuaternion.x, localQuaternion.w);
+    setLocal(obj.id, localQuaternion.x, localQuaternion.y, localQuaternion.z, localQuaternion.w)
+    setGlobal(obj.id, localQuaternion.x, localQuaternion.y, localQuaternion.z, localQuaternion.w)
   } else {
-    // console.log("e", qR.x, qR.y , qR.z ,qR.w);
-    // console.log("e1", e1.x,e1.y, e1.z,e1.w);
+    // console.log("localQuaternion ", localQuaternion.x, localQuaternion.y , localQuaternion.z ,localQuaternion.w);
+    // console.log("parentQuaternion ", parentQuaternion.x,parentQuaternion.y, parentQuaternion.z,parentQuaternion.w);
 
-    var ep = qte(e1);
-    // console.log("e " + 180 * e.x / Math.PI, 180 * e.y / Math.PI, 180 * e.z / Math.PI);
-    // console.log("e1 " + 180 * ep.x / Math.PI, 180 * ep.y / Math.PI, 180 * ep.z / Math.PI);
+    var parentEuler = quaternionToEuler(parentQuaternion);
+    // console.log("currentLocalEuler " + 180 * currentLocalEuler.x / Math.PI, 180 * currentLocalEuler.y / Math.PI, 180 * currentLocalEuler.z / Math.PI);
+    // console.log("parentEuler " + 180 * parentEuler.x / Math.PI, 180 * parentEuler.y / Math.PI, 180 * parentEuler.z / Math.PI);
 
-    var e1q = new Quaternion(e1.w, e1.x, e1.y, e1.z);
-    var qR1 = qR.mul(e1q.inverse());
-    // console.log("e1q", qR1.x,qR1.y, qR1.z,qR1.w);
+    var newParentQuaternion = new THREE.Quaternion(parentQuaternion.w, parentQuaternion.x, parentQuaternion.y, parentQuaternion.z);
+    var globalQuaternion = localQuaternion.multiply(newParentQuaternion.invert());
+    // console.log("newParentQuaternion", globalQuaternion.x,globalQuaternion.y, globalQuaternion.z,globalQuaternion.w);
 
-    x.quaternion.set(qR1.z, qR1.x, -qR1.y, qR1.w);
-    setLocal(obj.id, qR1.x, qR1.y, qR1.z, qR1.w)
-    setGlobal(obj.id, qR.x, qR.y, qR.z, qR.w)
+    x.quaternion.set(globalQuaternion.z, globalQuaternion.x, -globalQuaternion.y, globalQuaternion.w);
+    setLocal(obj.id, globalQuaternion.x, globalQuaternion.y, globalQuaternion.z, globalQuaternion.w)
+    setGlobal(obj.id, localQuaternion.x, localQuaternion.y, localQuaternion.z, localQuaternion.w)
   }
 }
 
-function qte(q) {
+function quaternionToEuler(q) {
     var angles = {};
     var den = Math.sqrt(q.w * q.w + q.x * q.x + q.y * q.y + q.z * q.z);
     q.w /= den;
@@ -93,7 +88,7 @@ function setLocal(id, x, y, z, w) {
   mac2Bones[id].local.w = w;
 }
 
-function getParentQuat(child) {
+function getParentQuaternion(child) {
   var id = dependencyGraph[[mac2Bones[child].id]];
   var keys = Object.keys(mac2Bones);
   for (var i = 0; i < keys.length; i++) {
@@ -126,10 +121,6 @@ function quatern2rotMat(q) {
   return R;
 }
 
-function getMovementValue(a, b) {
-  return a*freq;
-}
-
 function mpuToBnoFrame(q) {
   // Define the initial and final axes of the coordinate system
   const initialX = new THREE.Vector3(-1, 0, 0); // Points to the left
@@ -148,5 +139,4 @@ function mpuToBnoFrame(q) {
   const finalQuaternion = q.clone().multiply(rotationQuaternion);
 
   return finalQuaternion;
-
 }

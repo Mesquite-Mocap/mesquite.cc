@@ -1,7 +1,7 @@
 var mac2Bones = {
-  "4C:75:25:C0:23:DC" : {id: "LeftArm", calibration:{x:0, y:0, z:0, w:1}, last:{x:0, y:0, z:0, w:1}, global:{x:null, y:0, z:0, w:1}, local:{x:0, y:0, z:0, w:1}, sensorPosition:{x:0, y:0, z:0, w: 1}},
-  "08:3A:F2:44:C9:94" : {id: "LeftForeArm", calibration:{x:0, y:0, z:0, w:1}, last:{x:0, y:0, z:0, w:1}, global:{x:null, y:0, z:0, w:1}, local:{x:0, y:0, z:0, w:1}, sensorPosition:{x:0, y:0, z:0, w: 1}},
-  "08:3A:F2:44:CA:8C" : {id: "LeftHand", calibration:{x:0, y:0, z:0, w:1}, last:{x:0, y:0, z:0, w:1}, global:{x:null, y:0, z:0, w:1}, local:{x:0, y:0, z:0, w:1}, sensorPosition:{x:0, y:0, z:0, w: 1}},
+  "4c:75:25:c1:a1:27" : {id: "LeftArm", calibration:{x:0, y:0, z:0, w:1}, last:{x:0, y:0, z:0, w:1}, global:{x:null, y:0, z:0, w:1}, local:{x:0, y:0, z:0, w:1}, sensorPosition:{x:0, y:0, z:0, w: 1}},
+  "4c:75:25:c1:a1:26" : {id: "LeftForeArm", calibration:{x:0, y:0, z:0, w:1}, last:{x:0, y:0, z:0, w:1}, global:{x:null, y:0, z:0, w:1}, local:{x:0, y:0, z:0, w:1}, sensorPosition:{x:0, y:0, z:0, w: 1}},
+  "4c:75:25:c0:23:de" : {id: "LeftHand", calibration:{x:0, y:0, z:0, w:1}, last:{x:0, y:0, z:0, w:1}, global:{x:null, y:0, z:0, w:1}, local:{x:0, y:0, z:0, w:1}, sensorPosition:{x:0, y:0, z:0, w: 1}},
   "08:3A:F2:44:C8:DC" : {id: "LeftUpLeg", calibration:{x:0, y:0, z:0, w:1}, last:{x:0, y:0, z:0, w:1}, global:{x:null, y:0, z:0, w:1}, local:{x:0, y:0, z:0, w:1}, sensorPosition:{x:0, y:0, z:0, w: 1}},
   "08:3A:F2:44:CA:8S" : {id: "LeftLeg", calibration:{x:0, y:0, z:0, w:1}, last:{x:0, y:0, z:0, w:1}, global:{x:null, y:0, z:0, w:1}, local:{x:0, y:0, z:0, w:1}, sensorPosition:{x:0, y:0, z:0, w: 1}},
   "00:00:00:00:00:05" : {id: "LeftFoot", calibration:{x:0, y:0, z:0, w:1}, last:{x:0, y:0, z:0, w:1}, global:{x:null, y:0, z:0, w:1}, local:{x:0, y:0, z:0, w:1}, sensorPosition:{x:0, y:0, z:0, w: 1}},

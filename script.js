@@ -64,18 +64,21 @@ button.addEventListener("click", async () => {
         // Enable notifications for the characteristic
         await characteristic.startNotifications();
 
+        var message = "Start Calibration";
+        const encoder = new TextEncoder();
+        const data = encoder.encode(message);
+        characteristic.writeValue(data);
+
       // Listen for characteristic value changes
         characteristic.addEventListener('characteristicvaluechanged', event => {
           const value = event.target.value;
           const decoder = new TextDecoder('utf-8');
           const message = decoder.decode(value);
 
+          // console.log(message);
+          var obj = JSON.parse(message);
           // console.log('Received message:', new Date(), message);
-          // var obj = JSON.parse(message);
-          // console.log('Received message:', new Date(), obj);
-
-          console.log(message);
-          // handleWSMessage(obj);
+          handleWSMessage(obj);
         });
     });
 
