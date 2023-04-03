@@ -1,4 +1,5 @@
 var rigPrefix = "mixamorig";
+var calibrated = false;
 
 function calibrate() {
   var keys = Object.keys(mac2Bones);
@@ -8,6 +9,11 @@ function calibrate() {
     mac2Bones[keys[i]].calibration.z = mac2Bones[keys[i]].last.z;
     mac2Bones[keys[i]].calibration.w = mac2Bones[keys[i]].last.w;
   }
+  mac2Bones[obj.id].sensorPosition.x = 0;
+  mac2Bones[obj.id].sensorPosition.y = 0;
+  mac2Bones[obj.id].sensorPosition.z = 0;
+  mac2Bones[obj.id].sensorPosition.w = 1;
+  calibrated = true;
 }
 
 function handleWSMessage(obj) {
@@ -32,6 +38,24 @@ function handleWSMessage(obj) {
   );
 
   var localQuaternion = currentQuaternion.multiply(calibratedQuaternion.invert());
+
+  if (calibrated) {
+    var updatedQuaternion = new THREE.Quaternion();
+    var sensorPosition = new THREE.Quaternion(
+      mac2Bones[obj.id].sensorPosition.x,
+      mac2Bones[obj.id].sensorPosition.y,
+      mac2Bones[obj.id].sensorPosition.z,
+      mac2Bones[obj.id].sensorPosition.w
+    );
+  
+    updatedQuaternion.multiplyQuaternions(sensorPosition, localQuaternion);
+    mac2Bones[obj.id].sensorPosition.x = updatedQuaternion.x;
+    mac2Bones[obj.id].sensorPosition.y = updatedQuaternion.y;
+    mac2Bones[obj.id].sensorPosition.z = updatedQuaternion.z;
+    mac2Bones[obj.id].sensorPosition.w = updatedQuaternion.w;
+  
+    localQuaternion = updatedQuaternion;
+  }
 
   var currentLocalEuler = quaternionToEuler(localQuaternion)
   var parentQuaternion = getParentQuaternion(obj.id);
