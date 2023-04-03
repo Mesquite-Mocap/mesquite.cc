@@ -1,5 +1,7 @@
 var rigPrefix = "mixamorig";
 
+var calibrated = false;
+
 function calibrate() {
   var keys = Object.keys(mac2Bones);
   for (var i = 0; i < keys.length; i++) {
@@ -8,14 +10,18 @@ function calibrate() {
     mac2Bones[keys[i]].calibration.z = mac2Bones[keys[i]].last.z;
     mac2Bones[keys[i]].calibration.w = mac2Bones[keys[i]].last.w;
   }
+
+  mac2Bones[obj.id].sensorPosition.x = 0;
+  mac2Bones[obj.id].sensorPosition.y = 0;
+  mac2Bones[obj.id].sensorPosition.z = 0;
+  mac2Bones[obj.id].sensorPosition.w = 1;
+
+  calibrated = true;
 }
 
-function handleWSMessage(obj) {
+function handleWSMessage(obj) { 
   // console.log(mac2Bones[obj.id].id);
-  mac2Bones[obj.id].last.x = obj.x;
-  mac2Bones[obj.id].last.y = obj.y;
-  mac2Bones[obj.id].last.z = obj.z;
-  mac2Bones[obj.id].last.w = obj.w;
+  
   var bone = mac2Bones[obj.id].id;
   var x = model.getObjectByName(rigPrefix + bone);
 
@@ -23,6 +29,15 @@ function handleWSMessage(obj) {
   // var bnoQ = mpuToBnoFrame(mpuQ);
 
   var currentQuaternion = new THREE.Quaternion(obj.x, obj.y, obj.z, obj.w);
+
+  const euler = new THREE.Euler(-Math.PI / 2, Math.PI, 0, 'XYZ');
+  const rotationQuaternion = new THREE.Quaternion().setFromEuler(euler);
+  localQuaternion = rotateQuaternion(currentQuaternion, rotationQuaternion);
+
+  mac2Bones[obj.id].last.x = localQuaternion.x;
+  mac2Bones[obj.id].last.y = localQuaternion.y;
+  mac2Bones[obj.id].last.z = localQuaternion.z;
+  mac2Bones[obj.id].last.w = localQuaternion.w;
   
   var calibratedQuaternion = new THREE.Quaternion(
     mac2Bones[obj.id].calibration.x,
@@ -31,14 +46,33 @@ function handleWSMessage(obj) {
     mac2Bones[obj.id].calibration.w
   );
 
-  var localQuaternion = currentQuaternion.multiply(calibratedQuaternion.invert());
+  var localQuaternion = localQuaternion.multiply(calibratedQuaternion.invert());
+
+  if (calibrated) {
+    var updatedQuaternion = new THREE.Quaternion();
+    var sensorPosition = new THREE.Quaternion(
+      mac2Bones[obj.id].sensorPosition.x,
+      mac2Bones[obj.id].sensorPosition.y,
+      mac2Bones[obj.id].sensorPosition.z,
+      mac2Bones[obj.id].sensorPosition.w
+    );
+
+    updatedQuaternion.multiplyQuaternions(sensorPosition, localQuaternion);
+    mac2Bones[obj.id].sensorPosition.x = updatedQuaternion.x;
+    mac2Bones[obj.id].sensorPosition.y = updatedQuaternion.y;
+    mac2Bones[obj.id].sensorPosition.z = updatedQuaternion.z;
+    mac2Bones[obj.id].sensorPosition.w = updatedQuaternion.w;
+
+    localQuaternion = updatedQuaternion;
+  }
+  
 
   var currentLocalEuler = quaternionToEuler(localQuaternion)
   var parentQuaternion = getParentQuaternion(obj.id);
 
   if(parentQuaternion == null) {
     console.log("currentLocalEuler " + 180 * currentLocalEuler.x / Math.PI, 180 * currentLocalEuler.y / Math.PI, 180 * currentLocalEuler.z / Math.PI);
-    x.quaternion.set(localQuaternion.y, -localQuaternion.z, -localQuaternion.x, localQuaternion.w);
+    x.quaternion.set(localQuaternion.x, localQuaternion.y, localQuaternion.z, localQuaternion.w);
     setLocal(obj.id, localQuaternion.x, localQuaternion.y, localQuaternion.z, localQuaternion.w)
     setGlobal(obj.id, localQuaternion.x, localQuaternion.y, localQuaternion.z, localQuaternion.w)
   } else {
@@ -139,4 +173,11 @@ function mpuToBnoFrame(q) {
   const finalQuaternion = q.clone().multiply(rotationQuaternion);
 
   return finalQuaternion;
+}
+
+
+function rotateQuaternion(originalQuaternion, rotationQuaternion) {
+  const rotatedQuaternion = new THREE.Quaternion();
+  rotatedQuaternion.multiplyQuaternions(rotationQuaternion, originalQuaternion);
+  return rotatedQuaternion;
 }
