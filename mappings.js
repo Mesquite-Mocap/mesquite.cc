@@ -1,6 +1,6 @@
 var mac2Bones = {
   "4c:75:25:c1:a1:27" : {id: "LeftArm", calibration:{x:0, y:0, z:0, w:1}, last:{x:0, y:0, z:0, w:1}, global:{x:null, y:0, z:0, w:1}, local:{x:0, y:0, z:0, w:1}, sensorPosition:{x:0, y:0, z:0, w: 1}},
-  "4c:75:25:c1:a1:26" : {id: "LeftForeArm", calibration:{x:0, y:0, z:0, w:1}, last:{x:0, y:0, z:0, w:1}, global:{x:null, y:0, z:0, w:1}, local:{x:0, y:0, z:0, w:1}, sensorPosition:{x:0, y:0, z:0, w: 1}},
+  "30:83:98:dc:c8:32" : {id: "LeftForeArm", calibration:{x:0, y:0, z:0, w:1}, last:{x:0, y:0, z:0, w:1}, global:{x:null, y:0, z:0, w:1}, local:{x:0, y:0, z:0, w:1}, sensorPosition:{x:0, y:0, z:0, w: 1}},
   "4c:75:25:c0:23:de" : {id: "LeftHand", calibration:{x:0, y:0, z:0, w:1}, last:{x:0, y:0, z:0, w:1}, global:{x:null, y:0, z:0, w:1}, local:{x:0, y:0, z:0, w:1}, sensorPosition:{x:0, y:0, z:0, w: 1}},
   "08:3A:F2:44:C8:DC" : {id: "LeftUpLeg", calibration:{x:0, y:0, z:0, w:1}, last:{x:0, y:0, z:0, w:1}, global:{x:null, y:0, z:0, w:1}, local:{x:0, y:0, z:0, w:1}, sensorPosition:{x:0, y:0, z:0, w: 1}},
   "08:3A:F2:44:CA:8S" : {id: "LeftLeg", calibration:{x:0, y:0, z:0, w:1}, last:{x:0, y:0, z:0, w:1}, global:{x:null, y:0, z:0, w:1}, local:{x:0, y:0, z:0, w:1}, sensorPosition:{x:0, y:0, z:0, w: 1}},
@@ -16,7 +16,7 @@ var mac2Bones = {
   "00:00:00:00:00:14" : {id: "RightShoulder", calibration:{x:0, y:0, z:0, w:1}, last:{x:0, y:0, z:0, w:1}, global:{x:null, y:0, z:0, w:1}, local:{x:0, y:0, z:0, w:1}, sensorPosition:{x:0, y:0, z:0, w: 1}},
   "00:00:00:00:00:15" : {id: "RightToeBase", calibration:{x:0, y:0, z:0, w:1}, last:{x:0, y:0, z:0, w:1}, global:{x:null, y:0, z:0, w:1}, local:{x:0, y:0, z:0, w:1}, sensorPosition:{x:0, y:0, z:0, w: 1}},
   "08:3A:F2:44:CA:F0" : {id: "Hips", calibration:{x:0, y:0, z:0, w:1}, last:{x:0, y:0, z:0, w:1}, global:{x:null, y:0, z:0, w:1}, local:{x:0, y:0, z:0, w:1}, sensorPosition:{x:0, y:0, z:0, w: 1}},
-  "08:3A:F2:44:C9:89" : {id: "Head", calibration:{x:0, y:0, z:0, w:1}, last:{x:0, y:0, z:0, w:1}, global:{x:null, y:0, z:0, w:1}, local:{x:0, y:0, z:0, w:1}, sensorPosition:{x:0, y:0, z:0, w: 1}},
+  "30:83:98:dc:c8:32" : {id: "Head", calibration:{x:0, y:0, z:0, w:1}, last:{x:0, y:0, z:0, w:1}, global:{x:null, y:0, z:0, w:1}, local:{x:0, y:0, z:0, w:1}, sensorPosition:{x:0, y:0, z:0, w: 1}},
   "00:00:00:00:00:18" : {id: "Neck", calibration:{x:0, y:0, z:0, w:1}, last:{x:0, y:0, z:0, w:1}, global:{x:null, y:0, z:0, w:1}, local:{x:0, y:0, z:0, w:1}, sensorPosition:{x:0, y:0, z:0, w: 1}},
   "08:3A:F2:44:C9:B8" : {id: "Spine", calibration:{x:0, y:0, z:0, w:1}, last:{x:0, y:0, z:0, w:1}, global:{x:null, y:0, z:0, w:1}, local:{x:0, y:0, z:0, w:1}, sensorPosition:{x:0, y:0, z:0, w: 1}}
   // "00:00:00:00:00:20" : {id: "", calibration:{x:0, y:0, z:0, w:1}, last:{x:0, y:0, z:0, w:1}, global:{x:null, y:0, z:0, w:1}, local:{x:0, y:0, z:0, w:1}, sensorPosition:{x:0, y:0, z:0, w: 1}},
