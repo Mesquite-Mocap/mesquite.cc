@@ -71,8 +71,8 @@ function handleWSMessage(obj) {
   var parentQuaternion = getParentQuaternion(obj.id);
 
   if(parentQuaternion == null) {
-    console.log("currentLocalEuler " + 180 * currentLocalEuler.x / Math.PI, 180 * currentLocalEuler.y / Math.PI, 180 * currentLocalEuler.z / Math.PI);
-    x.quaternion.set(localQuaternion.x, localQuaternion.y, localQuaternion.z, localQuaternion.w);
+    // console.log("currentLocalEuler " + 180 * currentLocalEuler.x / Math.PI, 180 * currentLocalEuler.y / Math.PI, 180 * currentLocalEuler.z / Math.PI);
+    x.quaternion.set(localQuaternion.y, -localQuaternion.z, -localQuaternion.x, localQuaternion.w);
     setLocal(obj.id, localQuaternion.x, localQuaternion.y, localQuaternion.z, localQuaternion.w)
     setGlobal(obj.id, localQuaternion.x, localQuaternion.y, localQuaternion.z, localQuaternion.w)
   } else {
