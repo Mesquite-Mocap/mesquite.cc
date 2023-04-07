@@ -8,8 +8,11 @@ const characteristicUuid = '6e400002-b5a3-f393-e0a9-e50e24dcca9e';
 let devices = [];
 let device_characteristics = [];
 
-async function connect(buttonId) {
+
+
+async function connect() {
   try {
+    manageModal.close();
     const device = await navigator.bluetooth.requestDevice({
       optionalServices: [serviceUuid],
       // acceptAllDevices: true,
@@ -18,7 +21,9 @@ async function connect(buttonId) {
       ]
     });
     console.log('Connected to device : ', device.name);
-    devices.push(device);
+    if(!devices.includes(device)){
+      devices.push(device);
+    }
 
     // Connect to the GATT server
     // We also get the name of the Bluetooth device here
@@ -41,11 +46,10 @@ async function connect(buttonId) {
 
       // console.log(message);
       // var obj = JSON.parse(message);
-      console.log('Received message:', new Date(), message);
+    //  console.log('Received message:', new Date(), message);
       // handleWSMessage(obj);
     });
 
-    document.getElementById(buttonId).style.backgroundColor = "green";
 
     // devices.forEach(async device => {
     //     // Connect to the GATT server
@@ -82,9 +86,9 @@ async function connect(buttonId) {
   }
 }
 
-const mpu_calibrate = document.getElementById("mpu_calibrate");
+//const mpu_calibrate = document.getElementById("mpu_calibrate");
 
-mpu_calibrate.addEventListener("click", async () => {
+//mpu_calibrate.addEventListener("click", async () => {
   // devices.forEach(async device => {
   //   // Connect to the GATT server
   //   // We also get the name of the Bluetooth device here
@@ -103,10 +107,12 @@ mpu_calibrate.addEventListener("click", async () => {
   //   characteristic.writeValue(data);
   // });
 
-  device_characteristics.forEach(async characteristic => {
-    var message = "Start Calibration";
-    const encoder = new TextEncoder();
-    const data = encoder.encode(message);
-    characteristic.writeValue(data);
-  });
-});
+//  device_characteristics.forEach(async characteristic => {
+//    var message = "Start Calibration";
+//    const encoder = new TextEncoder();
+//    const data = encoder.encode(message);
+//    characteristic.writeValue(data);
+//  });
+//});
+
+

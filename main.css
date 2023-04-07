@@ -78,3 +78,27 @@ a, button, input, select {
 	margin-top: 20px;
 	padding: 10px;
 }
+
+
+a.btn.main{
+	position: fixed;
+	text-decoration: none;
+}
+
+a.btn.main i{
+	padding: 0;
+	margin: 0;
+	width: 30px;
+}
+
+#manageModal{
+	min-height: 50vh;
+	max-height: 80vh;
+	overflow-y: hidden;
+}
+
+.podName{
+	font-size: 1.5em;
+	text-align: right;
+	line-height: 50px;
+}

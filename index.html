@@ -7,12 +7,21 @@
       content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"
     />
     <link type="text/css" rel="stylesheet" href="main.css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
     <script src="mappings.js"></script>
-    <!-- <script src="custom_mpu.js"></script> -->
+    <!-- <script src="custom.js"></script> -->
     <script src="custom_bno.js"></script>
     <script src="quaternion.min.js"></script>
     <script src="three.min.js"></script>
     <!-- <script src="https://cdn.jsdelivr.net/npm/kalmanjs@1.1.0/lib/kalman.js"></script> -->
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+
+    
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
   </head>
 
   <body>
@@ -35,16 +44,25 @@
         mixer_bvh.time = 0;
         animation.paused = false;
       }
+      let manageModal;
+
     </script>
 
     <script type="module">
+
+/*
       import * as THREE from "../build/three.module.js";
-
       import Stats from "./jsm/libs/stats.module.js";
-
       import { OrbitControls } from "./jsm/controls/OrbitControls.js";
       import { FBXLoader } from "./jsm/loaders/FBXLoader.js";
       import { BVHLoader } from "./jsm/loaders/BVHLoader.js";
+    */
+            import * as THREE from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc@latest/build/three.module.js";
+          import Stats from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc@latest/build/stats.module.js";
+import { OrbitControls } from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc@latest/build/OrbitControls.js";
+import { FBXLoader } from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc@latest/build/FBXLoader.js";
+import { BVHLoader } from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc@latest/build/BVHLoader.js";
+
 
       const clock_bvh = new THREE.Clock();
 
@@ -57,52 +75,18 @@
       init();
       animate();
 
-      function connect() {
-        // var ws = new WebSocket("ws://localhost:3000/web_client");
-        // ws.onopen = function () {
-        //   // subscribe to some channels
-        //   ws.send(
-        //     JSON.stringify({
-        //       //.... some message the I must send when I connect ....
-        //     })
-        //   );
-        // };
 
-        // ws.onmessage = function (e) {
-        //   e.data.text().then(function (text) {
-        //     try {
-        //       var obj = JSON.parse(text);
-        //       handleWSMessage(obj);
-        //     } catch (e) {
-        //       console.log(e);
-        //     }
-        //   });
-        // };
-
-        // ws.onclose = function (e) {
-        //   console.log(
-        //     "Socket is closed. Reconnect will be attempted in 1 second.",
-        //     e.reason
-        //   );
-        //   setTimeout(function () {
-        //     connect();
-        //   }, 1000);
-        // };
-
-        // ws.onerror = function (err) {
-        //   console.error(
-        //     "Socket encountered error: ",
-        //     err.message,
-        //     "Closing socket"
-        //   );
-        //   ws.close();
-        // };
-      }
-
-      // connect();
 
       function init() {
+          // init modal
+          var elems = document.querySelectorAll('.modal');
+          var instances = M.Modal.init(elems, {});
+          manageModal = instances[0];
+
+
         const container = document.createElement("div");
+        container.style.position = "fixed";
+        container.style.top = "0px";
         document.body.appendChild(container);
 
         camera = new THREE.PerspectiveCamera(
@@ -370,32 +354,56 @@
         rightArm.quaternion.set(0, 0, 0, 1);
       }
     </script>
-    <button
-      onclick="calibrate()"
-      style="position: fixed; bottom: 5px; right: 5px"
-    >
-      Set T-Pose
-    </button>
-    <button id="getDetails">Get device details</button>
-    <button id="button1" style="position: fixed; top: 50px; left: 5px" onclick="connect('button1')">LeftArm</button>
-    <button id="button2" style="position: fixed; top: 75px; left: 5px" onclick="connect('button2')">LeftForeArm</button>
-    <button id="button3" style="position: fixed; top: 100px; left: 5px" onclick="connect('button3')">Button 3</button>
-    <button id="button4" style="position: fixed; top: 125px; left: 5px" onclick="connect('button4')">Button 4</button>
-    <button id="button5" style="position: fixed; top: 150px; left: 5px" onclick="connect('button5')">Button 5</button>
-    <button id="button6" style="position: fixed; top: 175px; left: 5px" onclick="connect('button6')">Button 6</button>
-    <button id="button7" style="position: fixed; top: 200px; left: 5px" onclick="connect('button7')">Button 7</button>
-    <button id="button8" style="position: fixed; top: 225px; left: 5px" onclick="connect('button8')">Button 8</button>
-    <button id="button9" style="position: fixed; top: 250px; left: 5px" onclick="connect('button9')">Button 9</button>
-    <button id="button10" style="position: fixed; top: 275px; left: 5px" onclick="connect('button10')">Button 10</button>
-    <button id="button11" style="position: fixed; top: 300px; left: 5px" onclick="connect('button11')">Button 11</button>
-    <button id="button12" style="position: fixed; top: 325px; left: 5px" onclick="connect('button12')">Button 12</button>
-    <button id="button13" style="position: fixed; top: 350px; left: 5px" onclick="connect('button13')">Button 13</button>
-    <button id="button14" style="position: fixed; top: 375px; left: 5px" onclick="connect('button14')">Button 14</button>
-    <button id="button15" style="position: fixed; top: 400px; left: 5px" onclick="connect('button15')">Button 15</button>
-    <button id="button16" style="position: fixed; top: 425px; left: 5px" onclick="connect('button16')">Button 16</button>
 
-    <button id="mpu_calibrate" style="position: fixed; top: 500px; left: 5px">Calibrate</button>
-    <script src="script.js"></script>
+
+    <a href='javascript:calibrate()' style='right:0;bottom:0' class="main btn waves-effect waves-light white black-text large">Set Default Pose
+      <i class="material-icons left">title</i>
+    </a>
+
+
+  <a href='javascript:mapPods()' style='right:0' class="main btn waves-effect waves-light white black-text large">Bone Mapping
+    <i class="material-icons left">settings_ethernet</i>
+  </a>
+
+  <a href='javascript:connect()' style='' class="main btn waves-effect waves-light white black-text large">Connect Pods
+    <i class="material-icons left">grains</i>
+  </a>
+
+  <-- modal -->
+  <div id="manageModal" class="modal">
+    <div class="modal-content black-text" >
+      <h4 style="text-align:center">Pod  <i style='vertical-align: middle;font-size:80%' class="material-icons medium">arrow_forward
+      </i>  Bone Mapping</h4>
+      <div id="devicePresent">
+        <hr>  
+
+      <p id="deviceMapList" >
+      </p>
+
+      <hr>  
+    <div class='row pod pod'>
+        <div class='podName col s6'> Anchor Pod</div>
+        <div class='podMac col s6'>
+          <select id="anchorPod">
+            <option value='hips'>Hips</option>
+            <option value='chest'>Chest</option>
+          </select>
+           
+        </div>
+        </div>
+      </div>
+
+        <div id="noDevice" style="text-align:center"> 
+        <p> No devices yet  
+        </p>
+        <a href='javascript:connect()' style="text-decoration: none;" class="btn waves-effect waves-light black">Search for some
+          <i class="material-icons left">search</i>
+        </a>
+        </div>
+    </div>
+
   </body>
+  <script src="script.js"></script>
+
 </html>
 
