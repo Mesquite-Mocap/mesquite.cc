@@ -7,6 +7,8 @@
       content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"
     />
     <link type="text/css" rel="stylesheet" href="main.css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
     <script src="mappings.js"></script>
     <script src="custom.js"></script>
     <script src="quaternion.min.js"></script>
@@ -346,17 +348,17 @@
     </script>
 
 
-    <a href='javascript:calibrate()' style='right:0;bottom:0' class="main btn waves-effect waves-light white black-text">Set Default Pose
+    <a href='javascript:calibrate()' style='right:0;bottom:0' class="main btn waves-effect waves-light white black-text large">Set Default Pose
       <i class="material-icons left">title</i>
     </a>
 
 
-  <a href='javascript:mapPods()' style='right:0' class="main btn waves-effect waves-light white black-text">Bone Mapping
+  <a href='javascript:mapPods()' style='right:0' class="main btn waves-effect waves-light white black-text large">Bone Mapping
     <i class="material-icons left">settings_ethernet</i>
   </a>
 
-  <a href='javascript:connect()' style='' class="main btn waves-effect waves-light white black-text">Connect Pods
-    <i class="material-icons left">settings_bluetooth</i>
+  <a href='javascript:connect()' style='' class="main btn waves-effect waves-light white black-text large">Connect Pods
+    <i class="material-icons left">grains</i>
   </a>
 
   <-- modal -->
@@ -364,7 +366,25 @@
     <div class="modal-content black-text" >
       <h4 style="text-align:center">Pod  <i style='vertical-align: middle;font-size:80%' class="material-icons medium">arrow_forward
       </i>  Bone Mapping</h4>
+      <div id="devicePresent">
+        <hr>  
+
       <p id="deviceMapList" >
+      </p>
+
+      <hr>  
+    <div class='row pod pod'>
+        <div class='podName col s6'> Anchor Pod</div>
+        <div class='podMac col s6'>
+          <select id="anchorPod">
+            <option value='hips'>Hips</option>
+            <option value='chest'>Chest</option>
+          </select>
+           
+        </div>
+        </div>
+      </div>
+
         <div id="noDevice" style="text-align:center"> 
         <p> No devices yet  
         </p>
@@ -372,7 +392,6 @@
           <i class="material-icons left">search</i>
         </a>
         </div>
-      </p>
     </div>
 
   </body>

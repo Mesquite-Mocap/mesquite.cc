@@ -152,7 +152,86 @@ function mpuToBnoFrame(q) {
 }
 
 function mapPods(){
+  var html = "";
+  for(var i = 0; i < devices.length; i++){
+    html += "<div class='row pod pod"+i+"'>"+
+      "<div class='podName col s6'>"+devices[i].name+"</div>"
+      + "<div class='podMac col s6'>"
+      +boneSelectMarkup+ "</div>"+
+      "</div>";
+  }
+
+  console.log(html);
+
+  document.getElementById("deviceMapList").innerHTML = html;
+  if(devices.length == 0){
+    document.getElementById("noDevice").style.display = "block";
+    document.getElementById("devicePresent").style.display = "none";
+
+  }
+  else{
+    document.getElementById("noDevice").style.display = "none";
+    document.getElementById("devicePresent").style.display = "block";
+  }
+     
+// init select
+
+  var elems = document.querySelectorAll('select');
+  var instances = M.FormSelect.init(elems, {});
+
   //open modal
   manageModal.open();
 
 }
+
+
+function boneSelectChanged(select){
+  var boneName = select.value;
+  console.log(boneName);
+
+  var podMac  = select.parentNode.parentNode.parentNode.getElementsByClassName("podName")[0].innerHTML.replace("MM-",'');
+  console.log(podMac);
+  
+  mac2Bones[podMac] = {id: boneName, calibration:{x:0, y:0, z:0, w:1}, last:{x:0, y:0, z:0, w:1}, global:{x:null, y:0, z:0, w:1}, local:{x:0, y:0, z:0, w:1}, sensorPosition:{x:0, y:0, z:0, w: 1}};
+
+  $("#deviceMapList select").each(function(){
+    if(this !== select){
+      this.querySelectorAll("option[value='"+boneName+"']").forEach(function(option){
+        option.disabled = true;
+      });
+    }  
+  });
+
+  //update select
+  var elems = document.querySelectorAll('select');
+  var instances = M.FormSelect.init(elems, {});
+
+}
+
+var boneSelectMarkup = "<select class='boneSelect' onchange='boneSelectChanged(this)'>"+
+  "<option value='0'>Select Bone</option>"+
+  "<option value='head'>Head</option>"+
+  "<option value='neck'>Neck</option>"+
+  "<option value='chest'>Chest</option>"+
+  "<option value='waist'>Waist</option>"+
+  "<option value='leftCollar'>Left Collar</option>"+
+  "<option value='leftShoulder'>Left Shoulder</option>"+
+  "<option value='leftElbow'>Left Elbow</option>"+
+  "<option value='leftWrist'>Left Wrist</option>"+
+  "<option value='leftHand'>Left Hand</option>"+
+  "<option value='leftFingertip'>Left Fingertip</option>"+
+  "<option value='rightCollar'>Right Collar</option>"+
+  "<option value='rightShoulder'>Right Shoulder</option>"+
+  "<option value='rightElbow'>Right Elbow</option>"+
+  "<option value='rightWrist'>Right Wrist</option>"+
+  "<option value='rightHand'>Right Hand</option>"+
+  "<option value='rightFingertip'>Right Fingertip</option>"+
+  "<option value='leftHip'>Left Hip</option>"+
+  "<option value='leftKnee'>Left Knee</option>"+
+  "<option value='leftAnkle'>Left Ankle</option>"+
+  "<option value='leftFoot'>Left Foot</option>"+
+  "<option value='rightHip'>Right Hip</option>"+
+  "<option value='rightKnee'>Right Knee</option>"+
+  "<option value='rightAnkle'>Right Ankle</option>"+
+  "<option value='rightFoot'>Right Foot</option>"+
+  "</select>";

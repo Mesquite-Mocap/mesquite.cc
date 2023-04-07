@@ -21,7 +21,9 @@ async function connect() {
       ]
     });
     console.log('Connected to device : ', device.name);
-    devices.push(device);
+    if(!devices.includes(device)){
+      devices.push(device);
+    }
 
     // Connect to the GATT server
     // We also get the name of the Bluetooth device here
@@ -44,7 +46,7 @@ async function connect() {
 
       // console.log(message);
       // var obj = JSON.parse(message);
-      console.log('Received message:', new Date(), message);
+    //  console.log('Received message:', new Date(), message);
       // handleWSMessage(obj);
     });
 
