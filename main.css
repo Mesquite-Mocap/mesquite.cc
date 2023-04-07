@@ -78,3 +78,9 @@ a, button, input, select {
 	margin-top: 20px;
 	padding: 10px;
 }
+
+
+a.btn.main{
+	position: fixed;
+	text-decoration: none;
+}
