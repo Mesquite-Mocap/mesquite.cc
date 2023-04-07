@@ -48,13 +48,20 @@
     </script>
 
     <script type="module">
+
+/*
       import * as THREE from "../build/three.module.js";
-
       import Stats from "./jsm/libs/stats.module.js";
-
       import { OrbitControls } from "./jsm/controls/OrbitControls.js";
       import { FBXLoader } from "./jsm/loaders/FBXLoader.js";
       import { BVHLoader } from "./jsm/loaders/BVHLoader.js";
+    */
+            import * as THREE from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc@latest/build/three.module.js";
+          import Stats from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc@latest/jsm/libs/stats.module.js";
+import { OrbitControls } from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc@latest/jsm/controls/OrbitControls.js";
+import { FBXLoader } from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc@latest/jsm/loaders/FBXLoader.js";
+import { BVHLoader } from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc@latest/jsm/loaders/BVHLoader.js";
+
 
       const clock_bvh = new THREE.Clock();
 
