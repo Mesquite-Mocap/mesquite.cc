@@ -12,6 +12,7 @@ let device_characteristics = [];
 
 async function connect() {
   try {
+    manageModal.close();
     const device = await navigator.bluetooth.requestDevice({
       optionalServices: [serviceUuid],
       // acceptAllDevices: true,

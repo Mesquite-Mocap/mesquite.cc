@@ -8,7 +8,7 @@
     />
     <link type="text/css" rel="stylesheet" href="main.css" />
     <script src="mappings.js"></script>
-    <script src="custom_mpu.js"></script>
+    <script src="custom.js"></script>
     <script src="quaternion.min.js"></script>
     <script src="three.min.js"></script>
     <!-- <script src="https://cdn.jsdelivr.net/npm/kalmanjs@1.1.0/lib/kalman.js"></script> -->
@@ -361,13 +361,17 @@
 
   <-- modal -->
   <div id="manageModal" class="modal">
-    <div class="modal-content">
-      <h4>Modal Header</h4>
-      <p>A bunch of text</p>
+    <div class="modal-content black-text" >
+      <h4>Device to Bone Mapping</h4>
+      <p id="deviceMapList" >
+        <p> No devices yet  
+        </p>
+        <a href='javascript:connect()' class="btn waves-effect waves-light black">Search for some
+          <i class="material-icons left">search</i>
+        </a>
+      </p>
     </div>
-    <div class="modal-footer">
-      <a href="#!" class="modal-close waves-effect waves-green btn-flat">Agree</a>
-    </div>
+
   </body>
   <script src="script.js"></script>
 

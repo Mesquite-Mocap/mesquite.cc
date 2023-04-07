@@ -150,3 +150,9 @@ function mpuToBnoFrame(q) {
   return finalQuaternion;
 
 }
+
+function mapPods(){
+  //open modal
+  manageModal.open();
+
+}
