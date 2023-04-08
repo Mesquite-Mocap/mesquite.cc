@@ -22,11 +22,14 @@ function handleWSMessage(obj) {
 
     var currentQuaternion = new THREE.Quaternion(obj.x, obj.y, obj.z, obj.w);
 
-    // const euler = new THREE.Euler(Math.PI,0, 0, 'XYZ');
-    // const rotationQuaternion = new THREE.Quaternion().setFromEuler(euler);
-    // var localQuaternion = rotateQuaternion(currentQuaternion, rotationQuaternion);
-
-    var localQuaternion = currentQuaternion;
+    if (mac2Bones[obj.id].id == "Hips") {
+        var localQuaternion = currentQuaternion;
+    } else {
+    const euler = new THREE.Euler(Math.PI/2,0, 0, 'XYZ');
+    const rotationQuaternion = new THREE.Quaternion().setFromEuler(euler);
+    var localQuaternion = rotateQuaternion(currentQuaternion, rotationQuaternion);
+    }
+    
 
     mac2Bones[obj.id].last.x = localQuaternion.x;
     mac2Bones[obj.id].last.y = localQuaternion.y;
@@ -45,9 +48,18 @@ function handleWSMessage(obj) {
     var currentLocalEuler = quaternionToEuler(localQuaternion)
     var parentQuaternion = getParentQuaternion(obj.id);
 
+    //check if obj has sensorPosition
+    if (obj.sensorPosition !== undefined) {
+        
+        var sensorPosition = new THREE.Vector3(obj.sensorPosition.x*100, obj.sensorPosition.y*100, obj.sensorPosition.z*100);
+        //set this as position of the bone
+        console.log(sensorPosition);
+        x.position.set(sensorPosition.x, sensorPosition.y, sensorPosition.z);
+    }
+
     if (parentQuaternion == null) {
         // console.log("currentLocalEuler " + 180 * currentLocalEuler.x / Math.PI, 180 * currentLocalEuler.y / Math.PI, 180 * currentLocalEuler.z / Math.PI);
-        x.quaternion.set(localQuaternion.z, localQuaternion.x, -localQuaternion.y, localQuaternion.w);
+        x.quaternion.set(localQuaternion.x, localQuaternion.y, localQuaternion.z, localQuaternion.w);
         setLocal(obj.id, localQuaternion.x, localQuaternion.y, localQuaternion.z, localQuaternion.w)
         setGlobal(obj.id, localQuaternion.x, localQuaternion.y, localQuaternion.z, localQuaternion.w)
     } else {
@@ -62,7 +74,7 @@ function handleWSMessage(obj) {
         var globalQuaternion = newParentQuaternion.invert().multiply(localQuaternion);
         // console.log("newParentQuaternion", globalQuaternion.x,globalQuaternion.y, globalQuaternion.z,globalQuaternion.w);
 
-        x.quaternion.set(localQuaternion.z, localQuaternion.x, -localQuaternion.y, localQuaternion.w);
+        x.quaternion.set(localQuaternion.x, localQuaternion.z, -localQuaternion.y, localQuaternion.w);
         setLocal(obj.id, globalQuaternion.x, globalQuaternion.y, globalQuaternion.z, globalQuaternion.w)
         setGlobal(obj.id, localQuaternion.x, localQuaternion.y, localQuaternion.z, localQuaternion.w)
     }
@@ -150,7 +162,7 @@ function mapPods() {
             "</div>";
     }
 
-    console.log(html);
+    // console.log(html);
 
     document.getElementById("deviceMapList").innerHTML = html;
     if (devices.length == 0) {
@@ -211,3 +223,6 @@ var boneSelectMarkup = "<select class='boneSelect' onchange='boneSelectChanged(t
     "<option value='RightUpLeg'>RightUpLeg</option>" +
     "<option value='RightLeg'>RightLeg</option>" +
     "</select>";
+
+
+

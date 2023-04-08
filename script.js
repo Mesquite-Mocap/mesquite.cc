@@ -44,10 +44,30 @@ async function connect() {
       const decoder = new TextDecoder('utf-8');
       const message = decoder.decode(value);
 
-      // console.log(message);
-      var obj = JSON.parse(message);
-      console.log('Received message:', new Date(), message);
-      handleWSMessage(obj);
+      // console.log('Received message:', new Date(), message);
+      if (message.startsWith("{") && message.endsWith("}")) {
+        var obj = JSON.parse(message);
+          if(mac2Bones[obj.id] !== undefined){
+          handleWSMessage(obj);
+          }
+      }
+      else{
+        // message is space separated
+        var obj = message.split(" ");
+        mac_id = obj[0];
+        obj.shift();
+        obj.pop();
+        // console.log(obj);
+        //check the length of obj ==7 
+        if(obj.length == 7){
+            if (mac2Bones[mac_id] !== undefined) {
+                //create json object
+                var json_obj = { id : mac_id,  x : obj[0], y : obj[1], z : obj[2], w : obj[3], sensorPosition : { x : obj[4], y : obj[5], z : obj[6] }};
+                // console.log(json_obj);
+                handleWSMessage(json_obj);
+            }
+          }
+      }
     });
 
 
