@@ -19,7 +19,7 @@ async function connect() {
       filters: [
         { namePrefix: "MM-" },
       ]
-    });
+    }).catch(error => { console.log(error); });;
     console.log('Connected to device : ', device.name);
     if(!devices.includes(device)){
       devices.push(device);
