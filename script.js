@@ -45,9 +45,9 @@ async function connect() {
       const message = decoder.decode(value);
 
       // console.log(message);
-      // var obj = JSON.parse(message);
-    //  console.log('Received message:', new Date(), message);
-      // handleWSMessage(obj);
+      var obj = JSON.parse(message);
+      console.log('Received message:', new Date(), message);
+      handleWSMessage(obj);
     });
 
 

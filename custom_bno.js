@@ -15,7 +15,7 @@ function calibrate() {
 }
 
 function handleWSMessage(obj) {
-    // console.log(mac2Bones[obj.id].id);
+    console.log(mac2Bones[obj.id].id);
 
     var bone = mac2Bones[obj.id].id;
     var x = model.getObjectByName(rigPrefix + bone);
@@ -199,28 +199,15 @@ function boneSelectChanged(select) {
 
 var boneSelectMarkup = "<select class='boneSelect' onchange='boneSelectChanged(this)'>" +
     "<option value='0'>Select Bone</option>" +
-    "<option value='head'>Head</option>" +
-    "<option value='neck'>Neck</option>" +
-    "<option value='chest'>Chest</option>" +
-    "<option value='waist'>Waist</option>" +
-    "<option value='leftCollar'>Left Collar</option>" +
-    "<option value='leftShoulder'>Left Shoulder</option>" +
-    "<option value='leftElbow'>Left Elbow</option>" +
-    "<option value='leftWrist'>Left Wrist</option>" +
-    "<option value='leftHand'>Left Hand</option>" +
-    "<option value='leftFingertip'>Left Fingertip</option>" +
-    "<option value='rightCollar'>Right Collar</option>" +
-    "<option value='rightShoulder'>Right Shoulder</option>" +
-    "<option value='rightElbow'>Right Elbow</option>" +
-    "<option value='rightWrist'>Right Wrist</option>" +
-    "<option value='rightHand'>Right Hand</option>" +
-    "<option value='rightFingertip'>Right Fingertip</option>" +
-    "<option value='leftHip'>Left Hip</option>" +
-    "<option value='leftKnee'>Left Knee</option>" +
-    "<option value='leftAnkle'>Left Ankle</option>" +
-    "<option value='leftFoot'>Left Foot</option>" +
-    "<option value='rightHip'>Right Hip</option>" +
-    "<option value='rightKnee'>Right Knee</option>" +
-    "<option value='rightAnkle'>Right Ankle</option>" +
-    "<option value='rightFoot'>Right Foot</option>" +
+    "<option value='Head'>Head</option>" +
+    "<option value='Spine'>Spine</option>" +
+    "<option value='Hips'>Hips</option>" +
+    "<option value='LeftArm'>LeftArm</option>" +
+    "<option value='LeftForeArm'>LeftForeArm</option>" +
+    "<option value='RightArm'>RightArm</option>" +
+    "<option value='RightForeArm'>RightForeArm</option>" +
+    "<option value='LeftUpLeg'>LeftUpLeg</option>" +
+    "<option value='LeftLeg'>LeftLeg</option>" +
+    "<option value='RightUpLeg'>RightUpLeg</option>" +
+    "<option value='RightLeg'>RightLeg</option>" +
     "</select>";
