@@ -76,6 +76,8 @@
 
 
 
+
+
       function init() {
           // init modal
           var elems = document.querySelectorAll('.modal');
@@ -137,6 +139,8 @@
         //	loader.load( 'models/fbx/Ch14_nonPBR.fbx', function ( object ) {
         loader.load("models/fbx/" + fbxfile, function (object) {
           model = object;
+          model.children[1].material.color.set(0x222222);
+          model.children[2].material.color.set(0x999999);
 
           if (zoomLevel) {
             object.scale.multiplyScalar(zoomLevel);
@@ -212,6 +216,8 @@
         // stats
         // stats = new Stats();
         //			container.appendChild( stats.dom );
+
+
 
         document.getElementById("splashScreen").style.opacity = "0";
         setTimeout(function () {
