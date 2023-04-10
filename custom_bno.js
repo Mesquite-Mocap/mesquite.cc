@@ -16,7 +16,7 @@ function calibrate() {
 }
 
 function handleWSMessage(obj) {
-    console.log(mac2Bones[obj.id].id);
+    // console.log(mac2Bones[obj.id].id);
 
     var bone = mac2Bones[obj.id].id;
     var x = model.getObjectByName(rigPrefix + bone);
@@ -29,7 +29,7 @@ function handleWSMessage(obj) {
         var localQuaternion = rotateQuaternion(currentQuaternion, rotationQuaternion);
         // var localQuaternion = currentQuaternion;
     } else {
-    const euler = new THREE.Euler(-Math.PI/2,0, 0, 'XYZ');
+    const euler = new THREE.Euler(Math.PI/2,0, 0, 'XYZ');
     const rotationQuaternion = new THREE.Quaternion().setFromEuler(euler);
     var localQuaternion = rotateQuaternion(currentQuaternion, rotationQuaternion);
     }
@@ -74,6 +74,7 @@ function handleWSMessage(obj) {
 
     if (parentQuaternion == null) {
         // console.log("currentLocalEuler " + 180 * currentLocalEuler.x / Math.PI, 180 * currentLocalEuler.y / Math.PI, 180 * currentLocalEuler.z / Math.PI);
+        // x.quaternion.set(localQuaternion.x, localQuaternion.z, -localQuaternion.y, localQuaternion.w);
         x.quaternion.set(localQuaternion.x, localQuaternion.y, localQuaternion.z, localQuaternion.w);
         setLocal(obj.id, localQuaternion.x, localQuaternion.y, localQuaternion.z, localQuaternion.w)
         setGlobal(obj.id, localQuaternion.x, localQuaternion.y, localQuaternion.z, localQuaternion.w)
@@ -82,14 +83,15 @@ function handleWSMessage(obj) {
         // console.log("parentQuaternion ", parentQuaternion.x,parentQuaternion.y, parentQuaternion.z,parentQuaternion.w);
 
         var parentEuler = quaternionToEuler(parentQuaternion);
-        console.log("currentLocalEuler " + 180 * currentLocalEuler.x / Math.PI, 180 * currentLocalEuler.y / Math.PI, 180 * currentLocalEuler.z / Math.PI);
-        console.log("parentEuler " + 180 * parentEuler.x / Math.PI, 180 * parentEuler.y / Math.PI, 180 * parentEuler.z / Math.PI);
+        // console.log("currentLocalEuler " + 180 * currentLocalEuler.x / Math.PI, 180 * currentLocalEuler.y / Math.PI, 180 * currentLocalEuler.z / Math.PI);
+        // console.log("parentEuler " + 180 * parentEuler.x / Math.PI, 180 * parentEuler.y / Math.PI, 180 * parentEuler.z / Math.PI);
 
         var newParentQuaternion = new THREE.Quaternion(parentQuaternion.x, parentQuaternion.y, parentQuaternion.z, parentQuaternion.w);
         var globalQuaternion = newParentQuaternion.invert().multiply(localQuaternion);
         // console.log("newParentQuaternion", globalQuaternion.x,globalQuaternion.y, globalQuaternion.z,globalQuaternion.w);
 
-        x.quaternion.set(localQuaternion.x, localQuaternion.z, -localQuaternion.y, localQuaternion.w);
+        // x.quaternion.set(localQuaternion.x, localQuaternion.z, -localQuaternion.y, localQuaternion.w);
+        x.quaternion.set(globalQuaternion.x, globalQuaternion.y, globalQuaternion.z, globalQuaternion.w);
         setLocal(obj.id, globalQuaternion.x, globalQuaternion.y, globalQuaternion.z, globalQuaternion.w)
         setGlobal(obj.id, localQuaternion.x, localQuaternion.y, localQuaternion.z, localQuaternion.w)
     }
