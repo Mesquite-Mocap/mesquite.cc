@@ -1,6 +1,7 @@
 var rigPrefix = "mixamorig";
 
 var calibrated = false;
+var initial_position = new THREE.Vector3(0, 0, 0);
 
 function calibrate() {
     var keys = Object.keys(mac2Bones);
@@ -23,9 +24,12 @@ function handleWSMessage(obj) {
     var currentQuaternion = new THREE.Quaternion(obj.x, obj.y, obj.z, obj.w);
 
     if (mac2Bones[obj.id].id == "Hips") {
-        var localQuaternion = currentQuaternion;
+        const euler = new THREE.Euler(-Math.PI , 0, 0, 'XYZ');
+        const rotationQuaternion = new THREE.Quaternion().setFromEuler(euler);
+        var localQuaternion = rotateQuaternion(currentQuaternion, rotationQuaternion);
+        // var localQuaternion = currentQuaternion;
     } else {
-    const euler = new THREE.Euler(Math.PI/2,0, 0, 'XYZ');
+    const euler = new THREE.Euler(-Math.PI/2,0, 0, 'XYZ');
     const rotationQuaternion = new THREE.Quaternion().setFromEuler(euler);
     var localQuaternion = rotateQuaternion(currentQuaternion, rotationQuaternion);
     }
@@ -50,8 +54,19 @@ function handleWSMessage(obj) {
 
     //check if obj has sensorPosition
     if (obj.sensorPosition !== undefined) {
-        
-        var sensorPosition = new THREE.Vector3(obj.sensorPosition.x*100, obj.sensorPosition.y*100, obj.sensorPosition.z*100);
+        if (initial_position.x == 0 && initial_position.y == 0 && initial_position.z == 0) {
+            initial_position.x = obj.sensorPosition.x*100;
+            initial_position.y = obj.sensorPosition.y*100;
+            initial_position.z = obj.sensorPosition.z*100;
+        }
+        if (calibrated == true) {
+            initial_position.x = obj.sensorPosition.x*100;
+            initial_position.y = obj.sensorPosition.y*100;
+            initial_position.z = obj.sensorPosition.z*100;
+            calibrated = false;
+        }
+
+        var sensorPosition = new THREE.Vector3(obj.sensorPosition.x * 100 - initial_position.x, obj.sensorPosition.y * 100 - initial_position.y, obj.sensorPosition.z*100- initial_position.z);
         //set this as position of the bone
         console.log(sensorPosition);
         x.position.set(sensorPosition.x, sensorPosition.y, sensorPosition.z);
