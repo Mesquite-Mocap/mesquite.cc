@@ -47,9 +47,9 @@ async function connect() {
       // console.log('Received message:', new Date(), message);
       if (message.startsWith("{") && message.endsWith("}")) {
         var obj = JSON.parse(message);
-          if(mac2Bones[obj.id] !== undefined){
+        if(mac2Bones[obj.id] !== undefined){
           handleWSMessage(obj);
-          }
+        }
       }
       else{
         // message is space separated

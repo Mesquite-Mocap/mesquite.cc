@@ -1,7 +1,8 @@
 var rigPrefix = "mixamorig";
 
 var calibrated = false;
-var initial_position = new THREE.Vector3(0, 0, 0);
+var initialPosition = {x:0, y:0, z:0}
+var positionSensivity = 50;
 
 function calibrate() {
     var keys = Object.keys(mac2Bones);
@@ -23,15 +24,15 @@ function handleWSMessage(obj) {
 
     var currentQuaternion = new THREE.Quaternion(obj.x, obj.y, obj.z, obj.w);
 
-    if (mac2Bones[obj.id].id == "Hips") {
-        const euler = new THREE.Euler(-Math.PI , 0, 0, 'XYZ');
+    if (mac2Bones[obj.id].id == "Spine") {
+        const euler = new THREE.Euler(0 , Math.PI, 0, 'XYZ');
         const rotationQuaternion = new THREE.Quaternion().setFromEuler(euler);
         var localQuaternion = rotateQuaternion(currentQuaternion, rotationQuaternion);
         // var localQuaternion = currentQuaternion;
     } else {
-    const euler = new THREE.Euler(Math.PI/2,0, 0, 'XYZ');
-    const rotationQuaternion = new THREE.Quaternion().setFromEuler(euler);
-    var localQuaternion = rotateQuaternion(currentQuaternion, rotationQuaternion);
+        const euler = new THREE.Euler(-Math.PI/2,0, 0, 'XYZ');
+        const rotationQuaternion = new THREE.Quaternion().setFromEuler(euler);
+        var localQuaternion = rotateQuaternion(currentQuaternion, rotationQuaternion);
     }
     
 
@@ -54,22 +55,23 @@ function handleWSMessage(obj) {
 
     //check if obj has sensorPosition
     if (obj.sensorPosition !== undefined) {
-        if (initial_position.x == 0 && initial_position.y == 0 && initial_position.z == 0) {
-            initial_position.x = obj.sensorPosition.x*100;
-            initial_position.y = obj.sensorPosition.y*100;
-            initial_position.z = obj.sensorPosition.z*100;
+        if (initialPosition.x == 0 && initialPosition.y == 0 && initialPosition.z == 0) {
+            initialPosition.x = obj.sensorPosition.x*positionSensivity;
+            initialPosition.y = obj.sensorPosition.y*positionSensivity;
+            initialPosition.z = obj.sensorPosition.z*positionSensivity;
         }
         if (calibrated == true) {
-            initial_position.x = obj.sensorPosition.x*100;
-            initial_position.y = obj.sensorPosition.y*100;
-            initial_position.z = obj.sensorPosition.z*100;
+            initialPosition.x = obj.sensorPosition.x*positionSensivity;
+            initialPosition.y = obj.sensorPosition.y*positionSensivity;
+            initialPosition.z = obj.sensorPosition.z*positionSensivity;
             calibrated = false;
         }
 
-        var sensorPosition = new THREE.Vector3(obj.sensorPosition.x * 100 - initial_position.x, obj.sensorPosition.y * 100 - initial_position.y, obj.sensorPosition.z*100- initial_position.z);
+        var sensorPosition = new THREE.Vector3(obj.sensorPosition.x * positionSensivity - initialPosition.x, obj.sensorPosition.y * positionSensivity - initialPosition.y + 100, obj.sensorPosition.z*positionSensivity- initialPosition.z);
         //set this as position of the bone
-        console.log(sensorPosition);
-        x.position.set(sensorPosition.x, sensorPosition.y, sensorPosition.z);
+        // console.log(sensorPosition);
+        const hipsBone = model.getObjectByName(rigPrefix + "Hips");
+        hipsBone.position.set(sensorPosition.z, sensorPosition.y, -sensorPosition.x);
     }
 
     if (parentQuaternion == null) {
