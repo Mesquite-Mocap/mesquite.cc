@@ -15,19 +15,24 @@ function calibrate() {
 }
 
 function handleWSMessage(obj) {
-    console.log(mac2Bones[obj.id].id);
+    // console.log(mac2Bones[obj.id].id);
 
     var bone = mac2Bones[obj.id].id;
     var x = model.getObjectByName(rigPrefix + bone);
 
     var currentQuaternion = new THREE.Quaternion(obj.x, obj.y, obj.z, obj.w);
 
-    if (mac2Bones[obj.id].id == "Hips") {
-        var localQuaternion = currentQuaternion;
+    var localQuaternion = new THREE.Quaternion();
+    if (mac2Bones[obj.id].id == "Spine") {
+        const euler = new THREE.Euler(-Math.PI/2,0, 0, 'XYZ');
+        const rotationQuaternion = new THREE.Quaternion().setFromEuler(euler);
+        localQuaternion = rotateQuaternion(currentQuaternion, rotationQuaternion);
+        // localQuaternion = currentQuaternion;
     } else {
-    const euler = new THREE.Euler(Math.PI/2,0, 0, 'XYZ');
-    const rotationQuaternion = new THREE.Quaternion().setFromEuler(euler);
-    var localQuaternion = rotateQuaternion(currentQuaternion, rotationQuaternion);
+        const euler = new THREE.Euler(-Math.PI/2,0, 0, 'XYZ');
+        const rotationQuaternion = new THREE.Quaternion().setFromEuler(euler);
+        localQuaternion = rotateQuaternion(currentQuaternion, rotationQuaternion);
+        // localQuaternion = currentQuaternion;
     }
     
 
@@ -49,13 +54,14 @@ function handleWSMessage(obj) {
     var parentQuaternion = getParentQuaternion(obj.id);
 
     //check if obj has sensorPosition
-    if (obj.sensorPosition !== undefined) {
+    // if (obj.sensorPosition !== undefined) {
         
-        var sensorPosition = new THREE.Vector3(obj.sensorPosition.x*100, obj.sensorPosition.y*100, obj.sensorPosition.z*100);
-        //set this as position of the bone
-        console.log(sensorPosition);
-        x.position.set(sensorPosition.x, sensorPosition.y, sensorPosition.z);
-    }
+    //     var sensorPosition = new THREE.Vector3(obj.sensorPosition.x*100, obj.sensorPosition.y*100, obj.sensorPosition.z*100);
+    //     //set this as position of the bone
+    //     console.log(sensorPosition);
+    //     var hipsBone = model.getObjectByName(rigPrefix + "Hips");
+    //     hipsBone.position.set(sensorPosition.x, sensorPosition.y, sensorPosition.z);
+    // }
 
     if (parentQuaternion == null) {
         // console.log("currentLocalEuler " + 180 * currentLocalEuler.x / Math.PI, 180 * currentLocalEuler.y / Math.PI, 180 * currentLocalEuler.z / Math.PI);
@@ -68,14 +74,15 @@ function handleWSMessage(obj) {
         // console.log("parentQuaternion ", parentQuaternion.x,parentQuaternion.y, parentQuaternion.z,parentQuaternion.w);
 
         var parentEuler = quaternionToEuler(parentQuaternion);
-        console.log("currentLocalEuler " + 180 * currentLocalEuler.x / Math.PI, 180 * currentLocalEuler.y / Math.PI, 180 * currentLocalEuler.z / Math.PI);
-        console.log("parentEuler " + 180 * parentEuler.x / Math.PI, 180 * parentEuler.y / Math.PI, 180 * parentEuler.z / Math.PI);
+        // console.log("currentLocalEuler " + 180 * currentLocalEuler.x / Math.PI, 180 * currentLocalEuler.y / Math.PI, 180 * currentLocalEuler.z / Math.PI);
+        // console.log("parentEuler " + 180 * parentEuler.x / Math.PI, 180 * parentEuler.y / Math.PI, 180 * parentEuler.z / Math.PI);
 
         var newParentQuaternion = new THREE.Quaternion(parentQuaternion.x, parentQuaternion.y, parentQuaternion.z, parentQuaternion.w);
         var globalQuaternion = newParentQuaternion.invert().multiply(localQuaternion);
         // console.log("newParentQuaternion", globalQuaternion.x,globalQuaternion.y, globalQuaternion.z,globalQuaternion.w);
 
-        x.quaternion.set(localQuaternion.x, localQuaternion.z, -localQuaternion.y, localQuaternion.w);
+        // x.quaternion.set(localQuaternion.x, localQuaternion.z, -localQuaternion.y, localQuaternion.w);
+        x.quaternion.set(globalQuaternion.x, globalQuaternion.y, globalQuaternion.z, globalQuaternion.w);
         setLocal(obj.id, globalQuaternion.x, globalQuaternion.y, globalQuaternion.z, globalQuaternion.w)
         setGlobal(obj.id, localQuaternion.x, localQuaternion.y, localQuaternion.z, localQuaternion.w)
     }
