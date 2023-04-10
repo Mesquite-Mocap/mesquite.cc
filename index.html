@@ -212,6 +212,11 @@
         // stats
         // stats = new Stats();
         //			container.appendChild( stats.dom );
+
+        document.getElementById("splashScreen").style.opacity = "0";
+        setTimeout(function () {
+          document.getElementById("splashScreen").style.display = "none";
+        }, 1000);
       }
 
       function onWindowResize() {
@@ -399,6 +404,13 @@
           <i class="material-icons left">search</i>
         </a>
         </div>
+  </div>
+  </div>
+
+  <div id="splashScreen" style="width:100vw;height:100vh;position:fixed;top:0;left:0;background-color:rgba(0,0,0,0.9);z-index:1000;background-image: url(icons/icon.png); background-repeat: no-repeat;background-position: 50% 30%; background-size: 200px; transition: 1s;">
+      <div class="title" style="top:60vh; text-align:center;font-size:200%; position: absolute; width: 100vw;">
+          Mesquite Mocap
+      </div>    
   </div>
 
   </body>

@@ -102,7 +102,7 @@ async function connect() {
     // });
   } catch (err) {
     console.log(err);
-    alert("An error occured while fetching device details");
+    //alert("An error occured while fetching device details");
   }
 }
 
