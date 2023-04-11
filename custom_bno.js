@@ -78,8 +78,8 @@ function handleWSMessage(obj) {
         // console.log("currentLocalEuler " + 180 * currentLocalEuler.x / Math.PI, 180 * currentLocalEuler.y / Math.PI, 180 * currentLocalEuler.z / Math.PI);
         // x.quaternion.set(localQuaternion.x, localQuaternion.z, -localQuaternion.y, localQuaternion.w);
         x.quaternion.set(localQuaternion.x, localQuaternion.y, localQuaternion.z, localQuaternion.w);
-        setLocal(obj.id, localQuaternion.x, localQuaternion.y, localQuaternion.z, localQuaternion.w)
-        setGlobal(obj.id, localQuaternion.x, localQuaternion.y, localQuaternion.z, localQuaternion.w)
+        setLocal(obj.id, localQuaternion.x, localQuaternion.y, localQuaternion.z, localQuaternion.w);
+        setGlobal(obj.id, localQuaternion.x, localQuaternion.y, localQuaternion.z, localQuaternion.w);
     } else {
         // console.log("localQuaternion ", localQuaternion.x, localQuaternion.y , localQuaternion.z ,localQuaternion.w);
         // console.log("parentQuaternion ", parentQuaternion.x,parentQuaternion.y, parentQuaternion.z,parentQuaternion.w);
@@ -94,8 +94,8 @@ function handleWSMessage(obj) {
 
         // x.quaternion.set(localQuaternion.x, localQuaternion.z, -localQuaternion.y, localQuaternion.w);
         x.quaternion.set(globalQuaternion.x, globalQuaternion.y, globalQuaternion.z, globalQuaternion.w);
-        setLocal(obj.id, globalQuaternion.x, globalQuaternion.y, globalQuaternion.z, globalQuaternion.w)
-        setGlobal(obj.id, localQuaternion.x, localQuaternion.y, localQuaternion.z, localQuaternion.w)
+        setLocal(obj.id, globalQuaternion.x, globalQuaternion.y, globalQuaternion.z, globalQuaternion.w);
+        setGlobal(obj.id, localQuaternion.x, localQuaternion.y, localQuaternion.z, localQuaternion.w);
     }
 }
 
