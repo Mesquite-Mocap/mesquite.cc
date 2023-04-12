@@ -23,32 +23,40 @@ function handleWSMessage(obj) {
     var x = model.getObjectByName(rigPrefix + bone);
 
     var currentQuaternion = new THREE.Quaternion(obj.x, obj.y, obj.z, obj.w);
+    var localQuaternion = new THREE.Quaternion();
+    var rotationQuaternion = new THREE.Quaternion();
+    var euler = new THREE.Euler();
 
-    if (mac2Bones[obj.id].id == "Spine") {
-        const euler = new THREE.Euler(0 , Math.PI, 0, 'XYZ');
-        const rotationQuaternion = new THREE.Quaternion().setFromEuler(euler);
-        var localQuaternion = rotateQuaternion(currentQuaternion, rotationQuaternion);
-        // var localQuaternion = currentQuaternion;
+    if (bone === "Spine") {
+        euler.set(0, Math.PI, 0, 'XYZ');
     } else {
-        const euler = new THREE.Euler(-Math.PI/2,0, 0, 'XYZ');
-        const rotationQuaternion = new THREE.Quaternion().setFromEuler(euler);
-        var localQuaternion = rotateQuaternion(currentQuaternion, rotationQuaternion);
+        euler.set(-Math.PI / 2, 0, 0, 'XYZ');
     }
+
+    rotationQuaternion.setFromEuler(euler);
+    localQuaternion.copy(currentQuaternion).multiply(rotationQuaternion);
     
 
-    mac2Bones[obj.id].last.x = localQuaternion.x;
-    mac2Bones[obj.id].last.y = localQuaternion.y;
-    mac2Bones[obj.id].last.z = localQuaternion.z;
-    mac2Bones[obj.id].last.w = localQuaternion.w;
+    // mac2Bones[obj.id].last.x = localQuaternion.x;
+    // mac2Bones[obj.id].last.y = localQuaternion.y;
+    // mac2Bones[obj.id].last.z = localQuaternion.z;
+    // mac2Bones[obj.id].last.w = localQuaternion.w;
 
-    var calibratedQuaternion = new THREE.Quaternion(
-        mac2Bones[obj.id].calibration.x,
-        mac2Bones[obj.id].calibration.y,
-        mac2Bones[obj.id].calibration.z,
-        mac2Bones[obj.id].calibration.w
-    );
+    // var calibratedQuaternion = new THREE.Quaternion(
+    //     mac2Bones[obj.id].calibration.x,
+    //     mac2Bones[obj.id].calibration.y,
+    //     mac2Bones[obj.id].calibration.z,
+    //     mac2Bones[obj.id].calibration.w
+    // );
 
-    localQuaternion = localQuaternion.multiply(calibratedQuaternion.invert());
+    // localQuaternion = localQuaternion.multiply(calibratedQuaternion.invert());
+
+    const boneData = mac2Bones[obj.id];
+    boneData.last.copy(localQuaternion);
+
+    var calibratedQuaternion = boneData.calibration.clone().invert();
+
+    localQuaternion.multiply(calibratedQuaternion);
 
     var currentLocalEuler = quaternionToEuler(localQuaternion)
     var parentQuaternion = getParentQuaternion(obj.id);
@@ -147,19 +155,19 @@ function getParentQuaternion(child) {
     return null;
 }
 
-function quatern2rotMat(q) {
-    var R = [[], [], []];
-    R[0][0] = 2 * Math.pow(q[0], 2) - 1 + 2 * Math.pow(q[1], 2);
-    R[0][1] = 2 * (q[1] * q[2] + q[0] * q[3]);
-    R[0][2] = 2 * (q[1] * q[3] - q[0] * q[2]);
-    R[1][0] = 2 * (q[1] * q[2] - q[0] * q[3]);
-    R[1][1] = 2 * Math.pow(q[0], 2) - 1 + 2 * Math.pow(q[2], 2);
-    R[1][2] = 2 * (q[2] * q[3] + q[0] * q[1]);
-    R[2][0] = 2 * (q[1] * q[3] + q[0] * q[2]);
-    R[2][1] = 2 * (q[2] * q[3] - q[0] * q[1]);
-    R[2][2] = 2 * Math.pow(q[0], 2) - 1 + 2 * Math.pow(q[3], 2);
-    return R;
-}
+// function quatern2rotMat(q) {
+//     var R = [[], [], []];
+//     R[0][0] = 2 * Math.pow(q[0], 2) - 1 + 2 * Math.pow(q[1], 2);
+//     R[0][1] = 2 * (q[1] * q[2] + q[0] * q[3]);
+//     R[0][2] = 2 * (q[1] * q[3] - q[0] * q[2]);
+//     R[1][0] = 2 * (q[1] * q[2] - q[0] * q[3]);
+//     R[1][1] = 2 * Math.pow(q[0], 2) - 1 + 2 * Math.pow(q[2], 2);
+//     R[1][2] = 2 * (q[2] * q[3] + q[0] * q[1]);
+//     R[2][0] = 2 * (q[1] * q[3] + q[0] * q[2]);
+//     R[2][1] = 2 * (q[2] * q[3] - q[0] * q[1]);
+//     R[2][2] = 2 * Math.pow(q[0], 2) - 1 + 2 * Math.pow(q[3], 2);
+//     return R;
+// }
 
 
 
@@ -205,6 +213,17 @@ function mapPods() {
 }
 
 
+class BoneData {
+    constructor(boneName) {
+        this.id = boneName;
+        this.calibration = new THREE.Quaternion(0, 0, 0, 1);
+        this.last = new THREE.Quaternion(0, 0, 0, 1);
+        this.global = new THREE.Quaternion(0, 0, 0, 1);
+        this.local = new THREE.Quaternion(0, 0, 0, 1);
+        this.sensorPosition = new THREE.Vector4(0, 0, 0, 1);
+    }
+}
+
 function boneSelectChanged(select) {
     var boneName = select.value;
     console.log(boneName);
@@ -212,8 +231,8 @@ function boneSelectChanged(select) {
     var podMac = select.parentNode.parentNode.parentNode.getElementsByClassName("podName")[0].innerHTML.replace("MM-", '');
     console.log(podMac);
 
-    mac2Bones[podMac] = { id: boneName, calibration: { x: 0, y: 0, z: 0, w: 1 }, last: { x: 0, y: 0, z: 0, w: 1 }, global: { x: null, y: 0, z: 0, w: 1 }, local: { x: 0, y: 0, z: 0, w: 1 }, sensorPosition: { x: 0, y: 0, z: 0, w: 1 } };
-
+    // mac2Bones[podMac] = { id: boneName, calibration: { x: 0, y: 0, z: 0, w: 1 }, last: { x: 0, y: 0, z: 0, w: 1 }, global: { x: null, y: 0, z: 0, w: 1 }, local: { x: 0, y: 0, z: 0, w: 1 }, sensorPosition: { x: 0, y: 0, z: 0, w: 1 } };
+    mac2Bones[podMac] = new BoneData(boneName);
     $("#deviceMapList select").each(function () {
         if (this !== select) {
             this.querySelectorAll("option[value='" + boneName + "']").forEach(function (option) {
