@@ -23,19 +23,18 @@ function handleWSMessage(obj) {
     var x = model.getObjectByName(rigPrefix + bone);
 
     var currentQuaternion = new THREE.Quaternion(obj.x, obj.y, obj.z, obj.w);
-    var localQuaternion = new THREE.Quaternion();
-    var rotationQuaternion = new THREE.Quaternion();
-    var euler = new THREE.Euler();
 
-    if (bone === "Spine") {
-        euler.set(0, Math.PI, 0, 'XYZ');
+    if (mac2Bones[obj.id].id == "Spine") {
+        const euler = new THREE.Euler(0, Math.PI, 0, 'XYZ');
+        const rotationQuaternion = new THREE.Quaternion().setFromEuler(euler);
+        var localQuaternion = rotateQuaternion(currentQuaternion, rotationQuaternion);
+        // var localQuaternion = currentQuaternion;
     } else {
-        euler.set(-Math.PI / 2, 0, 0, 'XYZ');
+        const euler = new THREE.Euler(-Math.PI / 2, 0, 0, 'XYZ');
+        const rotationQuaternion = new THREE.Quaternion().setFromEuler(euler);
+        var localQuaternion = rotateQuaternion(currentQuaternion, rotationQuaternion);
     }
 
-    rotationQuaternion.setFromEuler(euler);
-    localQuaternion.copy(currentQuaternion).multiply(rotationQuaternion);
-    
 
     mac2Bones[obj.id].last.x = localQuaternion.x;
     mac2Bones[obj.id].last.y = localQuaternion.y;
@@ -51,31 +50,22 @@ function handleWSMessage(obj) {
 
     localQuaternion = localQuaternion.multiply(calibratedQuaternion.invert());
 
-    // const boneData = mac2Bones[obj.id];
-    // boneData.last.copy(localQuaternion);
-
-    // var calibratedQuaternion = boneData.calibration.clone().invert();
-
-    // localQuaternion.multiply(calibratedQuaternion);
-
     var currentLocalEuler = quaternionToEuler(localQuaternion)
     var parentQuaternion = getParentQuaternion(obj.id);
-
-    //check if obj has sensorPosition
     if (obj.sensorPosition !== undefined) {
         if (initialPosition.x == 0 && initialPosition.y == 0 && initialPosition.z == 0) {
-            initialPosition.x = obj.sensorPosition.x*positionSensivity;
-            initialPosition.y = obj.sensorPosition.y*positionSensivity;
-            initialPosition.z = obj.sensorPosition.z*positionSensivity;
+            initialPosition.x = obj.sensorPosition.x * positionSensivity;
+            initialPosition.y = obj.sensorPosition.y * positionSensivity;
+            initialPosition.z = obj.sensorPosition.z * positionSensivity;
         }
         if (calibrated == true) {
-            initialPosition.x = obj.sensorPosition.x*positionSensivity;
-            initialPosition.y = obj.sensorPosition.y*positionSensivity;
-            initialPosition.z = obj.sensorPosition.z*positionSensivity;
+            initialPosition.x = obj.sensorPosition.x * positionSensivity;
+            initialPosition.y = obj.sensorPosition.y * positionSensivity;
+            initialPosition.z = obj.sensorPosition.z * positionSensivity;
             calibrated = false;
         }
 
-        var sensorPosition = new THREE.Vector3(obj.sensorPosition.x * positionSensivity - initialPosition.x, obj.sensorPosition.y * positionSensivity - initialPosition.y + 100, obj.sensorPosition.z*positionSensivity- initialPosition.z);
+        var sensorPosition = new THREE.Vector3(obj.sensorPosition.x * positionSensivity - initialPosition.x, obj.sensorPosition.y * positionSensivity - initialPosition.y + 100, obj.sensorPosition.z * positionSensivity - initialPosition.z);
         //set this as position of the bone
         // console.log(sensorPosition);
         const hipsBone = model.getObjectByName(rigPrefix + "Hips");
@@ -86,8 +76,8 @@ function handleWSMessage(obj) {
         // console.log("currentLocalEuler " + 180 * currentLocalEuler.x / Math.PI, 180 * currentLocalEuler.y / Math.PI, 180 * currentLocalEuler.z / Math.PI);
         // x.quaternion.set(localQuaternion.x, localQuaternion.z, -localQuaternion.y, localQuaternion.w);
         x.quaternion.set(localQuaternion.x, localQuaternion.y, localQuaternion.z, localQuaternion.w);
-        setLocal(obj.id, localQuaternion.x, localQuaternion.y, localQuaternion.z, localQuaternion.w);
-        setGlobal(obj.id, localQuaternion.x, localQuaternion.y, localQuaternion.z, localQuaternion.w);
+        setLocal(obj.id, localQuaternion.x, localQuaternion.y, localQuaternion.z, localQuaternion.w)
+        setGlobal(obj.id, localQuaternion.x, localQuaternion.y, localQuaternion.z, localQuaternion.w)
     } else {
         // console.log("localQuaternion ", localQuaternion.x, localQuaternion.y , localQuaternion.z ,localQuaternion.w);
         // console.log("parentQuaternion ", parentQuaternion.x,parentQuaternion.y, parentQuaternion.z,parentQuaternion.w);
@@ -102,10 +92,11 @@ function handleWSMessage(obj) {
 
         // x.quaternion.set(localQuaternion.x, localQuaternion.z, -localQuaternion.y, localQuaternion.w);
         x.quaternion.set(globalQuaternion.x, globalQuaternion.y, globalQuaternion.z, globalQuaternion.w);
-        setLocal(obj.id, globalQuaternion.x, globalQuaternion.y, globalQuaternion.z, globalQuaternion.w);
-        setGlobal(obj.id, localQuaternion.x, localQuaternion.y, localQuaternion.z, localQuaternion.w);
+        setLocal(obj.id, globalQuaternion.x, globalQuaternion.y, globalQuaternion.z, globalQuaternion.w)
+        setGlobal(obj.id, localQuaternion.x, localQuaternion.y, localQuaternion.z, localQuaternion.w)
     }
 }
+
 
 function quaternionToEuler(q) {
     var angles = {};
