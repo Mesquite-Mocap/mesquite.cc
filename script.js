@@ -60,19 +60,21 @@ function handleBLEMessage(event) {
   const value = event.target.value;
   const decoder = new TextDecoder('utf-8');
   const message = decoder.decode(value);
-
+  
+  console.log("received BLE message: ", new Date().getTime(), message);
   if (message.split(" ").length == 5) {
-    const [id, quatI, quatJ, quatK, quatReal] = message.split(",");
-
+    const [id, quatI, quatJ, quatK, quatReal] = message.split(" ");
+    //check if id is not in  devices then add it
+  
+    const obj = {
+      id: id,
+      x: parseFloat(quatI),
+      y: parseFloat(quatJ),
+      z: parseFloat(quatK),
+      w: parseFloat(quatReal)
+    };
+    
     if (mac2Bones[id] !== undefined) {
-      const obj = {
-        id: id,
-        x: parseFloat(quatI),
-        y: parseFloat(quatJ),
-        z: parseFloat(quatK),
-        w: parseFloat(quatReal)
-      };
-
       handleWSMessage(obj);
     }
   }
@@ -99,9 +101,12 @@ function handleBLEMessage(event) {
 const debouncedConnect = debounce(connect, 300);
 
 // Attach the debounced function to the button click event
-button.addEventListener('click', debouncedConnect);
-
-
+window.addEventListener("load", function () {
+  const button = document.getElementById("getDetails");
+  if (button) {
+    button.addEventListener('click', debouncedConnect);
+  }
+});
 
 // function processMessageQueue() {
 //   while (messageQueue.length > 0) {
