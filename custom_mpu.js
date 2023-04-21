@@ -163,3 +163,78 @@ function rotateQuaternion(originalQuaternion, rotationQuaternion) {
   rotatedQuaternion.multiplyQuaternions(rotationQuaternion, originalQuaternion);
   return rotatedQuaternion;
 }
+
+
+
+function mapPods() {
+  var html = "";
+  for (var i = 0; i < devices.length; i++) {
+      html += "<div class='row pod pod" + i + "'>" +
+          "<div class='podName col s6'>" + devices[i].name + "</div>"
+          + "<div class='podMac col s6'>"
+          + boneSelectMarkup + "</div>" +
+          "</div>";
+  }
+
+  // console.log(html);
+
+  document.getElementById("deviceMapList").innerHTML = html;
+  if (devices.length == 0) {
+      document.getElementById("noDevice").style.display = "block";
+      document.getElementById("devicePresent").style.display = "none";
+
+  }
+  else {
+      document.getElementById("noDevice").style.display = "none";
+      document.getElementById("devicePresent").style.display = "block";
+  }
+
+  // init select
+
+  var elems = document.querySelectorAll('select');
+  var instances = M.FormSelect.init(elems, {});
+
+  //open modal
+  manageModal.open();
+
+}
+
+var boneSelectMarkup = "<select class='boneSelect' onchange='boneSelectChanged(this)'>" +
+    "<option value='0'>Select Bone</option>" +
+    "<option value='Head'>Head</option>" +
+    "<option value='Spine'>Spine</option>" +
+    "<option value='Hips'>Hips</option>" +
+    "<option value='LeftArm'>LeftArm</option>" +
+    "<option value='LeftForeArm'>LeftForeArm</option>" +
+    "<option value='RightArm'>RightArm</option>" +
+    "<option value='RightForeArm'>RightForeArm</option>" +
+    "<option value='LeftUpLeg'>LeftUpLeg</option>" +
+    "<option value='LeftLeg'>LeftLeg</option>" +
+    "<option value='RightUpLeg'>RightUpLeg</option>" +
+    "<option value='RightLeg'>RightLeg</option>" +
+    "</select>";
+
+
+    
+function boneSelectChanged(select) {
+  var boneName = select.value;
+  console.log(boneName);
+
+  var podMac = select.parentNode.parentNode.parentNode.getElementsByClassName("podName")[0].innerHTML.replace("MM-", '');
+  console.log(podMac);
+
+  mac2Bones[podMac] = { id: boneName, calibration: { x: 0, y: 0, z: 0, w: 1 }, last: { x: 0, y: 0, z: 0, w: 1 }, global: { x: null, y: 0, z: 0, w: 1 }, local: { x: 0, y: 0, z: 0, w: 1 }, sensorPosition: { x: 0, y: 0, z: 0, w: 1 } };
+
+  $("#deviceMapList select").each(function () {
+      if (this !== select) {
+          this.querySelectorAll("option[value='" + boneName + "']").forEach(function (option) {
+              option.disabled = true;
+          });
+      }
+  });
+
+  //update select
+  var elems = document.querySelectorAll('select');
+  var instances = M.FormSelect.init(elems, {});
+
+}

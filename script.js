@@ -9,6 +9,14 @@ let devices = [];
 let device_characteristics = [];
 
 
+// send ble message
+
+function sendBLEMessage(message, device_index) {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(message);
+  device_characteristics[device_index].writeValue(data);
+}
+
 
 async function connect() {
   try {
