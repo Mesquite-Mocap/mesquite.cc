@@ -1,7 +1,7 @@
 const button = document.getElementById("getDetails");
 const details = document.getElementById("details");
 
-// // UUIDs for the service and characteristic
+// UUIDs for the service and characteristic
 const serviceUuid = '6e400001-b5a3-f393-e0a9-e50e24dcca9e';
 const characteristicUuid = '6e400002-b5a3-f393-e0a9-e50e24dcca9e';
 
@@ -17,6 +17,17 @@ function sendBLEMessage(message, device_index) {
   device_characteristics[device_index].writeValue(data);
 }
 
+const debounce = (func, wait) => {
+  let timeout;
+  return function executedFunction(...args) {
+    const later = () => {
+      clearTimeout(timeout);
+      func(...args);
+    };
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
+};
 
 async function connect() {
   try {
@@ -29,7 +40,7 @@ async function connect() {
       ]
     }).catch(error => { console.log(error); });;
     console.log('Connected to device : ', device.name);
-    if(!devices.includes(device)){
+    if (!devices.includes(device)) {
       devices.push(device);
     }
 
@@ -47,100 +58,73 @@ async function connect() {
     device_characteristics.push(characteristic);
 
     // Listen for characteristic value changes
-    characteristic.addEventListener('characteristicvaluechanged', event => {
-      const value = event.target.value;
-      const decoder = new TextDecoder('utf-8');
-      const message = decoder.decode(value);
+    characteristic.addEventListener('characteristicvaluechanged', handleBLEMessage);
 
-      // console.log('Received message:', new Date(), message);
-      if (message.startsWith("{") && message.endsWith("}")) {
-        var obj = JSON.parse(message);
-        if(mac2Bones[obj.id] !== undefined){
-          handleWSMessage(obj);
-        }
-      }
-      else{
-        // message is space separated
-        var obj = message.split(" ");
-        mac_id = obj[0];
-        obj.shift();
-        obj.pop();
-        // console.log(obj);
-        //check the length of obj ==7 
-        if(obj.length == 7){
-            if (mac2Bones[mac_id] !== undefined) {
-                //create json object
-                var json_obj = { id : mac_id,  x : obj[0], y : obj[1], z : obj[2], w : obj[3], sensorPosition : { x : obj[4], y : obj[5], z : obj[6] }};
-                // console.log(json_obj);
-                handleWSMessage(json_obj);
-            }
-          }
-      }
-    });
-
-
-    // devices.forEach(async device => {
-    //     // Connect to the GATT server
-    //     // We also get the name of the Bluetooth device here
-    //     let deviceName = device.gatt.device.name;
-    //     const server = await device.gatt.connect();
-
-    //     const service = await server.getPrimaryService(serviceUuid);
-    //     const characteristic = await service.getCharacteristic(characteristicUuid);
-
-    //     // Enable notifications for the characteristic
-    //     await characteristic.startNotifications();
-
-    //     var message = "Start Calibration";
-    //     const encoder = new TextEncoder();
-    //     const data = encoder.encode(message);
-    //     characteristic.writeValue(data);
-
-    //   // Listen for characteristic value changes
-    //     characteristic.addEventListener('characteristicvaluechanged', event => {
-    //       const value = event.target.value;
-    //       const decoder = new TextDecoder('utf-8');
-    //       const message = decoder.decode(value);
-
-    //       // console.log(message);
-    //       var obj = JSON.parse(message);
-    //       console.log('Received message:', new Date(), message);
-    //       handleWSMessage(obj);
-    //     });
-    // });
-  } catch (err) {
-    console.log(err);
-    //alert("An error occured while fetching device details");
+  } catch (error) {
+    console.error('An error occurred while connecting:', error);
   }
 }
 
-//const mpu_calibrate = document.getElementById("mpu_calibrate");
+function handleBLEMessage(event) {
+  const value = event.target.value;
+  const decoder = new TextDecoder('utf-8');
+  const message = decoder.decode(value);
+  
+  console.log("received BLE message: ", new Date().getTime(), message);
+  if (message.split(" ").length == 5) {
+    const [id, quatI, quatJ, quatK, quatReal] = message.split(" ");
+    //check if id is not in  devices then add it
+  
+    const obj = {
+      id: id,
+      x: parseFloat(quatI),
+      y: parseFloat(quatJ),
+      z: parseFloat(quatK),
+      w: parseFloat(quatReal)
+    };
+    
+    if (mac2Bones[id] !== undefined) {
+      handleWSMessage(obj);
+    }
+  }
+  else {
+    // message is space separated
+    var obj = message.split(" ");
+    mac_id = obj[0];
+    obj.shift();
+    obj.pop();
+    // console.log(obj);
+    //check the length of obj ==7 
+    if (obj.length == 7) {
+      if (mac2Bones[mac_id] !== undefined) {
+        //create json object
+        var json_obj = { id: mac_id, x: obj[0], y: obj[1], z: obj[2], w: obj[3], sensorPosition: { x: obj[4], y: obj[5], z: obj[6] } };
+        // console.log(json_obj);
+        handleWSMessage(json_obj);
+      }
+    }
+  }
+}
 
-//mpu_calibrate.addEventListener("click", async () => {
-  // devices.forEach(async device => {
-  //   // Connect to the GATT server
-  //   // We also get the name of the Bluetooth device here
-  //   let deviceName = device.gatt.device.name;
-  //   const server = await device.gatt.connect();
+// Debounce the connect function
+const debouncedConnect = debounce(connect, 300);
 
-  //   const service = await server.getPrimaryService(serviceUuid);
-  //   const characteristic = await service.getCharacteristic(characteristicUuid);
+// Attach the debounced function to the button click event
+window.addEventListener("load", function () {
+  const button = document.getElementById("getDetails");
+  if (button) {
+    button.addEventListener('click', debouncedConnect);
+  }
+});
 
-  //   // Enable notifications for the characteristic
-  //   await characteristic.startNotifications();
+// function processMessageQueue() {
+//   while (messageQueue.length > 0) {
+//     const message = messageQueue.shift();
 
-  //   var message = "Start Calibration";
-  //   const encoder = new TextEncoder();
-  //   const data = encoder.encode(message);
-  //   characteristic.writeValue(data);
-  // });
+//     if (message.split(" ").length == 5) {
+     
+//   }
+// }
 
-//  device_characteristics.forEach(async characteristic => {
-//    var message = "Start Calibration";
-//    const encoder = new TextEncoder();
-//    const data = encoder.encode(message);
-//    characteristic.writeValue(data);
-//  });
-//});
-
-
+// Call processMessageQueue every 50 milliseconds
+// setInterval(processMessageQueue, 50);
