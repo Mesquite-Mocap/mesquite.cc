@@ -2,21 +2,19 @@ var rigPrefix = "mixamorig";
 
 var calibrated = false;
 
+
 function calibrate() {
   var keys = Object.keys(mac2Bones);
   for (var i = 0; i < keys.length; i++) {
-    mac2Bones[keys[i]].calibration.x = mac2Bones[keys[i]].last.x;
-    mac2Bones[keys[i]].calibration.y = mac2Bones[keys[i]].last.y;
-    mac2Bones[keys[i]].calibration.z = mac2Bones[keys[i]].last.z;
-    mac2Bones[keys[i]].calibration.w = mac2Bones[keys[i]].last.w;
-    mac2Bones[keys[i]].sensorPosition.x = 0;
-    mac2Bones[keys[i]].sensorPosition.y = 0;
-    mac2Bones[keys[i]].sensorPosition.z = 0;
-    mac2Bones[keys[i]].sensorPosition.w = 1;
+      mac2Bones[keys[i]].calibration.x = mac2Bones[keys[i]].last.x;
+      mac2Bones[keys[i]].calibration.y = mac2Bones[keys[i]].last.y;
+      mac2Bones[keys[i]].calibration.z = mac2Bones[keys[i]].last.z;
+      mac2Bones[keys[i]].calibration.w = mac2Bones[keys[i]].last.w;
   }
 
   calibrated = true;
 }
+
 
 function handleWSMessage(obj) { 
   // console.log(mac2Bones[obj.id].id);

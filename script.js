@@ -65,12 +65,19 @@ async function connect() {
   }
 }
 
+function broadcastBLE(message)
+{
+  for (let i = 0; i < devices.length; i++) {
+    sendBLEMessage(message, i);
+  }
+}
+
 function handleBLEMessage(event) {
   const value = event.target.value;
   const decoder = new TextDecoder('utf-8');
   const message = decoder.decode(value);
   
-  console.log("received BLE message: ", new Date().getTime(), message);
+  console.log(new Date(), message);
   if (message.split(" ").length == 5) {
     const [id, quatI, quatJ, quatK, quatReal] = message.split(" ");
     //check if id is not in  devices then add it

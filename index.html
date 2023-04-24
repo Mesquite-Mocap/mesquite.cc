@@ -9,7 +9,6 @@
     <link type="text/css" rel="stylesheet" href="main.css" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
-    <script src="mappings.js"></script>
     <script src="custom_mpu.js"></script>
 
     <script src="quaternion.min.js"></script>
@@ -368,13 +367,13 @@
     </script>
 
 
-    <a href='javascript:calibrate()' style='right:0;bottom:0' class="main btn waves-effect waves-light white black-text large">Set Default Pose
-      <i class="material-icons left">title</i>
+    <a href='javascript:calibrate()' style='right:0;bottom:0' class="main btn waves-effect waves-light white black-text large">Set  
+      <i class="material-icons " style="vertical-align:middle;font-size:200%">accessibility</i> Pose
     </a>
 
 
-  <a href='javascript:mapPods()' style='right:0' class="main btn waves-effect waves-light white black-text large">Bone Mapping
-    <i class="material-icons left">settings_ethernet</i>
+  <a href='javascript:mapPods()' style='right:0' class="main btn waves-effect waves-light white black-text large">Pod 
+    <i class="material-icons " style="vertical-align:middle">settings_ethernet</i> Bone
   </a>
 
   <a href='javascript:connect()' style='' class="main btn waves-effect waves-light white black-text large">Connect Pods
@@ -393,16 +392,26 @@
       </p>
 
       <hr>  
-    <div class='row pod pod'>
-        <div class='podName col s6'> Anchor Pod</div>
-        <div class='podMac col s6'>
-          <select id="anchorPod">
-            <option value='hips'>Hips</option>
-            <option value='chest'>Chest</option>
-          </select>
-           
-        </div>
-        </div>
+    <div class='row pod pod' style="text-align: center;">
+       <a href='javascript:broadcastBLE("calibrate")' style='' class=" btn waves-effect waves-light white black-text large">Start Calibration
+        <i class="material-icons left">rotate_90_degrees_ccw</i>
+      </a>
+      <a href='javascript:broadcastBLE("dispoff")' style='' class=" btn waves-effect waves-light white black-text large">Turn off Display
+        <i class="material-icons left">format_clear</i>
+      </a>
+      <a href='javascript:broadcastBLE("turnoff")' style='' class=" btn waves-effect waves-light white black-text large">Turn off Pods
+        <i class="material-icons left">power_settings_new</i>
+      </a>
+      <a href='javascript:broadcastBLE("restart")' style='' class=" btn waves-effect waves-light white black-text large">Restart Pods
+        <i class="material-icons left">refresh</i>
+      </a>
+      <a href='javascript:broadcastBLE("ota")' style='' class=" btn waves-effect waves-light white black-text large">OTA mode
+        <i class="material-icons left">file_upload</i>
+      </a>
+
+
+
+
       </div>
 
         <div id="noDevice" style="text-align:center"> 
