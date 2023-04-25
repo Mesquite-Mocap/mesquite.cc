@@ -42,6 +42,7 @@ async function connect() {
     console.log('Connected to device : ', device.name);
     if (!devices.includes(device)) {
       devices.push(device);
+      sendBLEMessage("start", devices.length - 1);
     }
 
     // Connect to the GATT server
