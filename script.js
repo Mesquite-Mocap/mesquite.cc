@@ -40,10 +40,7 @@ async function connect() {
       ]
     }).catch(error => { console.log(error); });;
     console.log('Connected to device : ', device.name);
-    if (!devices.includes(device)) {
-      devices.push(device);
-      sendBLEMessage("start", devices.length - 1);
-    }
+
 
     // Connect to the GATT server
     // We also get the name of the Bluetooth device here
@@ -60,6 +57,10 @@ async function connect() {
 
     // Listen for characteristic value changes
     characteristic.addEventListener('characteristicvaluechanged', handleBLEMessage);
+    if (!devices.includes(device)) {
+      devices.push(device);
+      sendBLEMessage("start", devices.length - 1);
+    }
 
   } catch (error) {
     console.error('An error occurred while connecting:', error);
