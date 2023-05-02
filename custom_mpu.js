@@ -174,6 +174,8 @@ function mapPods() {
           "</div>";
   }
 
+  
+
   // console.log(html);
 
   document.getElementById("deviceMapList").innerHTML = html;
@@ -192,6 +194,10 @@ function mapPods() {
   var elems = document.querySelectorAll('select');
   var instances = M.FormSelect.init(elems, {});
 
+
+  for(var i = 0; i < devices.length; i++) {
+    $("#deviceMapList select:eq(" + i + ")").val(getMac2Bone(devices[0].mac));
+  }
   //open modal
   manageModal.open();
 
@@ -225,6 +231,8 @@ function boneSelectChanged(select) {
   var podMac = select.parentNode.parentNode.parentNode.getElementsByClassName("podName")[0].innerHTML.replace("MM-", '');
   console.log(podMac);
 
+  setMac2Bone(podMac, boneName);
+  
   mac2Bones[podMac] = { id: boneName, calibration: { x: 0, y: 0, z: 0, w: 1 }, last: { x: 0, y: 0, z: 0, w: 1 }, global: { x: null, y: 0, z: 0, w: 1 }, local: { x: 0, y: 0, z: 0, w: 1 }, sensorPosition: { x: 0, y: 0, z: 0, w: 1 } };
 
   $("#deviceMapList select").each(function () {

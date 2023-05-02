@@ -126,6 +126,14 @@ window.addEventListener("load", function () {
   }
 });
 
+
+function getMac2Bone(mac){
+  return localStorage.getItem(mac) || "0";
+}
+
+function setMac2Bone(mac, bone){
+  localStorage.setItem(mac, bone);
+}
 // function processMessageQueue() {
 //   while (messageQueue.length > 0) {
 //     const message = messageQueue.shift();
