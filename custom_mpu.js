@@ -201,15 +201,19 @@ var boneSelectMarkup = "<select class='boneSelect' onchange='boneSelectChanged(t
     "<option value='0'>Select Bone</option>" +
     "<option value='Head'>Head</option>" +
     "<option value='Spine'>Spine</option>" +
-    "<option value='Hips'>Hips</option>" +
+    //"<option value='Hips'>Hips</option>" +
     "<option value='LeftArm'>LeftArm</option>" +
     "<option value='LeftForeArm'>LeftForeArm</option>" +
+    "<option value='LeftHand'>LeftHand</option>" + 
     "<option value='RightArm'>RightArm</option>" +
     "<option value='RightForeArm'>RightForeArm</option>" +
+    "<option value='RightHand'>RightHand</option>" + 
     "<option value='LeftUpLeg'>LeftUpLeg</option>" +
     "<option value='LeftLeg'>LeftLeg</option>" +
+    "<option value='LeftFoot'>LeftFoot</option>" +
     "<option value='RightUpLeg'>RightUpLeg</option>" +
     "<option value='RightLeg'>RightLeg</option>" +
+    "<option value='RightFoot'>RightFoot</option>" +
     "</select>";
 
 

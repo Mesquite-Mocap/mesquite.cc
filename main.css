@@ -92,8 +92,8 @@ a.btn.main i{
 }
 
 #manageModal{
-	min-height: 50vh;
-	max-height: 80vh;
+	min-height: 80vh;
+	max-height: 90vh;
 	overflow-y: hidden;
 }
 
@@ -101,4 +101,12 @@ a.btn.main i{
 	font-size: 1.5em;
 	text-align: right;
 	line-height: 50px;
+}
+
+.dropdown-content li>a, .dropdown-content li>span{
+	padding: 0px 10px!important;
+}
+
+.dropdown-content li{
+	min-height: 30px!important;
 }
