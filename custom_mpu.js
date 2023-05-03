@@ -191,13 +191,17 @@ function mapPods() {
 
   // init select
 
-  var elems = document.querySelectorAll('select');
-  var instances = M.FormSelect.init(elems, {});
+
 
 
   for(var i = 0; i < devices.length; i++) {
-    $("#deviceMapList select:eq(" + i + ")").val(getMac2Bone(devices[0].mac));
+    $("#deviceMapList select:eq(" + i + ")").val(getMac2Bone(devices[i].name.replace("MM-","")));
   }
+
+
+  var elems = document.querySelectorAll('select');
+  var instances = M.FormSelect.init(elems, {});
+
   //open modal
   manageModal.open();
 
