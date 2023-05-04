@@ -69,7 +69,7 @@ async function exponentialBackoff(max, delay, toTry, success, fail) {
 }
 
 function time(text) {
-  log('[' + new Date().toJSON().substr(11, 8) + '] ' + text);
+  console.log('[' + new Date().toJSON().substr(11, 8) + '] ' + text);
 }
 
 async function connect() {
@@ -92,6 +92,7 @@ async function connect() {
     console.log('Connected to device : ', device.name);
 
 
+
     // Connect to the GATT server
     // We also get the name of the Bluetooth device here
     let deviceName = device.gatt.device.name;
@@ -112,9 +113,13 @@ async function connect() {
       sendBLEMessage("start", devices.length - 1);
     }
 
+
+
   } catch (error) {
     console.error('An error occurred while connecting:', error);
   }
+
+  mapPods(false);
 }
 
 function broadcastBLE(message)
@@ -142,7 +147,7 @@ function handleBLEMessage(event) {
       w: parseFloat(quatReal)
     };
     
-    if (mac2Bones[id] !== undefined) {
+    if (mac2Bones[id] && mac2Bones[id].id !== "0") {
       handleWSMessage(obj);
     }
   }

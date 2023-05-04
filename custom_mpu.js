@@ -164,7 +164,7 @@ function rotateQuaternion(originalQuaternion, rotationQuaternion) {
 
 
 
-function mapPods() {
+function mapPods(arg) {
   var html = "";
   for (var i = 0; i < devices.length; i++) {
       html += "<div class='row pod pod" + i + "'>" +
@@ -202,8 +202,16 @@ function mapPods() {
   var elems = document.querySelectorAll('select');
   var instances = M.FormSelect.init(elems, {});
 
+  for(var i = 0; i < devices.length; i++) {
+    boneSelectChanged($("#deviceMapList select:eq(" + i + ")")[0]);
+  }
+
+
+  
   //open modal
-  manageModal.open();
+  if(arg !== false){
+    manageModal.open();
+  }
 
 }
 
