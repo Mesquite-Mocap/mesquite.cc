@@ -245,8 +245,10 @@ function boneSelectChanged(select) {
 
   setMac2Bone(podMac, boneName);
   
-  mac2Bones[podMac] = { id: boneName, calibration: { x: 0, y: 0, z: 0, w: 1 }, last: { x: 0, y: 0, z: 0, w: 1 }, global: { x: null, y: 0, z: 0, w: 1 }, local: { x: 0, y: 0, z: 0, w: 1 }, sensorPosition: { x: 0, y: 0, z: 0, w: 1 } };
-
+  if(!mac2Bones[podMac]){
+    mac2Bones[podMac] = { id: boneName, calibration: { x: 0, y: 0, z: 0, w: 1 }, last: { x: 0, y: 0, z: 0, w: 1 }, global: { x: null, y: 0, z: 0, w: 1 }, local: { x: 0, y: 0, z: 0, w: 1 }, sensorPosition: { x: 0, y: 0, z: 0, w: 1 } };
+  }
+  
   $("#deviceMapList select").each(function () {
       if (this !== select) {
           this.querySelectorAll("option[value='" + boneName + "']").forEach(function (option) {
