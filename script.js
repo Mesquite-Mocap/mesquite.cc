@@ -29,11 +29,11 @@ const debounce = (func, wait) => {
   };
 };
 
-async function connect_aux() {
+async function connect_aux(index) {
   exponentialBackoff(3 /* max retries */, 2 /* seconds delay */,
     async function toTry() {
       time('Connecting to Bluetooth Device... ');
-      await bluetoothDevice.gatt.connect();
+      await devices[index].gatt.connect();
     },
     function success() {
       console.log('> Bluetooth Device connected. Try disconnect it now.');
@@ -43,9 +43,9 @@ async function connect_aux() {
     });
 }
 
-function onDisconnected() {
+function onDisconnected(index) {
   console.log('> Bluetooth Device disconnected');
-  connect_aux();
+  connect_aux(index);
 }
 
 /* Utils */
@@ -83,8 +83,7 @@ async function connect() {
       ]
     }).catch(error => { console.log(error); });
       
-    device.addEventListener('gattserverdisconnected', onDisconnected);
-    connect_aux();
+
 
   
 
@@ -108,10 +107,15 @@ async function connect() {
 
     // Listen for characteristic value changes
     characteristic.addEventListener('characteristicvaluechanged', handleBLEMessage);
-    if (!devices.includes(device)) {
+    var index = devices.indexOf(device);
+    if (index == -1) {
       devices.push(device);
       sendBLEMessage("start", devices.length - 1);
+      device.addEventListener('gattserverdisconnected', onDisconnected(index));
     }
+    
+    connect_aux(index);
+
 
 
 
