@@ -126,6 +126,20 @@ async function connect() {
   mapPods(false);
 }
 
+
+function getMacFromBone(bone)
+{
+  var ret = null;
+  var macs = Object.keys(mac2Bones);
+  for(var i = 0; i < macs.length; i++){
+    if(mac2Bones[macs[i]].id === bone){
+      ret = macs[i];
+      break;
+    }
+  }
+  return ret;
+}
+
 function broadcastBLE(message)
 {
   for (let i = 0; i < devices.length; i++) {
