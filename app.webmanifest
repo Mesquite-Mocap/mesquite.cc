@@ -1,16 +1,11 @@
 {
-  "name": "Mesquite\.cc",
-  "short_name": "Mesquite\ Mocap",
-  "description": "An open-source\, open-hardware\, web-based Mocap",
+  "name": "Mesquite.cc",
+  "short_name": "Mesquite Mocap",
+  "description": "An open-source, open-hardware, web-based Mocap",
   "icons": [
     {
-      "src": "icons/icon-32.png",
-      "sizes": "32x32",
-      "type": "image/png"
-    },
-    {
-      "src": "icons/icon-512.png",
-      "sizes": "512x512",
+      "src": "icons/icon.png",
+      "sizes": "400x400",
       "type": "image/png"
     }
   ],
