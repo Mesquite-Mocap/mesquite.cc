@@ -110,3 +110,23 @@ a.btn.main i{
 .dropdown-content li{
 	min-height: 30px!important;
 }
+.custom-button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	background-color: white;
+	color: black;
+	font-size: 1.2rem;
+	padding: 10px 16px;
+	border-radius: 4px;
+	text-decoration: none;
+	transition: background-color 0.2s ease-in-out;
+}
+
+.custom-button:hover {
+	background-color: #f5f5f5;
+}
+
+.custom-button i {
+	margin-right: 8px;
+}
