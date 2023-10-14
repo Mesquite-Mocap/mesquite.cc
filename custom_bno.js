@@ -4,6 +4,7 @@ var calibrated = false;
 var initialPosition = {x:0, y:0, z:0}
 var positionSensivity = 50;
 
+
 function calibrate() {
     var keys = Object.keys(mac2Bones);
     for (var i = 0; i < keys.length; i++) {
@@ -19,12 +20,12 @@ function calibrate() {
 function handleWSMessage(obj) {
     // console.log(mac2Bones[obj.id].id);
 
-    var bone = mac2Bones[obj.id].id;
+    var bone = obj.bone;
     var x = model.getObjectByName(rigPrefix + bone);
 
     var currentQuaternion = new THREE.Quaternion(obj.x, obj.y, obj.z, obj.w);
 
-    if (mac2Bones[obj.id].id == "Spine") {
+    if (bone == "Spine") {
         const euler = new THREE.Euler(0, Math.PI, 0, 'XYZ');
         const rotationQuaternion = new THREE.Quaternion().setFromEuler(euler);
         var localQuaternion = rotateQuaternion(currentQuaternion, rotationQuaternion);

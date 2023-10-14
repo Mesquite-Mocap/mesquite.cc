@@ -1,5 +1,7 @@
 var rigPrefix = "mixamorig";
 
+const baudRates = [300, 1200, 2400, 4800, 9600, 19200, 38400, 57600, 74880, 115200, 230400, 250000, 500000, 1000000, 2000000];
+
 var calibrated = false;
 var initialPosition = {x:0, y:0, z:0}
 var positionSensivity = 50;
@@ -21,20 +23,9 @@ function handleWSMessage(obj) {
 
   var currentQuaternion = new Quaternion(obj.x, obj.y, obj.z, obj.w);
 
-  
+
   localQuaternion = currentQuaternion;
 
-  // if (mac2Bones[obj.id].id == "Spine") {
-  //   const euler = new THREE.Euler(0, Math.PI, 0, 'XYZ');
-  //   const rotationQuaternion = new THREE.Quaternion().setFromEuler(euler);
-  //   var localQuaternion = rotateQuaternion(currentQuaternion, rotationQuaternion);
-  //   // var localQuaternion = currentQuaternion;
-  // } else {
-  //   // const euler = new THREE.Euler(-Math.PI / 2, 0, 0, 'XYZ');
-  //   // const rotationQuaternion = new THREE.Quaternion().setFromEuler(euler);
-  //   // var localQuaternion = rotateQuaternion(currentQuaternion, rotationQuaternion);
-  //   localQuaternion = currentQuaternion;
-  // }
 
   mac2Bones[obj.id].last.x = localQuaternion.x;
   mac2Bones[obj.id].last.y = localQuaternion.y;

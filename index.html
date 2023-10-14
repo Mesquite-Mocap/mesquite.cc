@@ -1,188 +1,193 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"
-    />
-    <link rel="manifest" href="app.webmanifest" />
-    <link type="text/css" rel="stylesheet" href="main.css" />
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
-    <script src="custom_bno.js"></script>
-    <script src="mappings.js"></script>
-    <script src="quaternion.min.js"></script>
-    <script src="three.min.js"></script>
-    
-    <script src="bvh_converter.js"></script>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+  <link rel="manifest" href="app.webmanifest" />
+  <link type="text/css" rel="stylesheet" href="main.css" />
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
-    <!-- <script src="https://cdn.jsdelivr.net/npm/kalmanjs@1.1.0/lib/kalman.js"></script> -->
+  <script src="custom_bno.js"></script>
+  <script src="mappings.js"></script>
+  <script src="quaternion.min.js"></script>
+  <script src="three.min.js"></script>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+  <script src="bvh_converter.js"></script>
 
-    
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <!-- <script src="https://cdn.jsdelivr.net/npm/kalmanjs@1.1.0/lib/kalman.js"></script> -->
 
-  </head>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 
-  <body>
-    <script>
-      var hash = window.location.hash.replace("#", "");
-      var args = hash.split(",");
-      var fbxfile = args[0] || "ybot.fbx";
-      var bvhfile = args[1] || "ri-redo.bvh";
-      var zoomLevel = args[2] || null;
-      if (zoomLevel) {
-        zoomLevel = parseFloat(zoomLevel);
+
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+</head>
+
+<body>
+  <script>
+    var hash = window.location.hash.replace("#", "");
+    var args = hash.split(",");
+    var fbxfile = args[0] || "ybot.fbx";
+    var bvhfile = args[1] || "ri-redo.bvh";
+    var zoomLevel = args[2] || null;
+    if (zoomLevel) {
+      zoomLevel = parseFloat(zoomLevel);
+    }
+    var model;
+    var animation;
+    var animationDuration;
+    let camera_bvh, controls_bvh, scene_bvh, renderer_bvh;
+    let mixer_bvh, skeletonHelper_bvh;
+    function animationReset() {
+      animation.time = 0;
+      mixer_bvh.time = 0;
+      animation.paused = false;
+    }
+    let manageModal;
+
+    let recording = false;
+    let recordedMotionData = [];
+    let firstFrameJointData = null;
+
+  </script>
+  <script type="module" src="threejsscene.js"></script>
+  <script type="module" src="webserial.js"></script>
+
+  <script>
+    let isRecording = false;
+
+    function toggleRecording() {
+      const recordButton = document.getElementById('recordButton');
+      const recordIcon = recordButton.querySelector('i');
+
+      if (!isRecording) {
+        startRecording();
+        recordButton.classList.remove('green');
+        recordButton.classList.add('red');
+        recordIcon.textContent = 'stop';
+        recordButton.innerHTML = recordButton.innerHTML.replace('Start Recording BVH', 'Stop Recording BVH');
+      } else {
+        stopRecording();
+        recordButton.classList.remove('red');
+        recordButton.classList.add('green');
+        recordIcon.textContent = 'fiber_manual_record';
+        recordButton.innerHTML = recordButton.innerHTML.replace('Stop Recording BVH', 'Start Recording BVH');
       }
-      var model;
-      var animation;
-      var animationDuration;
-      let camera_bvh, controls_bvh, scene_bvh, renderer_bvh;
-      let mixer_bvh, skeletonHelper_bvh;
-      function animationReset() {
-        animation.time = 0;
-        mixer_bvh.time = 0;
-        animation.paused = false;
-      }
-      let manageModal;
 
-      let recording = false;
-      let recordedMotionData = [];
-      let firstFrameJointData = null;
+      isRecording = !isRecording;
+    }
+    function startRecording() {
+      recording = true;
+      recordedMotionData = [];
 
-    </script>
-    <script type="module" src="threejsscene.js"></script>
+      // Store the first frame's joint data
+      firstFrameJointData = updateMotionData();
 
-    <script>
-      let isRecording = false;
-
-      function toggleRecording() {
-        const recordButton = document.getElementById('recordButton');
-        const recordIcon = recordButton.querySelector('i');
-
-        if (!isRecording) {
-          startRecording();
-          recordButton.classList.remove('green');
-          recordButton.classList.add('red');
-          recordIcon.textContent = 'stop';
-          recordButton.innerHTML = recordButton.innerHTML.replace('Start Recording BVH', 'Stop Recording BVH');
+      // Call updateMotionData every 50ms
+      const intervalId = setInterval(() => {
+        if (recording) {
+          updateMotionData();
         } else {
-          stopRecording();
-          recordButton.classList.remove('red');
-          recordButton.classList.add('green');
-          recordIcon.textContent = 'fiber_manual_record';
-          recordButton.innerHTML = recordButton.innerHTML.replace('Stop Recording BVH', 'Start Recording BVH');
+          clearInterval(intervalId);
         }
+      }, 25);
+    }
 
-        isRecording = !isRecording;
-      }
-      function startRecording() {
-        recording = true;
-        recordedMotionData = [];
+    function stopRecording() {
+      recording = false;
 
-        // Store the first frame's joint data
-        firstFrameJointData = updateMotionData();
+      // Call generateBVH and save the BVH file
+      const bvhContent = generateBVH(firstFrameJointData, recordedMotionData);
+      const blob = new Blob([bvhContent], { type: "text/plain;charset=utf-8" });
+      const date = new Date();
+      const dateString = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}-${date.getHours()}-${date.getMinutes()}-${date.getSeconds()}`;
+      const file_name = `MMcap_bvh_${dateString}.bvh`;
+      saveAs(blob, file_name);
+    }
 
-        // Call updateMotionData every 50ms
-        const intervalId = setInterval(() => {
-          if (recording) {
-            updateMotionData();
-          } else {
-            clearInterval(intervalId);
-          }
-        }, 25);
-      }
-
-      function stopRecording() {
-        recording = false;
-
-        // Call generateBVH and save the BVH file
-        const bvhContent = generateBVH(firstFrameJointData, recordedMotionData);
-        const blob = new Blob([bvhContent], { type: "text/plain;charset=utf-8" });
-        const date = new Date();
-        const dateString = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}-${date.getHours()}-${date.getMinutes()}-${date.getSeconds()}`;
-        const file_name = `MMcap_bvh_${dateString}.bvh`;
-        saveAs(blob, file_name);
-      }
-
-    </script>
+  </script>
 
 
-    <a href='javascript:calibrate()' style='right:0;bottom:0' class="main btn waves-effect waves-light white black-text large">Set  
-      <i class="material-icons " style="vertical-align:middle;font-size:200%">accessibility</i> Pose
-    </a>
-
-    <button id="recordButton" style="position:absolute; left:0; bottom:5px; z-index: 1;" class="custom-button"
-      onclick="toggleRecording()">
-      <i class="material-icons">fiber_manual_record</i>
-      Start Recording BVH
-    </button>
-
-
-  <a href='javascript:mapPods()' style='right:0' class="main btn waves-effect waves-light white black-text large">Pod 
-    <i class="material-icons " style="vertical-align:middle">settings_ethernet</i> Bone
+  <a href='javascript:calibrate()' style='right:0;bottom:0'
+    class="main btn waves-effect waves-light white black-text large">Set
+    <i class="material-icons " style="vertical-align:middle;font-size:200%">accessibility</i> Pose
   </a>
 
-  <a href='javascript:connect()' style='' class="main btn waves-effect waves-light white black-text large">Connect Pods
-    <i class="material-icons left">grains</i>
-  </a>
+  <button id="recordButton" style="position:absolute; left:0; bottom:5px; z-index: 1;" class="custom-button"
+    onclick="toggleRecording()">
+    <i class="material-icons">fiber_manual_record</i>
+    Start Recording BVH
+  </button>
 
-  
+
+
+
+  <button id='linkPods' style='width:200px' class="main btn waves-effect waves-light white black-text large">Link Pods
+    <i class="material-icons left">settings_ethernet</i>
+  </button>
+
+
   <div id="manageModal" class="modal">
-    <div class="modal-content black-text" >
-      <h4 style="text-align:center">Pod  <i style='vertical-align: middle;font-size:80%' class="material-icons medium">arrow_forward
-      </i>  Bone Mapping</h4>
+    <div class="modal-content black-text">
+      <h4 style="text-align:center">Pod <i style='vertical-align: middle;font-size:80%'
+          class="material-icons medium">arrow_forward
+        </i> Bone Mapping</h4>
       <div id="devicePresent">
-        <hr>  
+        <hr>
 
-      <p id="deviceMapList" >
-      </p>
-
-      <hr>  
-    <div class='row pod pod' style="text-align: center;">
-       <a href='javascript:broadcastBLE("calibrate")' style='' class=" btn waves-effect waves-light white black-text large">Start Calibration
-        <i class="material-icons left">rotate_90_degrees_ccw</i>
-      </a>
-      <a href='javascript:broadcastBLE("dispoff")' style='' class=" btn waves-effect waves-light white black-text large">Turn off Displays
-        <i class="material-icons left">format_clear</i>
-      </a>
-      <a href='javascript:broadcastBLE("poweroff")' style='' class=" btn waves-effect waves-light white black-text large">Power off Pods
-        <i class="material-icons left">power_settings_new</i>
-      </a>
-      <a href='javascript:broadcastBLE("restart")' style='' class=" btn waves-effect waves-light white black-text large">Restart Pods
-        <i class="material-icons left">refresh</i>
-      </a>
-      <a href='javascript:broadcastBLE("ota")' style='' class=" btn waves-effect waves-light white black-text large">OTA mode
-        <i class="material-icons left">file_upload</i>
-      </a>
-
-
-
-
-      </div>
-
-        <div id="noDevice" style="text-align:center"> 
-        <p> No devices yet  
+        <p id="deviceMapList">
         </p>
-        <a href='javascript:connect()' style="text-decoration: none;" class="btn waves-effect waves-light black">Search for some
-          <i class="material-icons left">search</i>
-        </a>
+
+        <hr>
+        <div class='row pod pod' style="text-align: center;">
+          <a href='javascript:broadcastBLE("calibrate")' style=''
+            class=" btn waves-effect waves-light white black-text large">Start Calibration
+            <i class="material-icons left">rotate_90_degrees_ccw</i>
+          </a>
+          <a href='javascript:broadcastBLE("dispoff")' style=''
+            class=" btn waves-effect waves-light white black-text large">Turn off Displays
+            <i class="material-icons left">format_clear</i>
+          </a>
+          <a href='javascript:broadcastBLE("poweroff")' style=''
+            class=" btn waves-effect waves-light white black-text large">Power off Pods
+            <i class="material-icons left">power_settings_new</i>
+          </a>
+          <a href='javascript:broadcastBLE("restart")' style=''
+            class=" btn waves-effect waves-light white black-text large">Restart Pods
+            <i class="material-icons left">refresh</i>
+          </a>
+          <a href='javascript:broadcastBLE("ota")' style=''
+            class=" btn waves-effect waves-light white black-text large">OTA mode
+            <i class="material-icons left">file_upload</i>
+          </a>
+
+
+
+
         </div>
-  </div>
-  </div>
 
-  <div id="splashScreen" style="width:100vw;height:100vh;position:fixed;top:0;left:0;background-color:rgba(0,0,0,0.9);z-index:1000;background-image: url(icons/icon.png); background-repeat: no-repeat;background-position: 50% 30%; background-size: 200px; transition: 1s;">
+        <div id="noDevice" style="text-align:center">
+          <p> No devices yet
+          </p>
+          <a href='javascript:connect()' style="text-decoration: none;"
+            class="btn waves-effect waves-light black">Search for some
+            <i class="material-icons left">search</i>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div id="splashScreen"
+      style="width:100vw;height:100vh;position:fixed;top:0;left:0;background-color:rgba(0,0,0,0.9);z-index:1000;background-image: url(icons/icon.png); background-repeat: no-repeat;background-position: 50% 30%; background-size: 200px; transition: 1s;">
       <div class="title" style="top:60vh; text-align:center;font-size:200%; position: absolute; width: 100vw;">
-          Mesquite Mocap
-      </div>    
-  </div>
+        Mesquite Mocap
+      </div>
+    </div>
 
-  </body>
-  <script src="script.js"></script>
+</body>
+<script src="script.js"></script>
 
 </html>
-
