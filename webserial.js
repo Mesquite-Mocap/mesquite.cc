@@ -12,21 +12,16 @@ let calibration = [0, 0, 0, 0];
 
 const maxLogLength = 500;
 const butConnect = document.getElementById('linkPods');
-const baudRate = document.getElementById('baudRate');
 
 
 
 document.addEventListener('DOMContentLoaded', () => {
   butConnect.addEventListener('click', clickConnect);
 
-  if ('serial' in navigator) {
-   // const notSupported = document.getElementById('notSupported');
-   // notSupported.classList.add('hidden');
+  if (!('serial' in navigator)) {
+   alert("Web Serial not supported. Please use Chrome 78+");
   }
 
-
-  //initBaudRate();
-  loadAllSettings();
 });
 
 /**
@@ -98,7 +93,6 @@ function logData(line) {
  // console.log(line);
  try{
     var x = JSON.parse(line);
-    console.log(x);
     handleWSMessage(x);
  }
     catch(e){
@@ -112,19 +106,12 @@ function enableStyleSheet(node, enabled) {
 }
 
 
-/**
- * @name reset
- * Reset the Plotter, Log, and associated data
- */
 async function reset() {
   // Clear the data
   
 }
 
-/**
- * @name clickConnect
- * Click handler for the connect/disconnect button.
- */
+
 async function clickConnect() {
   if (port) {
     await disconnect();
@@ -194,11 +181,11 @@ function convertJSON(chunk) {
 }
 
 function toggleUIConnected(connected) {
-  let lbl = 'Connect';
+  let lbl = 'Link Pods <i class="material-icons left">settings_ethernet</i>';
   if (connected) {
-    lbl = 'Disconnect';
+    lbl = 'Unlink Pods <i class="material-icons left">settings_ethernet</i>';
   }
-  butConnect.textContent = lbl;
+  butConnect.innerHTML = lbl;
 }
 
 function initBaudRate() {
@@ -210,19 +197,6 @@ function initBaudRate() {
   }
 }
 
-function loadAllSettings() {
-  // Load all saved settings or defaults
-  baudRate.value = loadSetting('baudrate', 115200);
-}
-
-function loadSetting(setting, defaultValue) {
-  let value = JSON.parse(window.localStorage.getItem(setting));
-  if (value == null) {
-    return defaultValue;
-  }
-
-  return value;
-}
 
 
 

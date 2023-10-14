@@ -20,6 +20,7 @@ function calibrate() {
 function handleWSMessage(obj) {
     // console.log(mac2Bones[obj.id].id);
 
+
     var bone = obj.bone;
     var x = model.getObjectByName(rigPrefix + bone);
 
@@ -37,22 +38,31 @@ function handleWSMessage(obj) {
     }
 
 
-    mac2Bones[obj.id].last.x = localQuaternion.x;
-    mac2Bones[obj.id].last.y = localQuaternion.y;
-    mac2Bones[obj.id].last.z = localQuaternion.z;
-    mac2Bones[obj.id].last.w = localQuaternion.w;
+
+    if(!mac2Bones[bone]){
+        mac2Bones[bone] = {}
+        mac2Bones[bone].last = {x:0, y:0, z:0, w:1}
+        mac2Bones[bone].calibration = {x:0, y:0, z:0, w:1}
+    }
+
+    mac2Bones[bone].last.x = localQuaternion.x;
+    mac2Bones[bone].last.y = localQuaternion.y;
+    mac2Bones[bone].last.z = localQuaternion.z;
+    mac2Bones[bone].last.w = localQuaternion.w;
 
     var calibratedQuaternion = new THREE.Quaternion(
-        mac2Bones[obj.id].calibration.x,
-        mac2Bones[obj.id].calibration.y,
-        mac2Bones[obj.id].calibration.z,
-        mac2Bones[obj.id].calibration.w
+        mac2Bones[bone].calibration.x,
+        mac2Bones[bone].calibration.y,
+        mac2Bones[bone].calibration.z,
+        mac2Bones[bone].calibration.w
     );
 
     localQuaternion = localQuaternion.multiply(calibratedQuaternion.invert());
+    //console.log(localQuaternion);
+
 
     var currentLocalEuler = quaternionToEuler(localQuaternion)
-    var parentQuaternion = getParentQuaternion(obj.id);
+    var parentQuaternion = getParentQuaternion(bone);
     if (obj.sensorPosition !== undefined) {
         if (initialPosition.x == 0 && initialPosition.y == 0 && initialPosition.z == 0) {
             initialPosition.x = obj.sensorPosition.x * positionSensivity;
@@ -77,8 +87,8 @@ function handleWSMessage(obj) {
         // console.log("currentLocalEuler " + 180 * currentLocalEuler.x / Math.PI, 180 * currentLocalEuler.y / Math.PI, 180 * currentLocalEuler.z / Math.PI);
         // x.quaternion.set(localQuaternion.x, localQuaternion.z, -localQuaternion.y, localQuaternion.w);
         x.quaternion.set(localQuaternion.x, localQuaternion.y, localQuaternion.z, localQuaternion.w);
-        setLocal(obj.id, localQuaternion.x, localQuaternion.y, localQuaternion.z, localQuaternion.w)
-        setGlobal(obj.id, localQuaternion.x, localQuaternion.y, localQuaternion.z, localQuaternion.w)
+        setLocal(bone, localQuaternion.x, localQuaternion.y, localQuaternion.z, localQuaternion.w)
+        setGlobal(bone, localQuaternion.x, localQuaternion.y, localQuaternion.z, localQuaternion.w)
     } else {
         // console.log("localQuaternion ", localQuaternion.x, localQuaternion.y , localQuaternion.z ,localQuaternion.w);
         // console.log("parentQuaternion ", parentQuaternion.x,parentQuaternion.y, parentQuaternion.z,parentQuaternion.w);
@@ -93,8 +103,8 @@ function handleWSMessage(obj) {
 
         // x.quaternion.set(localQuaternion.x, localQuaternion.z, -localQuaternion.y, localQuaternion.w);
         x.quaternion.set(globalQuaternion.x, globalQuaternion.y, globalQuaternion.z, globalQuaternion.w);
-        setLocal(obj.id, globalQuaternion.x, globalQuaternion.y, globalQuaternion.z, globalQuaternion.w)
-        setGlobal(obj.id, localQuaternion.x, localQuaternion.y, localQuaternion.z, localQuaternion.w)
+        setLocal(bone, globalQuaternion.x, globalQuaternion.y, globalQuaternion.z, globalQuaternion.w)
+        setGlobal(bone, localQuaternion.x, localQuaternion.y, localQuaternion.z, localQuaternion.w)
     }
 }
 
@@ -129,10 +139,12 @@ function setLocal(id, x, y, z, w) {
 }
 
 function getParentQuaternion(child) {
-    var id = dependencyGraph[[mac2Bones[child].id]];
+       // console.log(child);
+
+    var id = dependencyGraph[child];
     var keys = Object.keys(mac2Bones);
     for (var i = 0; i < keys.length; i++) {
-        if (mac2Bones[keys[i]].id == id) {
+        if (keys[i] == id) {
             if (mac2Bones[keys[i]].global.x == null) {
                 return null;
             }
