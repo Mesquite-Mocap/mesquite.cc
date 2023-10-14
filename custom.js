@@ -21,6 +21,7 @@ function handleWSMessage(obj) {
 
   var currentQuaternion = new Quaternion(obj.x, obj.y, obj.z, obj.w);
 
+  
   localQuaternion = currentQuaternion;
 
   // if (mac2Bones[obj.id].id == "Spine") {
