@@ -17,12 +17,19 @@ function calibrate() {
     calibrated = true;
 }
 
+function lowerFirstLetter(string) {
+    return string.charAt(0).toLowerCase() + string.slice(1);
+}
+
+
 function handleWSMessage(obj) {
     // console.log(mac2Bones[obj.id].id);
 
 
     var bone = obj.bone;
     var x = model.getObjectByName(rigPrefix + bone);
+    console.log(bone, x, lowerFirstLetter(bone));
+    statsObjs[lowerFirstLetter(bone)].update();
 
     var currentQuaternion = new THREE.Quaternion(obj.x, obj.y, obj.z, obj.w);
 
@@ -59,6 +66,7 @@ function handleWSMessage(obj) {
 
     localQuaternion = localQuaternion.multiply(calibratedQuaternion.invert());
     //console.log(localQuaternion);
+
 
 
     var currentLocalEuler = quaternionToEuler(localQuaternion)

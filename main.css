@@ -130,3 +130,8 @@ a.btn.main i{
 .custom-button i {
 	margin-right: 8px;
 }
+
+
+table.striped.highlight tr td{
+	height: 50px; !important;
+}

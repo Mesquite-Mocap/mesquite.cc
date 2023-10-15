@@ -15,6 +15,22 @@ let mixer;
 
 init();
 animate();
+
+
+/// load stats.js
+
+
+
+
+var keys = Object.keys(statsObjs);
+for (let i = 0; i < keys.length; i++) {
+  statsObjs[keys[i]] = new Stats();
+  document.getElementById(keys[i] + "Stats").appendChild(statsObjs[keys[i]].dom);
+  statsObjs[keys[i]].dom.style.cssText = 'position:relative; width:80px; margin:auto';
+
+}
+
+
 // const worker = new Worker('webworker.js');
 
 // worker.addEventListener('message', (event) => {
@@ -396,3 +412,5 @@ function loadAndPlayBVH(bvhData) {
     // console.log(animation);
     animation.play();
 }
+
+

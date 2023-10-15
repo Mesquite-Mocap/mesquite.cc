@@ -28,10 +28,75 @@
 
 <body>
   <script>
+
+    var statsObjs = {
+        "head": {
+          "status": "Not Connected",
+          "stats": null
+        },
+        "spine": {
+          "status": "Not Connected",
+          "stats": null
+        },
+        "hips": {
+          "status": "Not Connected",
+          "stats": null
+        },
+        "leftUpperArm": {
+          "status": "Not Connected",
+          "stats": null
+        },
+        "leftForeArm": {
+          "status": "Not Connected",
+          "stats": null
+        },
+        "rightUpperArm": {
+          "status": "Not Connected",
+          "stats": null
+        },
+        "rightForeArm": {
+          "status": "Not Connected",
+          "stats": null
+        },
+        "leftUpperLeg": {
+          "status": "Not Connected",
+          "stats": null
+        },
+        "leftLowerLeg": {
+          "status": "Not Connected",
+          "stats": null
+        },
+        "rightUpperLeg": {
+          "status": "Not Connected",
+          "stats": null
+        },
+        "rightLowerLeg": {
+          "status": "Not Connected",
+          "stats": null
+        },
+        "leftHand": {
+          "status": "Not Connected",
+          "stats": null
+        },
+        "rightHand": {
+          "status": "Not Connected",
+          "stats": null
+        },
+        "leftFoot": {
+          "status": "Not Connected",
+          "stats": null
+        },
+        "rightFoot": {
+          "status": "Not Connected",
+          "stats": null
+        }
+    }
+
+
     var hash = window.location.hash.replace("#", "");
     var args = hash.split(",");
     var fbxfile = args[0] || "ybot.fbx";
-    var bvhfile = args[1] || "ri-redo.bvh";
+    var bvhfile = args[1] || "blank.bvh";
     var zoomLevel = args[2] || null;
     if (zoomLevel) {
       zoomLevel = parseFloat(zoomLevel);
@@ -129,55 +194,111 @@
     <i class="material-icons left">settings_ethernet</i>
   </button>
 
+  
+  <button onclick="manageModal.open()" id='settingsButton' style='position:fixed;right:0' class="main btn waves-effect waves-light white black-text large">Stats for Nerds
+    <i class="material-icons left">insert_chart_outlined</i>
+  </button>
 
-  <div id="manageModal" class="modal">
+
+  <div id="manageModal" style="overflow-y:auto" class="modal">
     <div class="modal-content black-text">
-      <h4 style="text-align:center">Pod <i style='vertical-align: middle;font-size:80%'
-          class="material-icons medium">arrow_forward
-        </i> Bone Mapping</h4>
-      <div id="devicePresent">
-        <hr>
+      <h4 style="text-align:center"></h4>
 
-        <p id="deviceMapList">
+        <p id="deviceMapList"> 
+          <table class="striped highlight centered">
+            <thead>
+              <tr>
+                  <th>Bone</th>
+                  <th>Status</th>
+                  <th>Stats</th>
+              </tr>
+            </thead>
+    
+            <tbody>
+              <tr>
+                <td>Head</td>
+                <td id="headStatus">Not Connected</td>
+                <td id="headStats"></td>
+              </tr>
+              <tr>
+                <td>Spine</td>
+                <td id="spineStatus">Not Connected</td>
+                <td id="spineStats"></td>
+              </tr>
+              <tr>
+                <td>Hips</td>
+                <td id="hipsStatus">Not Connected</td>
+                <td id="hipsStats"></td>
+              </tr>
+              <tr>
+                <td>Left Upper Arm</td>
+                <td id="leftUpperArmStatus">Not Connected</td>
+                <td id="leftUpperArmStats"></td>
+              </tr>
+              <tr>
+                <td>Left Forearm</td>
+                <td id="leftForeArmStatus">Not Connected</td>
+                <td id="leftForeArmStats"></td>
+              </tr>
+              <tr>
+                <td>Right Upper Arm</td>
+                <td id="rightUpperArmStatus">Not Connected</td>
+                <td id="rightUpperArmStats"></td>
+              </tr>
+              <tr>
+                <td>Right Forearm</td>
+                <td id="rightForeArmStatus">Not Connected</td>
+                <td id="rightForeArmStats"></td>
+              </tr>
+              <tr>
+                <td>Left Upper Leg</td>
+                <td id="leftUpperLegStatus">Not Connected</td>
+                <td id="leftUpperLegStats"></td>
+              </tr>
+              <tr>
+                <td>Left Lower Leg</td>
+                <td id="leftLowerLegStatus">Not Connected</td>
+                <td id="leftLowerLegStats"></td>
+              </tr>
+              <tr>
+                <td>Right Upper Leg</td>
+                <td id="rightUpperLegStatus">Not Connected</td>
+                <td id="rightUpperLegStats"></td>
+              </tr>
+              <tr>
+                <td>Right Lower Leg</td>
+                <td id="rightLowerLegStatus">Not Connected</td>
+                <td id="rightLowerLegStats"></td>
+              </tr>
+              <tr>
+                <td>Left Hand</td>
+                <td id="leftHandStatus">Not Connected</td>
+                <td id="leftHandStats"></td>
+              </tr>
+              <tr>
+                <td>Right Hand</td>
+                <td id="rightHandStatus">Not Connected</td>
+                <td id="rightHandStats"></td>
+              </tr>
+              <tr>
+                <td>Left Foot</td>
+                <td id="leftFootStatus">Not Connected</td>
+                <td id="leftFootStats"></td>
+              </tr>
+              <tr>
+                <td>Right Foot</td>
+                <td id="rightFootStatus">Not Connected</td>
+                <td id="rightFootStats"></td>
+              </tr>
+
+
+            </tbody>
+          </table>
+                
         </p>
 
-        <hr>
-        <div class='row pod pod' style="text-align: center;">
-          <a href='javascript:broadcastBLE("calibrate")' style=''
-            class=" btn waves-effect waves-light white black-text large">Start Calibration
-            <i class="material-icons left">rotate_90_degrees_ccw</i>
-          </a>
-          <a href='javascript:broadcastBLE("dispoff")' style=''
-            class=" btn waves-effect waves-light white black-text large">Turn off Displays
-            <i class="material-icons left">format_clear</i>
-          </a>
-          <a href='javascript:broadcastBLE("poweroff")' style=''
-            class=" btn waves-effect waves-light white black-text large">Power off Pods
-            <i class="material-icons left">power_settings_new</i>
-          </a>
-          <a href='javascript:broadcastBLE("restart")' style=''
-            class=" btn waves-effect waves-light white black-text large">Restart Pods
-            <i class="material-icons left">refresh</i>
-          </a>
-          <a href='javascript:broadcastBLE("ota")' style=''
-            class=" btn waves-effect waves-light white black-text large">OTA mode
-            <i class="material-icons left">file_upload</i>
-          </a>
 
 
-
-
-        </div>
-
-        <div id="noDevice" style="text-align:center">
-          <p> No devices yet
-          </p>
-          <a href='javascript:connect()' style="text-decoration: none;"
-            class="btn waves-effect waves-light black">Search for some
-            <i class="material-icons left">search</i>
-          </a>
-        </div>
-      </div>
     </div>
 
     <div id="splashScreen"
