@@ -34,12 +34,12 @@ function handleWSMessage(obj) {
     var currentQuaternion = new THREE.Quaternion(obj.x, obj.y, obj.z, obj.w);
 
     if (bone == "Spine") {
-        const euler = new THREE.Euler(0, Math.PI, 0, 'XYZ');
+        const euler = new THREE.Euler(Math.PI/2, Math.PI, 0, 'XYZ');
         const rotationQuaternion = new THREE.Quaternion().setFromEuler(euler);
         var localQuaternion = rotateQuaternion(currentQuaternion, rotationQuaternion);
         // var localQuaternion = currentQuaternion;
     } else {
-        const euler = new THREE.Euler(-Math.PI / 2, 0, 0, 'XYZ');
+        const euler = new THREE.Euler(-Math.PI / 2, 0, Math.PI, 'XYZ');
         const rotationQuaternion = new THREE.Quaternion().setFromEuler(euler);
         var localQuaternion = rotateQuaternion(currentQuaternion, rotationQuaternion);
     }
