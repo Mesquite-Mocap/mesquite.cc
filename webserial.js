@@ -93,10 +93,11 @@ function logData(line) {
  // console.log(line);
  try{
     var x = JSON.parse(line);
+    // console.log(x);
     handleWSMessage(x);
  }
     catch(e){
-    //console.log(e);
+    console.log(e);
     }
 
 }

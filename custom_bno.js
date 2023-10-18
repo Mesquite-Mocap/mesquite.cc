@@ -29,7 +29,7 @@ function handleWSMessage(obj) {
     var bone = obj.bone;
     var x = model.getObjectByName(rigPrefix + bone);
     console.log(bone, x, lowerFirstLetter(bone));
-    statsObjs[lowerFirstLetter(bone)].update();
+    // statsObjs[lowerFirstLetter(bone)].update();
 
     var currentQuaternion = new THREE.Quaternion(obj.x, obj.y, obj.z, obj.w);
 
@@ -45,13 +45,15 @@ function handleWSMessage(obj) {
     }
 
 
-
+    
     if(!mac2Bones[bone]){
         mac2Bones[bone] = {}
         mac2Bones[bone].last = {x:0, y:0, z:0, w:1}
         mac2Bones[bone].calibration = {x:0, y:0, z:0, w:1}
+        mac2Bones[bone].local = {x:0, y:0, z:0, w:1}
+        mac2Bones[bone].global = {x:0, y:0, z:0, w:1}
     }
-
+    console.log(mac2Bones)
     mac2Bones[bone].last.x = localQuaternion.x;
     mac2Bones[bone].last.y = localQuaternion.y;
     mac2Bones[bone].last.z = localQuaternion.z;
