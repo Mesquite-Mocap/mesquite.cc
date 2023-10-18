@@ -29,7 +29,7 @@ function handleWSMessage(obj) {
     var bone = obj.bone;
     var x = model.getObjectByName(rigPrefix + bone);
     console.log(bone, x, lowerFirstLetter(bone));
-    // statsObjs[lowerFirstLetter(bone)].update();
+     statsObjs[lowerFirstLetter(bone)].update();
 
     var currentQuaternion = new THREE.Quaternion(obj.x, obj.y, obj.z, obj.w);
 
