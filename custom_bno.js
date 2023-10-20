@@ -28,18 +28,19 @@ function handleWSMessage(obj) {
 
     var bone = obj.bone;
     var x = model.getObjectByName(rigPrefix + bone);
-    console.log(bone, x, lowerFirstLetter(bone));
-     statsObjs[lowerFirstLetter(bone)].update();
+    // console.log(bone, x, lowerFirstLetter(bone));
+    statsObjs[lowerFirstLetter(bone)].update();
 
     var currentQuaternion = new THREE.Quaternion(obj.x, obj.y, obj.z, obj.w);
 
-    if (bone == "Spine") {
-        const euler = new THREE.Euler(Math.PI/2, Math.PI, 0, 'XYZ');
+    if (bone == "LeftArm" || bone == "RightArm" || bone == "RightForeArm" || bone == "LeftForeArm" ) {
+        
+        // var localQuaternion = currentQuaternion;
+        const euler = new THREE.Euler(-Math.PI / 2, 0, Math.PI, 'XYZ');
         const rotationQuaternion = new THREE.Quaternion().setFromEuler(euler);
         var localQuaternion = rotateQuaternion(currentQuaternion, rotationQuaternion);
-        // var localQuaternion = currentQuaternion;
     } else {
-        const euler = new THREE.Euler(-Math.PI / 2, 0, Math.PI, 'XYZ');
+        const euler = new THREE.Euler(Math.PI/2, Math.PI, 0, 'XYZ');
         const rotationQuaternion = new THREE.Quaternion().setFromEuler(euler);
         var localQuaternion = rotateQuaternion(currentQuaternion, rotationQuaternion);
     }
