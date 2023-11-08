@@ -90,10 +90,10 @@ async function readLoop() {
 }
 
 function logData(line) {
- // console.log(line);
+  //console.log(line);
  try{
     var x = JSON.parse(line);
-    // console.log(x);
+    console.log(x);
     handleWSMessage(x);
  }
     catch(e){
