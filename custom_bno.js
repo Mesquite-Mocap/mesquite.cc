@@ -2,7 +2,7 @@ var rigPrefix = "mixamorig";
 
 var calibrated = false;
 var initialPosition = {x:0, y:0, z:0}
-var positionSensivity = 50;
+var positionSensivity = 80;
 
 
 function calibrate() {

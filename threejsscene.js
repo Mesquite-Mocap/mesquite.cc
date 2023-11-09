@@ -151,7 +151,6 @@ function init() {
             }
         });
 
-
         scene.add(object);
 
 
