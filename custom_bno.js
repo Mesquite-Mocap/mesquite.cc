@@ -31,7 +31,11 @@ function handleWSMessage(obj) {
     // console.log(bone, x, lowerFirstLetter(bone));
     statsObjs[lowerFirstLetter(bone)].update();
 
-    var currentQuaternion = new THREE.Quaternion(obj.x, obj.y, obj.z, obj.w);
+    if(bone=="Hips"){
+        var currentQuaternion = new THREE.Quaternion(obj.w, obj.x, obj.z, obj.x);
+    }else{
+        var currentQuaternion = new THREE.Quaternion(obj.x, obj.y, obj.z, obj.w);
+    }
 
     if (bone == "LeftArm" || bone == "RightArm" || bone == "RightForeArm" || bone == "LeftForeArm" ) {
         
@@ -39,7 +43,13 @@ function handleWSMessage(obj) {
         const euler = new THREE.Euler(-Math.PI / 2, 0, Math.PI, 'XYZ');
         const rotationQuaternion = new THREE.Quaternion().setFromEuler(euler);
         var localQuaternion = rotateQuaternion(currentQuaternion, rotationQuaternion);
-    } else {
+    }
+    else if(bone == "Hips"){
+        const euler = new THREE.Euler(Math.PI/2, 0, 0, 'XYZ');
+        const rotationQuaternion = new THREE.Quaternion().setFromEuler(euler);
+        var localQuaternion = rotateQuaternion(currentQuaternion, rotationQuaternion);
+    }
+    else {
         const euler = new THREE.Euler(Math.PI/2, Math.PI, 0, 'XYZ');
         const rotationQuaternion = new THREE.Quaternion().setFromEuler(euler);
         var localQuaternion = rotateQuaternion(currentQuaternion, rotationQuaternion);
