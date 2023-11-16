@@ -106,6 +106,10 @@
     var animationDuration;
     let camera_bvh, controls_bvh, scene_bvh, renderer_bvh;
     let mixer_bvh, skeletonHelper_bvh;
+
+    var trackingLine;
+    var line_tracker = []; // Start with an empty array
+    
     function animationReset() {
       animation.time = 0;
       mixer_bvh.time = 0;

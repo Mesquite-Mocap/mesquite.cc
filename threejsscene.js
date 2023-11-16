@@ -13,6 +13,8 @@ const clock = new THREE.Clock();
 
 let mixer;
 
+
+
 init();
 animate();
 
@@ -153,6 +155,14 @@ function init() {
 
         scene.add(object);
 
+        var lineMaterial = new THREE.LineBasicMaterial({ color: 0xff0000 });
+        var lineGeometry = new THREE.BufferGeometry();
+        
+        lineGeometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(line_tracker), 3));
+        trackingLine = new THREE.Line(lineGeometry, lineMaterial);
+        scene.add(trackingLine);
+        
+        
 
         //     init_bvh();
         //     animate_bvh();

@@ -21,6 +21,22 @@ function lowerFirstLetter(string) {
     return string.charAt(0).toLowerCase() + string.slice(1);
 }
 
+// 3. Update Function
+function updateTrackingLine(newHipPosition) {
+    // Convert newHipPosition to an array and add it to positions
+    line_tracker.push(newHipPosition.x, newHipPosition.y, newHipPosition.z);
+
+    // Optional: Limit the length of the line
+    var maxLength = 10000; // maximum number of vertices
+    if (line_tracker.length > maxLength * 3) {
+        line_tracker.splice(0, 3); // remove the oldest vertex
+    }
+
+    // Update the line geometry
+    trackingLine.geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(line_tracker), 3));
+    trackingLine.geometry.attributes.position.needsUpdate = true;
+    trackingLine.geometry.setDrawRange(0, line_tracker.length / 3);
+}
 
 function handleWSMessage(obj) {
     // console.log(mac2Bones[obj.id].id);
@@ -50,7 +66,7 @@ function handleWSMessage(obj) {
         var localQuaternion = rotateQuaternion(currentQuaternion, rotationQuaternion);
     }
     else {
-        const euler = new THREE.Euler(Math.PI/2, Math.PI, 0, 'XYZ');
+        const euler = new THREE.Euler(-Math.PI/2,0, Math.PI, 'XYZ');
         const rotationQuaternion = new THREE.Quaternion().setFromEuler(euler);
         var localQuaternion = rotateQuaternion(currentQuaternion, rotationQuaternion);
     }
@@ -64,7 +80,7 @@ function handleWSMessage(obj) {
         mac2Bones[bone].local = {x:0, y:0, z:0, w:1}
         mac2Bones[bone].global = {x:0, y:0, z:0, w:1}
     }
-    console.log(mac2Bones)
+    // console.log(mac2Bones)
     mac2Bones[bone].last.x = localQuaternion.x;
     mac2Bones[bone].last.y = localQuaternion.y;
     mac2Bones[bone].last.z = localQuaternion.z;
@@ -102,6 +118,7 @@ function handleWSMessage(obj) {
         // console.log(sensorPosition);
         const hipsBone = model.getObjectByName(rigPrefix + "Hips");
         hipsBone.position.set(sensorPosition.z, sensorPosition.y, -sensorPosition.x);
+        updateTrackingLine(hipsBone.position);
     }
 
     if (parentQuaternion == null) {
@@ -251,10 +268,10 @@ function mapPods() {
 
 function boneSelectChanged(select) {
     var boneName = select.value;
-    console.log(boneName);
+    // console.log(boneName);
 
     var podMac = select.parentNode.parentNode.parentNode.getElementsByClassName("podName")[0].innerHTML.replace("MM-", '');
-    console.log(podMac);
+    // console.log(podMac);
 
     mac2Bones[podMac] = { id: boneName, calibration: { x: 0, y: 0, z: 0, w: 1 }, last: { x: 0, y: 0, z: 0, w: 1 }, global: { x: null, y: 0, z: 0, w: 1 }, local: { x: 0, y: 0, z: 0, w: 1 }, sensorPosition: { x: 0, y: 0, z: 0, w: 1 } };
     // mac2Bones[podMac] = new BoneData(boneName);
