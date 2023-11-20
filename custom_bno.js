@@ -24,7 +24,7 @@ function lowerFirstLetter(string) {
 // 3. Update Function
 function updateTrackingLine(newHipPosition) {
     // Convert newHipPosition to an array and add it to positions
-    line_tracker.push(newHipPosition.x, newHipPosition.y, newHipPosition.z);
+    line_tracker.push(newHipPosition.x, newHipPosition.y-100, newHipPosition.z);
 
     // Optional: Limit the length of the line
     var maxLength = 10000; // maximum number of vertices
@@ -41,10 +41,12 @@ function updateTrackingLine(newHipPosition) {
 function handleWSMessage(obj) {
     // console.log(mac2Bones[obj.id].id);
 
-
+    console.log(obj)
     var bone = obj.bone;
     var x = model.getObjectByName(rigPrefix + bone);
     // console.log(bone, x, lowerFirstLetter(bone));
+    
+    document.getElementById(lowerFirstLetter(bone) + "Batery").innerHTML = parseFloat(obj.batt)*100;
     statsObjs[lowerFirstLetter(bone)].update();
 
     if(bone=="Spine"){
