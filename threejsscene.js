@@ -379,19 +379,19 @@ function dothistoInit() {
 }
 
 
-// document.getElementById("bvhFileInput").addEventListener("change", function (event) {
-//     const file = event.target.files[0];
-//     if (!file) {
-//         return;
-//     }
+document.getElementById("bvhFileInput").addEventListener("change", function (event) {
+    const file = event.target.files[0];
+    if (!file) {
+        return;
+    }
 
-//     const reader = new FileReader();
-//     reader.onload = function (e) {
-//         const bvhData = e.target.result;
-//         loadAndPlayBVH(bvhData);
-//     };
-//     reader.readAsText(file);
-// });
+    const reader = new FileReader();
+    reader.onload = function (e) {
+        const bvhData = e.target.result;
+        loadAndPlayBVH(bvhData);
+    };
+    reader.readAsText(file);
+});
 
 function loadAndPlayBVH(bvhData) {
     console.log(bvhData);

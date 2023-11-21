@@ -104,7 +104,7 @@ url.getFile().then(function (file) {
       // number of frames
 
       var tokens = nextLine(lines).split(/[\s]+/);
-      numFrames = parseInt(tokens[1]);
+      var numFrames = parseInt(tokens[1]);
 
       if (isNaN(numFrames)) {
         console.error("THREE.BVHLoader: Failed to read number of frames.");
