@@ -103,6 +103,7 @@ function handleWSMessage(obj) {
     var currentLocalEuler = quaternionToEuler(localQuaternion)
     var parentQuaternion = getParentQuaternion(bone);
     if (obj.sensorPosition !== undefined) {
+        obj.sensorPosition.x *= -1;
         if (initialPosition.x == 0 && initialPosition.y == 0 && initialPosition.z == 0) {
             initialPosition.x = obj.sensorPosition.x * positionSensivity;
             initialPosition.y = obj.sensorPosition.y * positionSensivity;

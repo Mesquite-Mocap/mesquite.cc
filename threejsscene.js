@@ -2,8 +2,8 @@ import * as THREE from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc@l
 import Stats from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc@latest/build/stats.module.js";
 import { OrbitControls } from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc@latest/build/OrbitControls.js";
 import { FBXLoader } from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc@latest/build/FBXLoader.js";
-// import { BVHLoader } from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc@latest/build/BVHLoader.js";
-import {BVHLoader} from "./build/BVHLoader.js"
+import { BVHLoader } from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc@latest/build/BVHLoader.js";
+// import {BVHLoader} from "./build/BVHLoader.js"
 
 
 const clock_bvh = new THREE.Clock();
@@ -395,7 +395,7 @@ document.getElementById("bvhFileInput").addEventListener("change", function (eve
 });
 
 function loadAndPlayBVH(bvhData) {
-    console.log(bvhData);
+    // console.log(bvhData);
     init_bvh();
     animate_bvh();
     const loader_bvh = new BVHLoader();
