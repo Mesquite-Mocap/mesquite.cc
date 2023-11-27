@@ -30,66 +30,66 @@
   <script>
 
     var statsObjs = {
-        "head": {
-          "status": "Not Connected",
-          "stats": null
-        },
-        "spine": {
-          "status": "Not Connected",
-          "stats": null
-        },
-        "hips": {
-          "status": "Not Connected",
-          "stats": null
-        },
-        "leftArm": {
-          "status": "Not Connected",
-          "stats": null
-        },
-        "leftForeArm": {
-          "status": "Not Connected",
-          "stats": null
-        },
-        "rightArm": {
-          "status": "Not Connected",
-          "stats": null
-        },
-        "rightForeArm": {
-          "status": "Not Connected",
-          "stats": null
-        },
-        "leftUpLeg": {
-          "status": "Not Connected",
-          "stats": null
-        },
-        "leftLeg": {
-          "status": "Not Connected",
-          "stats": null
-        },
-        "rightUpLeg": {
-          "status": "Not Connected",
-          "stats": null
-        },
-        "rightLeg": {
-          "status": "Not Connected",
-          "stats": null
-        },
-        "leftHand": {
-          "status": "Not Connected",
-          "stats": null
-        },
-        "rightHand": {
-          "status": "Not Connected",
-          "stats": null
-        },
-        "leftFoot": {
-          "status": "Not Connected",
-          "stats": null
-        },
-        "rightFoot": {
-          "status": "Not Connected",
-          "stats": null
-        }
+      "head": {
+        "status": "Not Connected",
+        "stats": null
+      },
+      "spine": {
+        "status": "Not Connected",
+        "stats": null
+      },
+      "hips": {
+        "status": "Not Connected",
+        "stats": null
+      },
+      "leftArm": {
+        "status": "Not Connected",
+        "stats": null
+      },
+      "leftForeArm": {
+        "status": "Not Connected",
+        "stats": null
+      },
+      "rightArm": {
+        "status": "Not Connected",
+        "stats": null
+      },
+      "rightForeArm": {
+        "status": "Not Connected",
+        "stats": null
+      },
+      "leftUpLeg": {
+        "status": "Not Connected",
+        "stats": null
+      },
+      "leftLeg": {
+        "status": "Not Connected",
+        "stats": null
+      },
+      "rightUpLeg": {
+        "status": "Not Connected",
+        "stats": null
+      },
+      "rightLeg": {
+        "status": "Not Connected",
+        "stats": null
+      },
+      "leftHand": {
+        "status": "Not Connected",
+        "stats": null
+      },
+      "rightHand": {
+        "status": "Not Connected",
+        "stats": null
+      },
+      "leftFoot": {
+        "status": "Not Connected",
+        "stats": null
+      },
+      "rightFoot": {
+        "status": "Not Connected",
+        "stats": null
+      }
     }
 
 
@@ -179,19 +179,15 @@
 
   </script>
 
-<img id="face" width="300" height="200"
-  style="position: fixed; z-index: 999999999999; top:40px"
->
 
-<canvas id="facecanvas" style="position:fixed;top:400px;left:0;z-index:1000"></canvas>
 
   <a href='javascript:calibrate()' style='right:0;bottom:0'
     class="main btn waves-effect waves-light white black-text large">Set
     <i class="material-icons " style="vertical-align:middle;font-size:200%">accessibility</i> Pose
   </a>
 
-  <button id="recordButton" style="position:absolute; left:0; bottom:0px; z-index: 1;" class="main btn waves-effect waves-light green black-text large"
-    onclick="toggleRecording()">
+  <button id="recordButton" style="position:absolute; left:0; bottom:0px; z-index: 1;"
+    class="main btn waves-effect waves-light green black-text large" onclick="toggleRecording()">
     <i class="material-icons" style="vertical-align:middle;font-size:200%">fiber_manual_record</i>
     Record BVH
   </button>
@@ -203,134 +199,156 @@
     <i class="material-icons left">settings_ethernet</i>
   </button>
 
-  
-  <button onclick="manageModal.open()" id='settingsButton' style='position:fixed;right:0' class="main btn waves-effect waves-light white black-text large">Network Stats
-    <i class="material-icons left">insert_chart_outlined</i>
+
+  <button onclick="manageModal.open()" id='settingsButton' style='position:fixed;right:0'
+    class="main btn waves-effect waves-light white black-text large">Settings
+    <i class="material-icons left">settings</i>
   </button>
 
 
   <div id="manageModal" style="overflow-y:auto" class="modal">
     <div class="modal-content black-text">
       <h4 style="text-align:center"></h4>
-
-        <p id="deviceMapList"> 
-          <table class="striped highlight centered">
-            <thead>
-              <tr>
-                  <th>Bone</th>
-                  <th>Status</th>
-                  <th>Stats</th>
-              </tr>
-            </thead>
-    
-            <tbody>
-              <tr>
-                <td>Head</td>
-                <td id="headStatus">Not Connected</td>
-                <td id="headStats"></td>
-                <td id="headBatery"></td>
-              </tr>
-              <tr>
-                <td>Spine</td>
-                <td id="spineStatus">Not Connected</td>
-                <td id="spineStats"></td>
-                <td id="spineBatery"></td>
-              </tr>
-              <tr>
-                <td>Hips</td>
-                <td id="hipsStatus">Not Connected</td>
-                <td id="hipsStats"></td>
-                <td id="hipsBatery"></td>
-              </tr>
-              <tr>
-                <td>Left Upper Arm</td>
-                <td id="leftArmStatus">Not Connected</td>
-                <td id="leftArmStats"></td>
-                <td id="leftArmBatery"></td>
-              </tr>
-              <tr>
-                <td>Left Forearm</td>
-                <td id="leftForeArmStatus">Not Connected</td>
-                <td id="leftForeArmStats"></td>
-                <td id="leftForeArmBatery"></td>
-              </tr>
-              <tr>
-                <td>Right Upper Arm</td>
-                <td id="rightArmStatus">Not Connected</td>
-                <td id="rightArmStats"></td>
-                <td id="rightArmBatery"></td>
-              </tr>
-              <tr>
-                <td>Right Forearm</td>
-                <td id="rightForeArmStatus">Not Connected</td>
-                <td id="rightForeArmStats"></td>
-                <td id="rightForeArmBatery"></td>
-              </tr>
-              <tr>
-                <td>Left Upper Leg</td>
-                <td id="leftUpLegStatus">Not Connected</td>
-                <td id="leftUpLegStats"></td>
-                <td id="leftUpLegBatery"></td>
-              </tr>
-              <tr>
-                <td>Left Lower Leg</td>
-                <td id="leftLegStatus">Not Connected</td>
-                <td id="leftLegStats"></td>
-                <td id="leftLegBatery"></td>
-              </tr>
-              <tr>
-                <td>Right Upper Leg</td>
-                <td id="rightUpLegStatus">Not Connected</td>
-                <td id="rightUpLegStats"></td>
-                <td id="rightUpLegBatery"></td>
-              </tr>
-              <tr>
-                <td>Right Lower Leg</td>
-                <td id="rightLegStatus">Not Connected</td>
-                <td id="rightLegStats"></td>
-                <td id="rightLegBatery"></td>
-              </tr>
-              <tr>
-                <td>Left Hand</td>
-                <td id="leftHandStatus">Not Connected</td>
-                <td id="leftHandStats"></td>
-                <td id="leftHandBatery"></td>
-              </tr>
-              <tr>
-                <td>Right Hand</td>
-                <td id="rightHandStatus">Not Connected</td>
-                <td id="rightHandStats"></td>
-                <td id="rightHandBatery"></td>
-              </tr>
-              <tr>
-                <td>Left Foot</td>
-                <td id="leftFootStatus">Not Connected</td>
-                <td id="leftFootStats"></td>
-                <td id="leftFootBatery"></td>
-              </tr>
-              <tr>
-                <td>Right Foot</td>
-                <td id="rightFootStatus">Not Connected</td>
-                <td id="rightFootStats"></td>
-                <td id="rightFootBatery"></td>
-              </tr>
+      <!-- tab -->
+      <div class="row">
+        <div class="col s12">
+          <ul class="tabs" style="background-color: transparent;color:black">
+            <li class="tab col s3"><a id='deviceMapListB' style='text-decoration: none; color:black' class="active" onclick="$('#ext').fadeOut(0); $('#deviceMapList').fadeIn(0)">Network Stats</a></li>
+            <li class="tab col s3"><a style='text-decoration: none; color:black' onclick="$('#deviceMapList').fadeOut(0); $('#ext').fadeIn(0)">Add Ons</a></li>
+          </ul>
+        </div>
 
 
-            </tbody>
-          </table>
-                
-        </p>
+        
+
+        <div id="deviceMapList" >
+        <table class="striped highlight centered">
+          <thead>
+            <tr>
+              <th>Bone</th>
+              <th>Status</th>
+              <th>Stats</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr>
+              <td>Head</td>
+              <td id="headStatus">Not Connected</td>
+              <td id="headStats"></td>
+              <td id="headBatery"></td>
+            </tr>
+            <tr>
+              <td>Spine</td>
+              <td id="spineStatus">Not Connected</td>
+              <td id="spineStats"></td>
+              <td id="spineBatery"></td>
+            </tr>
+            <tr>
+              <td>Hips</td>
+              <td id="hipsStatus">Not Connected</td>
+              <td id="hipsStats"></td>
+              <td id="hipsBatery"></td>
+            </tr>
+            <tr>
+              <td>Left Upper Arm</td>
+              <td id="leftArmStatus">Not Connected</td>
+              <td id="leftArmStats"></td>
+              <td id="leftArmBatery"></td>
+            </tr>
+            <tr>
+              <td>Left Forearm</td>
+              <td id="leftForeArmStatus">Not Connected</td>
+              <td id="leftForeArmStats"></td>
+              <td id="leftForeArmBatery"></td>
+            </tr>
+            <tr>
+              <td>Right Upper Arm</td>
+              <td id="rightArmStatus">Not Connected</td>
+              <td id="rightArmStats"></td>
+              <td id="rightArmBatery"></td>
+            </tr>
+            <tr>
+              <td>Right Forearm</td>
+              <td id="rightForeArmStatus">Not Connected</td>
+              <td id="rightForeArmStats"></td>
+              <td id="rightForeArmBatery"></td>
+            </tr>
+            <tr>
+              <td>Left Upper Leg</td>
+              <td id="leftUpLegStatus">Not Connected</td>
+              <td id="leftUpLegStats"></td>
+              <td id="leftUpLegBatery"></td>
+            </tr>
+            <tr>
+              <td>Left Lower Leg</td>
+              <td id="leftLegStatus">Not Connected</td>
+              <td id="leftLegStats"></td>
+              <td id="leftLegBatery"></td>
+            </tr>
+            <tr>
+              <td>Right Upper Leg</td>
+              <td id="rightUpLegStatus">Not Connected</td>
+              <td id="rightUpLegStats"></td>
+              <td id="rightUpLegBatery"></td>
+            </tr>
+            <tr>
+              <td>Right Lower Leg</td>
+              <td id="rightLegStatus">Not Connected</td>
+              <td id="rightLegStats"></td>
+              <td id="rightLegBatery"></td>
+            </tr>
+            <tr>
+              <td>Left Hand</td>
+              <td id="leftHandStatus">Not Connected</td>
+              <td id="leftHandStats"></td>
+              <td id="leftHandBatery"></td>
+            </tr>
+            <tr>
+              <td>Right Hand</td>
+              <td id="rightHandStatus">Not Connected</td>
+              <td id="rightHandStats"></td>
+              <td id="rightHandBatery"></td>
+            </tr>
+            <tr>
+              <td>Left Foot</td>
+              <td id="leftFootStatus">Not Connected</td>
+              <td id="leftFootStats"></td>
+              <td id="leftFootBatery"></td>
+            </tr>
+            <tr>
+              <td>Right Foot</td>
+              <td id="rightFootStatus">Not Connected</td>
+              <td id="rightFootStats"></td>
+              <td id="rightFootBatery"></td>
+            </tr>
 
 
+          </tbody>
+        </table>
 
-    </div>
-
-    <div id="splashScreen"
-      style="width:100vw;height:100vh;position:fixed;top:0;left:0;background-color:rgba(0,0,0,0.9);z-index:1000;background-image: url(icons/icon.png); background-repeat: no-repeat;background-position: 50% 30%; background-size: 200px; transition: 1s;">
-      <div class="title" style="top:60vh; text-align:center;font-size:200%; position: absolute; width: 100vw;">
-        Mesquite Mocap
       </div>
-    </div>
+
+        <div id="ext" >
+          <h4>Face</h4>
+          <canvas id="facecanvas" width="320" height="240" style="margin:auto"></canvas>
+
+          <h4>Right Hand</h4>
+          <canvas id="rhcanvas" width="320" height="240" style="margin:auto"></canvas>
+
+          <h4>Left Hand</h4>
+          <canvas id="lhcanvas" width="320" height="240" style="margin:auto"></canvas>
+        </div>
+
+
+      </div>
+
+      <div id="splashScreen"
+        style="width:100vw;height:100vh;position:fixed;top:0;left:0;background-color:rgba(0,0,0,0.9);z-index:1000;background-image: url(icons/icon.png); background-repeat: no-repeat;background-position: 50% 30%; background-size: 200px; transition: 1s;">
+        <div class="title" style="top:60vh; text-align:center;font-size:200%; position: absolute; width: 100vw;">
+          Mesquite Mocap
+        </div>
+      </div>
 
 </body>
 <!-- <script src="script.js"></script> -->

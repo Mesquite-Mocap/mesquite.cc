@@ -20,6 +20,11 @@ init();
 animate();
 
 
+$('.tabs').tabs();
+// select the first tab
+$('#deviceMapListB').click();
+$('#ext').fadeOut(0);
+
 /// load stats.js
 
 

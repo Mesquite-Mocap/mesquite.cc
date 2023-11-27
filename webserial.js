@@ -96,7 +96,7 @@ function logData(line) {
     //console.log(x);
     if(x.face){
       //alert(x.face);
-      document.getElementById("face").src = x.face;
+      // document.getElementById("face").src = x.face;
       // write to canvas
       var canvas = document.getElementById("facecanvas");
       var ctx = canvas.getContext("2d");
