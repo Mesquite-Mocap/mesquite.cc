@@ -4,6 +4,9 @@ var calibrated = false;
 var initialPosition = {x:0, y:0, z:0}
 var positionSensivity = 80;
 
+var kfx = new KalmanFilter();
+var kfy = new KalmanFilter();
+var kfz = new KalmanFilter();
 
 function calibrate() {
     var keys = Object.keys(mac2Bones);
@@ -15,6 +18,7 @@ function calibrate() {
     }
 
     calibrated = true;
+    line_tracker = [];
 }
 
 function lowerFirstLetter(string) {
@@ -116,9 +120,11 @@ function handleWSMessage(obj) {
             calibrated = false;
         }
 
-        var sensorPosition = new THREE.Vector3(obj.sensorPosition.x * positionSensivity - initialPosition.x, obj.sensorPosition.y * positionSensivity - initialPosition.y + 100, obj.sensorPosition.z * positionSensivity - initialPosition.z);
+        
+        var sensorPosition = new THREE.Vector3(kfx.filter(obj.sensorPosition.x * positionSensivity - initialPosition.x), kfy.filter(obj.sensorPosition.y * positionSensivity - initialPosition.y) + 100, kfz.filter(obj.sensorPosition.z * positionSensivity - initialPosition.z));
         //set this as position of the bone
         // console.log(sensorPosition);
+        
         const hipsBone = model.getObjectByName(rigPrefix + "Hips");
         hipsBone.position.set(sensorPosition.z, sensorPosition.y, -sensorPosition.x);
         updateTrackingLine(hipsBone.position);
