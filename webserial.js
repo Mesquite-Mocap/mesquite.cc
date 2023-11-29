@@ -93,7 +93,20 @@ function logData(line) {
   //console.log(line);
  try{
     var x = JSON.parse(line);
-    console.log(x);
+    //console.log(x);
+    if(x.face){
+      //alert(x.face);
+      // document.getElementById("face").src = x.face;
+      // write to canvas
+      var canvas = document.getElementById("facecanvas");
+      var ctx = canvas.getContext("2d");
+      var img = document.createElement("img");
+      img.onload = function() {
+        ctx.drawImage(img, 0, 0);
+      }
+      img.src = x.face;
+      return;
+    }
     handleWSMessage(x);
  }
     catch(e){
