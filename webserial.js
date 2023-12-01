@@ -90,7 +90,6 @@ async function readLoop() {
 }
 
 function logData(line) {
-  //console.log(line);
  try{
     var x = JSON.parse(line);
     //console.log(x);
@@ -105,13 +104,16 @@ function logData(line) {
       return;
     }
     if(x.rhand){
+      //alert(x);
+      console.log(line);
+
       var canvas = document.getElementById("rhcanvas");
       var ctx = canvas.getContext("2d");
       var img = document.createElement("img");
       img.onload = function() {
         ctx.drawImage(img, 0, 0);
       }
-      img.src = x.face;
+      img.src = x.rhand;
       return;
     }
     if(x.lhand){
@@ -121,7 +123,7 @@ function logData(line) {
       img.onload = function() {
         ctx.drawImage(img, 0, 0);
       }
-      img.src = x.face;
+      img.src = x.lhand;
       return;
     }
 
