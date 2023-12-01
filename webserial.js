@@ -95,9 +95,6 @@ function logData(line) {
     var x = JSON.parse(line);
     //console.log(x);
     if(x.face){
-      //alert(x.face);
-      // document.getElementById("face").src = x.face;
-      // write to canvas
       var canvas = document.getElementById("facecanvas");
       var ctx = canvas.getContext("2d");
       var img = document.createElement("img");
@@ -107,6 +104,27 @@ function logData(line) {
       img.src = x.face;
       return;
     }
+    if(x.rhand){
+      var canvas = document.getElementById("rhcanvas");
+      var ctx = canvas.getContext("2d");
+      var img = document.createElement("img");
+      img.onload = function() {
+        ctx.drawImage(img, 0, 0);
+      }
+      img.src = x.face;
+      return;
+    }
+    if(x.lhand){
+      var canvas = document.getElementById("lhcanvas");
+      var ctx = canvas.getContext("2d");
+      var img = document.createElement("img");
+      img.onload = function() {
+        ctx.drawImage(img, 0, 0);
+      }
+      img.src = x.face;
+      return;
+    }
+
     handleWSMessage(x);
  }
     catch(e){
