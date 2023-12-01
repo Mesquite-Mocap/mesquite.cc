@@ -104,9 +104,6 @@ function logData(line) {
       return;
     }
     if(x.rhand){
-      //alert(x);
-      console.log(line);
-
       var canvas = document.getElementById("rhcanvas");
       var ctx = canvas.getContext("2d");
       var img = document.createElement("img");
