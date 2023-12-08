@@ -89,6 +89,7 @@ async function readLoop() {
   }
 }
 
+var faceVideoOn = false;
 function logData(line) {
  try{
     var x = JSON.parse(line);
@@ -101,6 +102,14 @@ function logData(line) {
         ctx.drawImage(img, 0, 0);
       }
       img.src = x.face;
+      // capture stream
+      if(!faceVideoOn){
+        faceVideoOn = true;
+        var stream = canvas.captureStream();
+        document.getElementById("facevideo").srcObject = stream;
+        document.getElementById("facevideo").play();
+      }
+
       return;
     }
     if(x.rhand){
