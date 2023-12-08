@@ -89,6 +89,8 @@ async function readLoop() {
   }
 }
 
+
+
 var faceVideoOn = false;
 function logData(line) {
  try{
@@ -108,6 +110,7 @@ function logData(line) {
         var stream = canvas.captureStream();
         document.getElementById("facevideo").srcObject = stream;
         document.getElementById("facevideo").play();
+        document.getElementById("facevideo").muted = true;
       }
 
       return;
