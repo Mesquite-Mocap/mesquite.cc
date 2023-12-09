@@ -1,3 +1,63 @@
+import vision from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.3";
+const { FaceLandmarker, FilesetResolver, DrawingUtils } = vision;
+
+async function createFaceLandmarker() {
+    const filesetResolver = await FilesetResolver.forVisionTasks(
+        "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.3/wasm"
+    );
+    faceLandmarker = await FaceLandmarker.createFromOptions(filesetResolver, {
+        baseOptions: {
+            modelAssetPath: `https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task`,
+            delegate: "GPU"
+        },
+        outputFaceBlendshapes: true,
+        runningMode: "VIDEO",
+        numFaces: 1
+    });
+}
+createFaceLandmarker();
+
+document.getElementById("facevideo").addEventListener('play', predictFace);
+let lastVideoTime = -1;
+
+
+
+
+
+
+async function predictFace() {
+    let results;
+    const video = document.getElementById("facevideo");
+    let startTimeMs = performance.now();
+    if (lastVideoTime !== video.currentTime) {
+        lastVideoTime = video.currentTime;
+        results = faceLandmarker.detectForVideo(video, startTimeMs);
+    }
+    if (results) {
+        //console.log(results);
+        const landmarks = results.faceLandmarks[0];
+        if (landmarks) {
+            console.log(landmarks);
+
+            var positions = new Float32Array(landmarks.length * 3);
+
+            // get right face scatter plot positions
+
+            // draw landmarks using faceGeometry
+            for (let i = 0; i < landmarks.length; i++) {
+                positions[i * 3] = landmarks[i].x * 100;
+                positions[i * 3 + 1] = -landmarks[i].y * 100 + 200;
+                positions[i * 3 + 2] = landmarks[i].z * 100;
+            }
+            faceGeometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3).setUsage(THREE.DynamicDrawUsage));
+        }
+    }
+    window.requestAnimationFrame(predictFace);
+}
+
+
+
+
 import * as THREE from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc@latest/build/three.module.js";
 import Stats from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc@latest/build/stats.module.js";
 import { OrbitControls } from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc@latest/build/OrbitControls.js";
@@ -81,6 +141,14 @@ function init() {
     hemiLight.position.set(0, 200, 0);
     scene.add(hemiLight);
 
+    // add face point cloud
+    faceGeometry = new THREE.BufferGeometry();
+    const material = new THREE.PointsMaterial({ size: 3, sizeAttenuation: false, color: 0xff0000 });
+    const points = new THREE.Points(faceGeometry, material);
+    scene.add(points);
+    // default face point cloud
+
+
     // const dirLight = new THREE.DirectionalLight(0xffffff);
     const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
     dirLight.position.set(0, 200, 100);
@@ -163,12 +231,12 @@ function init() {
 
         var lineMaterial = new THREE.LineBasicMaterial({ color: 0xff0000 });
         var lineGeometry = new THREE.BufferGeometry();
-        
+
         lineGeometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(line_tracker), 3));
         trackingLine = new THREE.Line(lineGeometry, lineMaterial);
         scene.add(trackingLine);
-        
-        
+
+
 
         //     init_bvh();
         //     animate_bvh();
