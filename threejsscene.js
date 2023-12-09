@@ -45,11 +45,12 @@ async function predictFace() {
 
             // draw landmarks using faceGeometry
             for (let i = 0; i < landmarks.length; i++) {
-                positions[i * 3] = landmarks[i].x * 100;
-                positions[i * 3 + 1] = -landmarks[i].y * 100 + 200;
-                positions[i * 3 + 2] = landmarks[i].z * 100;
+                positions[i * 3] = landmarks[i].x * 80;
+                positions[i * 3 + 1] = -landmarks[i].y * 80 + 250;
+                positions[i * 3 + 2] = landmarks[i].z * 80;
             }
             faceGeometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3).setUsage(THREE.DynamicDrawUsage));
+            
         }
     }
     window.requestAnimationFrame(predictFace);
@@ -143,7 +144,7 @@ function init() {
 
     // add face point cloud
     faceGeometry = new THREE.BufferGeometry();
-    const material = new THREE.PointsMaterial({ size: 3, sizeAttenuation: false, color: 0xff0000 });
+    const material = new THREE.PointsMaterial({ size: 1, sizeAttenuation: false, color: 0x000000 });
     const points = new THREE.Points(faceGeometry, material);
     scene.add(points);
     // default face point cloud
