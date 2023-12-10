@@ -171,7 +171,8 @@ import { OrbitControls } from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesqui
 import { GLTFLoader } from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc/build/GLTFLoader.js";
 import { KTX2Loader } from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc/build/KTX2Loader.js";
 import { MeshoptDecoder } from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc/build/meshopt_decoder.module.js";
-import { FBXLoader } from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc/build/FBXLoader.js";
+//import { FBXLoader } from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc/build/FBXLoader.js";
+import { FBXLoader } from "./build/FBXLoader.js";
 import { BVHLoader } from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc/build/BVHLoader.js";
 // import {BVHLoader} from "./build/BVHLoader.js"
 
@@ -268,7 +269,8 @@ function init() {
     scene.add(dirLight);
 
     const mesh = new THREE.Mesh(
-        new THREE.PlaneBufferGeometry(4000, 4000),
+        
+        new THREE.PlaneGeometry(4000, 4000),
         new THREE.MeshStandardMaterial({ color: 0x999999, depthWrite: false })
     );
 

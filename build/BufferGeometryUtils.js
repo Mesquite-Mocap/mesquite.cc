@@ -8,7 +8,7 @@ import {
 	TrianglesDrawMode,
 	Vector2,
 	Vector3
-} from './three.module-1.js';
+} from './three.module.js';
 
 var BufferGeometryUtils = {
 
