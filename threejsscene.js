@@ -1,3 +1,62 @@
+
+const blendshapesMap = {
+    // '_neutral': '',
+    'browDownLeft': 'browDown_L',
+    'browDownRight': 'browDown_R',
+    'browInnerUp': 'browInnerUp',
+    'browOuterUpLeft': 'browOuterUp_L',
+    'browOuterUpRight': 'browOuterUp_R',
+    'cheekPuff': 'cheekPuff',
+    'cheekSquintLeft': 'cheekSquint_L',
+    'cheekSquintRight': 'cheekSquint_R',
+    'eyeBlinkLeft': 'eyeBlink_L',
+    'eyeBlinkRight': 'eyeBlink_R',
+    'eyeLookDownLeft': 'eyeLookDown_L',
+    'eyeLookDownRight': 'eyeLookDown_R',
+    'eyeLookInLeft': 'eyeLookIn_L',
+    'eyeLookInRight': 'eyeLookIn_R',
+    'eyeLookOutLeft': 'eyeLookOut_L',
+    'eyeLookOutRight': 'eyeLookOut_R',
+    'eyeLookUpLeft': 'eyeLookUp_L',
+    'eyeLookUpRight': 'eyeLookUp_R',
+    'eyeSquintLeft': 'eyeSquint_L',
+    'eyeSquintRight': 'eyeSquint_R',
+    'eyeWideLeft': 'eyeWide_L',
+    'eyeWideRight': 'eyeWide_R',
+    'jawForward': 'jawForward',
+    'jawLeft': 'jawLeft',
+    'jawOpen': 'jawOpen',
+    'jawRight': 'jawRight',
+    'mouthClose': 'mouthClose',
+    'mouthDimpleLeft': 'mouthDimple_L',
+    'mouthDimpleRight': 'mouthDimple_R',
+    'mouthFrownLeft': 'mouthFrown_L',
+    'mouthFrownRight': 'mouthFrown_R',
+    'mouthFunnel': 'mouthFunnel',
+    'mouthLeft': 'mouthLeft',
+    'mouthLowerDownLeft': 'mouthLowerDown_L',
+    'mouthLowerDownRight': 'mouthLowerDown_R',
+    'mouthPressLeft': 'mouthPress_L',
+    'mouthPressRight': 'mouthPress_R',
+    'mouthPucker': 'mouthPucker',
+    'mouthRight': 'mouthRight',
+    'mouthRollLower': 'mouthRollLower',
+    'mouthRollUpper': 'mouthRollUpper',
+    'mouthShrugLower': 'mouthShrugLower',
+    'mouthShrugUpper': 'mouthShrugUpper',
+    'mouthSmileLeft': 'mouthSmile_L',
+    'mouthSmileRight': 'mouthSmile_R',
+    'mouthStretchLeft': 'mouthStretch_L',
+    'mouthStretchRight': 'mouthStretch_R',
+    'mouthUpperUpLeft': 'mouthUpperUp_L',
+    'mouthUpperUpRight': 'mouthUpperUp_R',
+    'noseSneerLeft': 'noseSneer_L',
+    'noseSneerRight': 'noseSneer_R',
+    // '': 'tongueOut'
+};
+
+
+
 import vision from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.3";
 const { FaceLandmarker, FilesetResolver, DrawingUtils } = vision;
 
@@ -7,10 +66,12 @@ async function createFaceLandmarker() {
     );
     faceLandmarker = await FaceLandmarker.createFromOptions(filesetResolver, {
         baseOptions: {
-            modelAssetPath: `https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task`,
+            modelAssetPath: 'https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task',
             delegate: "GPU"
         },
         outputFaceBlendshapes: true,
+        outputFaceGeometry: true,
+        outputFacialTransformationMatrices: true,
         runningMode: "VIDEO",
         numFaces: 1
     });
@@ -34,7 +95,35 @@ async function predictFace() {
         results = faceLandmarker.detectForVideo(video, startTimeMs);
     }
     if (results) {
-        //console.log(results);
+
+        faceResults = results;
+        if (results.faceBlendshapes.length > 0) {
+
+            console.log(results.faceBlendshapes[0].categories);
+            const face = scene.getObjectByName('mesh_2');
+
+            const faceBlendshapes = results.faceBlendshapes[0].categories;
+
+            for (const blendshape of faceBlendshapes) {
+
+                const categoryName = blendshape.categoryName;
+                const score = blendshape.score;
+
+                const index = face.morphTargetDictionary[blendshapesMap[categoryName]];
+
+                console.log(index, categoryName, score);
+                if (index !== undefined) {
+
+                    face.morphTargetInfluences[index] = score;
+
+                }
+
+            }
+
+            renderer.render(scene, camera);
+
+        }
+
         const landmarks = results.faceLandmarks[0];
         if (landmarks) {
             console.log(landmarks);
@@ -73,24 +162,21 @@ async function predictFace() {
 
 
 
-import * as THREE from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc@latest/build/three.module.js";
-import Stats from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc@latest/build/stats.module.js";
-import { OrbitControls } from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc@latest/build/OrbitControls.js";
+import * as THREE from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc/build/three.module.js";
+import Stats from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc/build/stats.module.js";
+import { OrbitControls } from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc/build/OrbitControls.js";
 // import { GLTFLoader } from "./build/GLTFLoader.js";
 // import { KTX2Loader } from "./build/KTX2Loader.js";
 // import { MeshoptDecoder } from "./build/meshopt_decoder.module.js";
 import { GLTFLoader } from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc/build/GLTFLoader.js";
- import { KTX2Loader } from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc/build/KTX2Loader.js";
+import { KTX2Loader } from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc/build/KTX2Loader.js";
 import { MeshoptDecoder } from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc/build/meshopt_decoder.module.js";
-import { FBXLoader } from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc@latest/build/FBXLoader.js";
-import { BVHLoader } from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc@latest/build/BVHLoader.js";
+import { FBXLoader } from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc/build/FBXLoader.js";
+import { BVHLoader } from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc/build/BVHLoader.js";
 // import {BVHLoader} from "./build/BVHLoader.js"
 
 
 const clock_bvh = new THREE.Clock();
-
-let camera, scene, renderer, stats;
-
 const clock = new THREE.Clock();
 
 let mixer;
@@ -181,41 +267,15 @@ function init() {
     dirLight.shadow.camera.right = 120;
     scene.add(dirLight);
 
-    //  scene.add( new THREE.CameraHelper( dirLight.shadow.camera ) );
-
-    // ground
-    // const textureLoader = new THREE.TextureLoader();
-    // const groundTexture = textureLoader.load('./models/TEXTURE.jpg'); // Use the path to your converted image
-    // groundTexture.wrapS = groundTexture.wrapT = THREE.RepeatWrapping;
-    // groundTexture.repeat.set(25, 25);
-    // groundTexture.anisotropy = 16;
-    // const occlusionMap = textureLoader.load('./models/A0.jpg');
-    // const roughnessMap = textureLoader.load('./models/ROUGHNESSMAP.jpg');
-    // const normalMap = textureLoader.load('./models/NORMALMAP.jpg');
-    // // const heightMap = textureLoader.load('path/to/height-texture.jpg');
-
-    // const groundMaterial = new THREE.MeshStandardMaterial({
-    //     map: groundTexture,
-    //     aoMap: occlusionMap,
-    //     roughnessMap: roughnessMap,
-    //     normalMap: normalMap,
-    //     // displacementMap: heightMap,
-    //     // displacementScale: 1.0, // Adjust this value to control the height effect
-    // });
-
     const mesh = new THREE.Mesh(
         new THREE.PlaneBufferGeometry(4000, 4000),
         new THREE.MeshStandardMaterial({ color: 0x999999, depthWrite: false })
     );
-    // const mesh = new THREE.Mesh(
-    //     new THREE.PlaneBufferGeometry(4000, 4000),
-    //     groundMaterial
-    // );
-
 
     mesh.rotation.x = - Math.PI / 2;
     mesh.receiveShadow = true;
     scene.add(mesh);
+    
 
     const grid = new THREE.GridHelper(4000, 80, 0x000000, 0x000000);
     grid.material.opacity = 0.2;
@@ -242,7 +302,6 @@ function init() {
 
         object.traverse(function (child) {
             if (child.isMesh) {
-
                 child.castShadow = true;
                 child.receiveShadow = true;
 
@@ -280,27 +339,17 @@ function init() {
         .setKTX2Loader(ktx2Loader)
         .setMeshoptDecoder(MeshoptDecoder)
         .load('./facecap.glb', (gltf) => {
-
-            const mesh1 = gltf.scene.children[0];
-            scene.add(mesh1);
-            // alert(mesh1);
+            facemesh = gltf.scene.children[0];
+            scene.add(facemesh);
             var head = model.getObjectByName("mixamorigHead")
             head = head.getWorldPosition();
-            // hide head color
-            //
-            // head.children[0].visible = false;
+            facemesh.position.set(head.x, head.y + 5, head.z + 7);
+            facemesh.scale.set(120, 125, 130);
+            facemesh.rotation.set(0, 0, 0);
 
-            //head.visible = false;
-
-            //change head color
-            // head.children[0].material.color.set(0x999999);
-
-            mesh1.position.set(head.x, head.y+5, head.z + 8);
-            mesh1.scale.set(120, 130, 130);
-            mesh1.rotation.set(0, 0, 0);
-
-            mesh1.material = new THREE.MeshStandardMaterial({ color: 0x000000, depthWrite: false });
-            mesh1.material.metalness = 1;
+            facemesh.material = new THREE.MeshStandardMaterial({ color: 0x000000, depthWrite: false });
+            facemesh.material.metalness = 10;
+            facemesh.material.roughness = 0.5;
 
             const controls = new OrbitControls(camera, renderer.domElement);
             controls.target.set(0, 100, 0);
@@ -507,5 +556,3 @@ function loadAndPlayBVH(bvhData) {
     // console.log(animation);
     animation.play();
 }
-
-

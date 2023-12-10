@@ -30,9 +30,13 @@
 // face points
 var positions;
 var faceGeometry;
+var facemesh;
+var faceLandmarker;
+var faceResults = null;
+
+let camera, scene, renderer, stats;
 
 
-let faceLandmarker;
 
     var statsObjs = {
       "head": {
