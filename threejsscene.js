@@ -296,11 +296,11 @@ function init() {
             // head.children[0].material.color.set(0x999999);
 
             mesh1.position.set(head.x, head.y+5, head.z + 8);
-            mesh1.scale.set(120, 120, 140);
+            mesh1.scale.set(120, 130, 130);
             mesh1.rotation.set(0, 0, 0);
 
-            mesh1.material = new THREE.MeshStandardMaterial({ color: 0xffffff, depthWrite: false });
-            mesh1.material.metalness = 0;
+            mesh1.material = new THREE.MeshStandardMaterial({ color: 0x000000, depthWrite: false });
+            mesh1.material.metalness = 1;
 
             const controls = new OrbitControls(camera, renderer.domElement);
             controls.target.set(0, 100, 0);
