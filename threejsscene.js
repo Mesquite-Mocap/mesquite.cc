@@ -168,11 +168,11 @@ import { OrbitControls } from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesqui
 // import { GLTFLoader } from "./build/GLTFLoader.js";
 // import { KTX2Loader } from "./build/KTX2Loader.js";
 // import { MeshoptDecoder } from "./build/meshopt_decoder.module.js";
-import { GLTFLoader } from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc@latest/build/GLTFLoader.js";
-import { KTX2Loader } from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc@latest/build/KTX2Loader.js";
+import { GLTFLoader } from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc/build/GLTFLoader.js";
+import { KTX2Loader } from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc/build/KTX2Loader.js";
 import { MeshoptDecoder } from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc@latest/build/meshopt_decoder.module.js";
-//import { FBXLoader } from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc/build/FBXLoader.js";
-import { FBXLoader } from "./build/FBXLoader.js";
+import { FBXLoader } from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc@latest/build/FBXLoader.js";
+//import { FBXLoader } from "./build/FBXLoader.js";
 import { BVHLoader } from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc@latest/build/BVHLoader.js";
 // import {BVHLoader} from "./build/BVHLoader.js"
 
@@ -269,7 +269,7 @@ function init() {
     scene.add(dirLight);
 
     const mesh = new THREE.Mesh(
-        
+
         new THREE.PlaneGeometry(4000, 4000),
         new THREE.MeshStandardMaterial({ color: 0x999999, depthWrite: false })
     );
@@ -277,7 +277,7 @@ function init() {
     mesh.rotation.x = - Math.PI / 2;
     mesh.receiveShadow = true;
     scene.add(mesh);
-    
+
 
     const grid = new THREE.GridHelper(4000, 80, 0x000000, 0x000000);
     grid.material.opacity = 0.2;
@@ -343,9 +343,7 @@ function init() {
         .load('./facecap.glb', (gltf) => {
             facemesh = gltf.scene.children[0];
             scene.add(facemesh);
-            var head = model.getObjectByName("mixamorigHead")
-            head = head.getWorldPosition();
-            facemesh.position.set(head.x, head.y + 5, head.z + 7);
+
             facemesh.scale.set(120, 125, 130);
             facemesh.rotation.set(0, 0, 0);
 
@@ -364,7 +362,7 @@ function init() {
             document.getElementById("splashScreen").style.opacity = "0";
             setTimeout(function () {
                 document.getElementById("splashScreen").style.display = "none";
-            }, 1000);
+            }, 3000);
         });
 }
 
@@ -380,6 +378,17 @@ function onWindowResize() {
 function animate() {
     requestAnimationFrame(animate);
 
+
+    if (model) {
+        var head = model.getObjectByName("mixamorigHead")
+        if (head && facemesh) {
+            head.getWorldPosition( facemesh.position );
+            facemesh.position.y += 5;
+            facemesh.position.z += 7;
+            //facemesh.position.x += 0;
+
+        }
+    }
 
     faceGeometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3).setUsage(THREE.DynamicDrawUsage));
     faceGeometry.computeBoundingSphere();
