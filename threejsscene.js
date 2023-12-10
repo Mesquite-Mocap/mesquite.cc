@@ -76,10 +76,10 @@ async function predictFace() {
 import * as THREE from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc@latest/build/three.module.js";
 import Stats from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc@latest/build/stats.module.js";
 import { OrbitControls } from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc@latest/build/OrbitControls.js";
-// import {GLTFLoader} from "./build/GLTFLoader.js";
+ import {GLTFLoader} from "./build/GLTFLoader.js";
 import { KTX2Loader } from "./build/KTX2Loader.js";
 import { MeshoptDecoder } from "./build/meshopt_decoder.module.js";
- import { GLTFLoader } from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc@latest/build/GLTFLoader.js";
+// import { GLTFLoader } from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc@latest/build/GLTFLoader.js";
 // import { KTX2Loader } from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc@latest/build/KTX2Loader.js";
 //import { MeshoptDecoder } from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc@latest/meshopt_decoder.module.js";
 import { FBXLoader } from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc@latest/build/FBXLoader.js";
@@ -167,8 +167,25 @@ function init() {
     const material = new THREE.PointsMaterial({ size: 2, sizeAttenuation: true, color: 0xFF0000 });
     const points = new THREE.Points(faceGeometry, material);
     scene.add(points);
-    // default face point cloud
+    
+    
+    // default face 
 
+    const ktx2Loader = new KTX2Loader()
+    .setTranscoderPath( './build/basis/' )
+    .detectSupport( renderer );
+
+
+    new GLTFLoader()
+    .setKTX2Loader( ktx2Loader )
+    .setMeshoptDecoder( MeshoptDecoder )
+    .load( 'facecap.glb', ( gltf ) => {
+
+        const mesh = gltf.scene.children[ 0 ];
+
+        scene.add( mesh );
+
+    } );
 
     // const dirLight = new THREE.DirectionalLight(0xffffff);
     const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
