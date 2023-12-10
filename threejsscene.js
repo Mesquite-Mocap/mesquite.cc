@@ -39,17 +39,31 @@ async function predictFace() {
         if (landmarks) {
             console.log(landmarks);
 
-            var positions = new Float32Array(landmarks.length * 3);
+            positions = new Float32Array(landmarks.length * 3);
 
             // get right face scatter plot positions
 
             // draw landmarks using faceGeometry
+            var head = model.getObjectByName("mixamorigHead")
+            head = head.getWorldPosition();
+
+
             for (let i = 0; i < landmarks.length; i++) {
-                positions[i * 3] = landmarks[i].x * 80;
-                positions[i * 3 + 1] = -landmarks[i].y * 80 + 250;
-                positions[i * 3 + 2] = landmarks[i].z * 80;
+                positions[i * 3] = (-landmarks[i].x)*100 + head.x;
+                positions[i * 3 + 1] = (-landmarks[i].y)*100 + head.y + 90;
+                positions[i * 3 + 2] = (-landmarks[i].z)*100 + head.z;
             }
-            faceGeometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3).setUsage(THREE.DynamicDrawUsage));
+          
+
+     
+
+         
+      
+
+   
+
+        
+         
             
         }
     }
@@ -144,7 +158,7 @@ function init() {
 
     // add face point cloud
     faceGeometry = new THREE.BufferGeometry();
-    const material = new THREE.PointsMaterial({ size: 1, sizeAttenuation: false, color: 0x000000 });
+    const material = new THREE.PointsMaterial({ size: 2, sizeAttenuation: true, color: 0xFF0000 });
     const points = new THREE.Points(faceGeometry, material);
     scene.add(points);
     // default face point cloud
@@ -326,6 +340,12 @@ function onWindowResize() {
 function animate() {
     requestAnimationFrame(animate);
 
+    
+    faceGeometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3).setUsage(THREE.DynamicDrawUsage));
+    faceGeometry.computeBoundingSphere();
+    faceGeometry.computeVertexNormals();
+
+
     //		const delta = clock.getDelta();
 
     //			if ( mixer ) mixer.update( delta );
@@ -347,6 +367,7 @@ function animate_bvh() {
     requestAnimationFrame(animate_bvh);
 
     const delta = clock_bvh.getDelta();
+
 
     if (mixer_bvh) {
         mixer_bvh.update(delta);
@@ -443,6 +464,7 @@ function animate_bvh() {
                 // console.log(child);
             }
             renderer.render(scene, camera);
+
             // stats.update();
         }
     });
