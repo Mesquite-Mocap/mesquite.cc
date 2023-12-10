@@ -130,17 +130,13 @@ async function predictFace() {
 
             positions = new Float32Array(landmarks.length * 3);
 
-            // get right face scatter plot positions
 
-            // draw landmarks using faceGeometry
-            var head = model.getObjectByName("mixamorigHead")
-            head = head.getWorldPosition();
 
 
             for (let i = 0; i < landmarks.length; i++) {
-                positions[i * 3] = (-landmarks[i].x) * 100 + head.x;
-                positions[i * 3 + 1] = (-landmarks[i].y) * 100 + head.y + 90;
-                positions[i * 3 + 2] = (-landmarks[i].z) * 100 + head.z;
+                positions[i * 3] = (-landmarks[i].x) * 100
+                positions[i * 3 + 1] = (-landmarks[i].y) * 100 + 90;
+                positions[i * 3 + 2] = (-landmarks[i].z) * 100;
             }
 
 
@@ -171,8 +167,8 @@ import { OrbitControls } from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesqui
 import { GLTFLoader } from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc/build/GLTFLoader.js";
 import { KTX2Loader } from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc/build/KTX2Loader.js";
 import { MeshoptDecoder } from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc@latest/build/meshopt_decoder.module.js";
-import { FBXLoader } from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc@latest/build/FBXLoader.js";
-//import { FBXLoader } from "./build/FBXLoader.js";
+//import { FBXLoader } from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc@latest/build/FBXLoader.js";
+import { FBXLoader } from "./build/FBXLoader.js";
 import { BVHLoader } from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc@latest/build/BVHLoader.js";
 // import {BVHLoader} from "./build/BVHLoader.js"
 
@@ -271,7 +267,7 @@ function init() {
     const mesh = new THREE.Mesh(
 
         new THREE.PlaneGeometry(4000, 4000),
-        new THREE.MeshStandardMaterial({ color: 0x999999, depthWrite: false })
+        new THREE.MeshStandardMaterial({ color: 0xffffff, depthWrite: false })
     );
 
     mesh.rotation.x = - Math.PI / 2;
@@ -344,7 +340,7 @@ function init() {
             facemesh = gltf.scene.children[0];
             scene.add(facemesh);
 
-            facemesh.scale.set(120, 125, 130);
+            facemesh.scale.set(120, 135, 135);
             facemesh.rotation.set(0, 0, 0);
 
             facemesh.material = new THREE.MeshStandardMaterial({ color: 0x000000, depthWrite: false });
@@ -383,16 +379,44 @@ function animate() {
         var head = model.getObjectByName("mixamorigHead")
         if (head && facemesh) {
             head.getWorldPosition( facemesh.position );
-            facemesh.position.y += 5;
-            facemesh.position.z += 7;
-            //facemesh.position.x += 0;
+            head.getWorldQuaternion( facemesh.quaternion );
+
+
+            facemesh.position.y += 8;
+            facemesh.position.z += 8;
+            facemesh.position.x += 0;
 
         }
     }
 
-    faceGeometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3).setUsage(THREE.DynamicDrawUsage));
-    faceGeometry.computeBoundingSphere();
-    faceGeometry.computeVertexNormals();
+
+    if ( faceResults && faceResults.faceBlendshapes && faceResults.faceBlendshapes.length > 0  ) {
+
+        const face = scene.getObjectByName( 'mesh_2' );
+
+        const faceBlendshapes = faceResults.faceBlendshapes[ 0 ].categories;
+
+        for ( const blendshape of faceBlendshapes ) {
+
+            const categoryName = blendshape.categoryName;
+            const score = blendshape.score;
+
+            const index = face.morphTargetDictionary[ blendshapesMap[  categoryName ] ];
+
+            if ( index !== undefined ) {
+
+                face.morphTargetInfluences[ index ] = score;
+
+            }
+
+        }
+
+    }
+
+
+    //faceGeometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3).setUsage(THREE.DynamicDrawUsage));
+    //faceGeometry.computeBoundingSphere();
+    //faceGeometry.computeVertexNormals();
 
 
     //		const delta = clock.getDelta();
