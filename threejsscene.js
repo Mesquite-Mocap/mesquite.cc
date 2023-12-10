@@ -99,7 +99,7 @@ async function predictFace() {
         faceResults = results;
         if (results.faceBlendshapes.length > 0) {
 
-            console.log(results.faceBlendshapes[0].categories);
+            //console.log(results.faceBlendshapes[0].categories);
             const face = scene.getObjectByName('mesh_2');
 
             const faceBlendshapes = results.faceBlendshapes[0].categories;
@@ -111,7 +111,7 @@ async function predictFace() {
 
                 const index = face.morphTargetDictionary[blendshapesMap[categoryName]];
 
-                console.log(index, categoryName, score);
+                //console.log(index, categoryName, score);
                 if (index !== undefined) {
 
                     face.morphTargetInfluences[index] = score;
@@ -126,7 +126,7 @@ async function predictFace() {
 
         const landmarks = results.faceLandmarks[0];
         if (landmarks) {
-            console.log(landmarks);
+            //console.log(landmarks);
 
             positions = new Float32Array(landmarks.length * 3);
 
