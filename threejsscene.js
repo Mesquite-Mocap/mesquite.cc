@@ -49,22 +49,22 @@ async function predictFace() {
 
 
             for (let i = 0; i < landmarks.length; i++) {
-                positions[i * 3] = (-landmarks[i].x)*100 + head.x;
-                positions[i * 3 + 1] = (-landmarks[i].y)*100 + head.y + 90;
-                positions[i * 3 + 2] = (-landmarks[i].z)*100 + head.z;
+                positions[i * 3] = (-landmarks[i].x) * 100 + head.x;
+                positions[i * 3 + 1] = (-landmarks[i].y) * 100 + head.y + 90;
+                positions[i * 3 + 2] = (-landmarks[i].z) * 100 + head.z;
             }
-          
 
-     
 
-         
-      
 
-   
 
-        
-         
-            
+
+
+
+
+
+
+
+
         }
     }
     window.requestAnimationFrame(predictFace);
@@ -76,10 +76,10 @@ async function predictFace() {
 import * as THREE from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc@latest/build/three.module.js";
 import Stats from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc@latest/build/stats.module.js";
 import { OrbitControls } from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc@latest/build/OrbitControls.js";
- import {GLTFLoader} from "./build/GLTFLoader.js";
+// import { GLTFLoader } from "./build/GLTFLoader.js";
 import { KTX2Loader } from "./build/KTX2Loader.js";
 import { MeshoptDecoder } from "./build/meshopt_decoder.module.js";
-// import { GLTFLoader } from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc@latest/build/GLTFLoader.js";
+import { GLTFLoader } from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc@latest/build/GLTFLoader.js";
 // import { KTX2Loader } from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc@latest/build/KTX2Loader.js";
 //import { MeshoptDecoder } from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc@latest/meshopt_decoder.module.js";
 import { FBXLoader } from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc@latest/build/FBXLoader.js";
@@ -167,25 +167,9 @@ function init() {
     const material = new THREE.PointsMaterial({ size: 2, sizeAttenuation: true, color: 0xFF0000 });
     const points = new THREE.Points(faceGeometry, material);
     scene.add(points);
-    
-    
-    // default face 
-
-    const ktx2Loader = new KTX2Loader()
-    .setTranscoderPath( './build/basis/' )
-    .detectSupport( renderer );
 
 
-    new GLTFLoader()
-    .setKTX2Loader( ktx2Loader )
-    .setMeshoptDecoder( MeshoptDecoder )
-    .load( 'facecap.glb', ( gltf ) => {
 
-        const mesh = gltf.scene.children[ 0 ];
-
-        scene.add( mesh );
-
-    } );
 
     // const dirLight = new THREE.DirectionalLight(0xffffff);
     const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
@@ -273,53 +257,6 @@ function init() {
         lineGeometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(line_tracker), 3));
         trackingLine = new THREE.Line(lineGeometry, lineMaterial);
         scene.add(trackingLine);
-
-
-
-        //     init_bvh();
-        //     animate_bvh();
-        // const loader_bvh = new BVHLoader();
-        //  loader_bvh.load( "models/fbx/Ri_BVH-3-standing.bvh", function ( result ) {
-        // // loader_bvh.load( "models/bvh/" + bvhfile, function ( result ) {
-
-        //     //console.log(result)
-        //     animationDuration = result.clip.duration
-
-        //     skeletonHelper_bvh = new THREE.SkeletonHelper( result.skeleton.bones[ 0 ] );
-        //     skeletonHelper_bvh.skeleton = result.skeleton; // allow animation mixer to bind to THREE.SkeletonHelper directly
-
-        //     const boneContainer = new THREE.Group();
-        //     boneContainer.add( result.skeleton.bones[ 0 ] );
-
-        //     scene_bvh.add( skeletonHelper_bvh );
-        //     scene_bvh.add( boneContainer );
-
-        //     // play animation
-        //     mixer_bvh = new THREE.AnimationMixer( skeletonHelper_bvh );
-        //     animation = mixer_bvh.clipAction( result.clip )
-        //     animation.setEffectiveWeight( 1.0 )
-        // // animation.setLoop(THREE.LoopOnce, 0);
-
-
-        //     animation.play()
-
-
-        // } );
-
-        // const jointInfo = [];
-        // const rootJoint = object.getObjectByName("mixamorigHips");
-        // if (rootJoint) {
-        //   console.log("Root joint found!", rootJoint);
-        //   traverseHierarchy(rootJoint, jointInfo, 0);
-
-        //   // Call generateBVH and save the BVH file here
-        //   const bvhContent = generateBVH(jointInfo);
-        //   const blob = new Blob([bvhContent], { type: "text/plain;charset=utf-8" });
-        //   saveAs(blob, "skeleton.bvh");
-        // } else {
-        //   console.error("Root joint not found!");
-        // }
-        // document.getElementById("stopRecording").disabled = false;
     });
 
     renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -331,24 +268,53 @@ function init() {
 
     container.appendChild(renderer.domElement);
 
-    const controls = new OrbitControls(camera, renderer.domElement);
-    controls.target.set(0, 100, 0);
-    controls.enableZoom = false;
+    // default face 
 
-    controls.update();
-
-    window.addEventListener("resize", onWindowResize, false);
-
-    // stats
-    // stats = new Stats();
-    //			container.appendChild( stats.dom );
+    const ktx2Loader = new KTX2Loader()
+        .setTranscoderPath('build/basis/')
+        .detectSupport(renderer);
 
 
 
-    document.getElementById("splashScreen").style.opacity = "0";
-    setTimeout(function () {
-        document.getElementById("splashScreen").style.display = "none";
-    }, 1000);
+    new GLTFLoader()
+        .setKTX2Loader(ktx2Loader)
+        .setMeshoptDecoder(MeshoptDecoder)
+        .load('./facecap.glb', (gltf) => {
+
+            const mesh1 = gltf.scene.children[0];
+            scene.add(mesh1);
+            // alert(mesh1);
+            var head = model.getObjectByName("mixamorigHead")
+            head = head.getWorldPosition();
+            // hide head color
+            //
+            // head.children[0].visible = false;
+
+            //head.visible = false;
+
+            //change head color
+            // head.children[0].material.color.set(0x999999);
+
+            mesh1.position.set(head.x, head.y+5, head.z + 8);
+            mesh1.scale.set(120, 120, 140);
+            mesh1.rotation.set(0, 0, 0);
+
+            mesh1.material = new THREE.MeshStandardMaterial({ color: 0xffffff, depthWrite: false });
+            mesh1.material.metalness = 0;
+
+            const controls = new OrbitControls(camera, renderer.domElement);
+            controls.target.set(0, 100, 0);
+            controls.enableZoom = false;
+
+            controls.update();
+
+            window.addEventListener("resize", onWindowResize, false);
+
+            document.getElementById("splashScreen").style.opacity = "0";
+            setTimeout(function () {
+                document.getElementById("splashScreen").style.display = "none";
+            }, 1000);
+        });
 }
 
 function onWindowResize() {
@@ -363,7 +329,7 @@ function onWindowResize() {
 function animate() {
     requestAnimationFrame(animate);
 
-    
+
     faceGeometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3).setUsage(THREE.DynamicDrawUsage));
     faceGeometry.computeBoundingSphere();
     faceGeometry.computeVertexNormals();
