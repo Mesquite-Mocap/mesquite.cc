@@ -47,7 +47,7 @@ import {
 	PointsMaterial,
 	PropertyBinding,
 	QuaternionKeyframeTrack,
-	RGBFormat,
+	//RGBFormat,
 	RepeatWrapping,
 	Skeleton,
 	SkinnedMesh,
@@ -2543,7 +2543,7 @@ var GLTFLoader = ( function () {
 			if ( textureDef.name ) texture.name = textureDef.name;
 
 			// When there is definitely no alpha channel in the texture, set RGBFormat to save space.
-			if ( ! hasAlpha ) texture.format = RGBFormat;
+			//if ( ! hasAlpha ) texture.format = RGBFormat;
 
 			var samplers = json.samplers || {};
 			var sampler = samplers[ textureDef.sampler ] || {};
