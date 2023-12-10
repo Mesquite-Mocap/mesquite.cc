@@ -375,16 +375,24 @@ function animate() {
     requestAnimationFrame(animate);
 
 
+
+
     if (model) {
-        var head = model.getObjectByName("mixamorigHead")
+        var head = model.getObjectByName("mixamorigHead");
+        head.traverse ( function (child) {
+           // if (child instanceof THREE.Mesh) {
+              child.scale.set(0.01, 0.01, 0.01);
+           // }
+          });
+
+
         if (head && facemesh) {
             head.getWorldPosition( facemesh.position );
             head.getWorldQuaternion( facemesh.quaternion );
 
-
-            facemesh.position.y += 8;
-            facemesh.position.z += 8;
-            facemesh.position.x += 0;
+          //  facemesh.position.y += 8;
+          //  facemesh.position.z += 8;
+          //  facemesh.position.x += 0;
 
         }
     }
