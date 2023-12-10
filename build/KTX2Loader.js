@@ -42,8 +42,8 @@ import {
 	RGFormat,
 	SRGBColorSpace,
 	UnsignedByteType,
-} from 'three';
-import { WorkerPool } from '../utils/WorkerPool.js';
+} from './three.module.js';
+import { WorkerPool } from './WorkerPool.js';
 import {
 	read,
 	KHR_DF_FLAG_ALPHA_PREMULTIPLIED,
@@ -68,8 +68,8 @@ import {
 	KHR_DF_PRIMARIES_UNSPECIFIED,
 	KHR_DF_PRIMARIES_BT709,
 	KHR_DF_PRIMARIES_DISPLAYP3
-} from '../libs/ktx-parse.module.js';
-import { ZSTDDecoder } from '../libs/zstddec.module.js';
+} from './ktx-parse.module.js';
+import { ZSTDDecoder } from './zstddec.module.js';
 
 const _taskCache = new WeakMap();
 
