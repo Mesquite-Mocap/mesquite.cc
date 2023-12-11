@@ -336,15 +336,17 @@ function init() {
     new GLTFLoader()
         .setKTX2Loader(ktx2Loader)
         .setMeshoptDecoder(MeshoptDecoder)
-        //.load('./facecap.glb', (gltf) => {
-        .load('./scene.glb', (gltf) => {
-                facemesh = gltf.scene.children[0];
+        .load('./facecap.glb', (gltf) => {
+            //.load('./scene.glb', (gltf) => {
+            facemesh = gltf.scene.children[0];
             scene.add(facemesh);
 
-            facemesh.scale.set(11, 10, 10.5);
+            // facemesh.scale.set(11, 10, 10.5);
+            facemesh.scale.set(120, 120, 92);
+
             facemesh.rotation.set(0, 0, 0);
 
-            facemesh.material = new THREE.MeshStandardMaterial({ color: 0x000000, depthWrite: true });
+            facemesh.material = new THREE.MeshStandardMaterial({ color: 0xffffff, depthWrite: false });
             facemesh.material.metalness = 1;
             facemesh.material.roughness = 5;
 
@@ -380,42 +382,42 @@ function animate() {
 
     if (model) {
         var head = model.getObjectByName("mixamorigHead");
-        head.traverse ( function (child) {
-           // if (child instanceof THREE.Mesh) {
-              child.scale.set(1, .7, .85);
-              child.color = 0x777777;
-           // }
-          });
+        head.traverse(function (child) {
+            // if (child instanceof THREE.Mesh) {
+            child.scale.set(1, .7, .5);
+            child.color = 0x777777;
+            // }
+        });
 
 
         if (head && facemesh) {
-            head.getWorldPosition( facemesh.position );
-            head.getWorldQuaternion( facemesh.quaternion );
+            head.getWorldPosition(facemesh.position);
+            head.getWorldQuaternion(facemesh.quaternion);
 
-          //  facemesh.position.y += 8;
-          //  facemesh.position.z += 8;
-          //  facemesh.position.x += 0;
+            //  facemesh.position.y += 8;
+            //  facemesh.position.z += 8;
+            //  facemesh.position.x += 0;
 
         }
     }
 
 
-    if ( faceResults && faceResults.faceBlendshapes && faceResults.faceBlendshapes.length > 0  ) {
+    if (faceResults && faceResults.faceBlendshapes && faceResults.faceBlendshapes.length > 0) {
 
-        const face = scene.getObjectByName( 'mesh_2' );
+        const face = scene.getObjectByName('mesh_2');
 
-        const faceBlendshapes = faceResults.faceBlendshapes[ 0 ].categories;
+        const faceBlendshapes = faceResults.faceBlendshapes[0].categories;
 
-        for ( const blendshape of faceBlendshapes ) {
+        for (const blendshape of faceBlendshapes) {
 
             const categoryName = blendshape.categoryName;
             const score = blendshape.score;
 
-            const index = face.morphTargetDictionary[ blendshapesMap[  categoryName ] ];
+            const index = face.morphTargetDictionary[blendshapesMap[categoryName]];
 
-            if ( index !== undefined ) {
+            if (index !== undefined) {
 
-                face.morphTargetInfluences[ index ] = score;
+                face.morphTargetInfluences[index] = score;
 
             }
 
