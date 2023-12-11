@@ -336,16 +336,17 @@ function init() {
     new GLTFLoader()
         .setKTX2Loader(ktx2Loader)
         .setMeshoptDecoder(MeshoptDecoder)
-        .load('./facecap.glb', (gltf) => {
-            facemesh = gltf.scene.children[0];
+        //.load('./facecap.glb', (gltf) => {
+        .load('./scene.glb', (gltf) => {
+                facemesh = gltf.scene.children[0];
             scene.add(facemesh);
 
-            facemesh.scale.set(120, 135, 135);
+            facemesh.scale.set(11, 10, 10.5);
             facemesh.rotation.set(0, 0, 0);
 
-            facemesh.material = new THREE.MeshStandardMaterial({ color: 0x000000, depthWrite: false });
-            facemesh.material.metalness = 10;
-            facemesh.material.roughness = 0.5;
+            facemesh.material = new THREE.MeshStandardMaterial({ color: 0x000000, depthWrite: true });
+            facemesh.material.metalness = 1;
+            facemesh.material.roughness = 5;
 
             const controls = new OrbitControls(camera, renderer.domElement);
             controls.target.set(0, 100, 0);
@@ -381,7 +382,8 @@ function animate() {
         var head = model.getObjectByName("mixamorigHead");
         head.traverse ( function (child) {
            // if (child instanceof THREE.Mesh) {
-              child.scale.set(0.01, 0.01, 0.01);
+              child.scale.set(1, .7, .85);
+              child.color = 0x777777;
            // }
           });
 

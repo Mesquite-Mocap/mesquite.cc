@@ -41,7 +41,7 @@ function updateTrackingLine(newHipPosition) {
 function handleWSMessage(obj) {
     // console.log(mac2Bones[obj.id].id);
 
-    console.log(obj)
+    //console.log(obj)
     var bone = obj.bone;
     var x = model.getObjectByName(rigPrefix + bone);
     // console.log(bone, x, lowerFirstLetter(bone));
