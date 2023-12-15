@@ -75,7 +75,35 @@ async function createFaceLandmarker() {
         runningMode: "VIDEO",
         numFaces: 1
     });
+
+    handLandmarkerLeft = await HandLandmarker.createFromOptions(filesetResolver, {
+        baseOptions: {
+            modelAssetPath: 'https://storage.googleapis.com/mediapipe-models/hand_landmark/hand_landmark.tflite',
+            delegate: "GPU"
+        },
+        maxNumHands: 1,
+        staticImageMode: false,
+        useGpu: true,
+        enableSegmentation: false,
+        enableClassification: false,
+        enableTracking: true
+    });
+
+    handLandmarkerRight = await HandLandmarker.createFromOptions(filesetResolver, {
+        baseOptions: {
+            modelAssetPath: 'https://storage.googleapis.com/mediapipe-models/hand_landmark/hand_landmark.tflite',
+            delegate: "GPU"
+        },
+        maxNumHands: 1,
+        staticImageMode: false,
+        useGpu: true,
+        enableSegmentation: false,
+        enableClassification: false,
+        enableTracking: true
+    });
+
 }
+
 createFaceLandmarker();
 
 document.getElementById("facevideo").addEventListener('play', predictFace);
