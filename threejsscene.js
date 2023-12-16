@@ -57,12 +57,20 @@ const blendshapesMap = {
 
 
 
-import vision from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.3";
-const { FaceLandmarker, FilesetResolver, DrawingUtils } = vision;
+import vision from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.0";
+//const { FaceLandmarker, HandLandmarker, FilesetResolver, DrawingUtils } = vision;
+
+import {
+    HandLandmarker,
+    FilesetResolver,
+    DrawingUtils,
+    FaceLandmarker,
+  } from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.0";
+
 
 async function createFaceLandmarker() {
     const filesetResolver = await FilesetResolver.forVisionTasks(
-        "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.3/wasm"
+        "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.0/wasm"
     );
     faceLandmarker = await FaceLandmarker.createFromOptions(filesetResolver, {
         baseOptions: {
@@ -76,31 +84,24 @@ async function createFaceLandmarker() {
         numFaces: 1
     });
 
-    handLandmarkerLeft = await HandLandmarker.createFromOptions(filesetResolver, {
+    handLandmarkerLeft = await HandLandmarker.createFromOptions(vision, {
         baseOptions: {
-            modelAssetPath: 'https://storage.googleapis.com/mediapipe-models/hand_landmark/hand_landmark.tflite',
-            delegate: "GPU"
+          modelAssetPath: `https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task`,
+          delegate: "GPU"
         },
-        maxNumHands: 1,
-        staticImageMode: false,
-        useGpu: true,
-        enableSegmentation: false,
-        enableClassification: false,
-        enableTracking: true
-    });
+        runningMode: "VIDEO",
+        numHands: 1
+      });
 
-    handLandmarkerRight = await HandLandmarker.createFromOptions(filesetResolver, {
+
+    handLandmarkerRight = await HandLandmarker.createFromOptions(vision, {
         baseOptions: {
-            modelAssetPath: 'https://storage.googleapis.com/mediapipe-models/hand_landmark/hand_landmark.tflite',
-            delegate: "GPU"
+          modelAssetPath: `https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task`,
+          delegate: "GPU"
         },
-        maxNumHands: 1,
-        staticImageMode: false,
-        useGpu: true,
-        enableSegmentation: false,
-        enableClassification: false,
-        enableTracking: true
-    });
+        runningMode: "VIDEO",
+        numHands: 1
+      });
 
 }
 
