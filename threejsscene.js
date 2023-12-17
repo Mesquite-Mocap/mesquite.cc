@@ -57,21 +57,25 @@ const blendshapesMap = {
 
 
 
-import vision from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.0";
+import vision from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.3";
 //const { FaceLandmarker, HandLandmarker, FilesetResolver, DrawingUtils } = vision;
 
+
+
+
 import {
-    HandLandmarker,
     FilesetResolver,
     DrawingUtils,
     FaceLandmarker,
-  } from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.0";
+    HandLandmarker
+} from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.3";
 
 
 async function createFaceLandmarker() {
-    const filesetResolver = await FilesetResolver.forVisionTasks(
-        "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.0/wasm"
+    var filesetResolver = await FilesetResolver.forVisionTasks(
+        "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.3/wasm"
     );
+
     faceLandmarker = await FaceLandmarker.createFromOptions(filesetResolver, {
         baseOptions: {
             modelAssetPath: 'https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task',
@@ -83,36 +87,54 @@ async function createFaceLandmarker() {
         runningMode: "VIDEO",
         numFaces: 1
     });
+}
 
-    handLandmarkerLeft = await HandLandmarker.createFromOptions(vision, {
-        baseOptions: {
-          modelAssetPath: `https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task`,
-          delegate: "GPU"
-        },
-        runningMode: "VIDEO",
-        numHands: 1
-      });
+async function createHandLandmarker() {
+    const vision = await FilesetResolver.forVisionTasks(
+        // path/to/wasm/root
+        "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm"
+    );
+    hands = await HandLandmarker.createFromOptions(
+        vision,
+        {
+            baseOptions: {
+                modelAssetPath: "https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task",
+            },
+            numHands: 2
+        });
 
-
-    handLandmarkerRight = await HandLandmarker.createFromOptions(vision, {
-        baseOptions: {
-          modelAssetPath: `https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task`,
-          delegate: "GPU"
-        },
-        runningMode: "VIDEO",
-        numHands: 1
-      });
+        await hands.setOptions({
+            runningMode: "VIDEO"
+        });
 
 }
 
+
+
+
 createFaceLandmarker();
+createHandLandmarker();
+
 
 document.getElementById("facevideo").addEventListener('play', predictFace);
 let lastVideoTime = -1;
 
+document.getElementById("rhvideo").addEventListener('play', predictRightHand);
+let lastVideoTime_rh = -1;
 
-
-
+async function predictRightHand() {
+    let results;
+    const video = document.getElementById("rhvideo");
+    let startTimeMs = performance.now();
+    if (lastVideoTime_rh !== video.currentTime) {
+        lastVideoTime_rh = video.currentTime;
+        results = hands.detectForVideo(video, startTimeMs);
+    }
+    if (results) {
+        console.log(results);
+    }
+    window.requestAnimationFrame(predictRightHand);
+}
 
 
 async function predictFace() {
@@ -167,22 +189,12 @@ async function predictFace() {
                 positions[i * 3 + 1] = (-landmarks[i].y) * 100 + 90;
                 positions[i * 3 + 2] = (-landmarks[i].z) * 100;
             }
-
-
-
-
-
-
-
-
-
-
-
-
         }
     }
     window.requestAnimationFrame(predictFace);
 }
+
+
 
 
 
@@ -589,7 +601,7 @@ function dothistoInit() {
     rightArm.quaternion.set(0, 0, 0, 1);
 }
 
-
+/*
 document.getElementById("bvhFileInput").addEventListener("change", function (event) {
     const file = event.target.files[0];
     if (!file) {
@@ -603,6 +615,7 @@ document.getElementById("bvhFileInput").addEventListener("change", function (eve
     };
     reader.readAsText(file);
 });
+*/
 
 function loadAndPlayBVH(bvhData) {
     // console.log(bvhData);

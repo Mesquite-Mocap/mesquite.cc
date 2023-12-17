@@ -20,7 +20,6 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 
-
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
 </head>
@@ -32,9 +31,10 @@ var positions;
 var faceGeometry;
 var facemesh;
 var faceLandmarker;
-var handLandmarkerLeft;
-var handLandmarkerRight;
+var hands;
 var faceResults = null;
+var lhResults = null;
+var rhResults = null;
 
 let camera, scene, renderer, stats;
 
@@ -349,9 +349,13 @@ let camera, scene, renderer, stats;
 
           <h4>Right Hand</h4>
           <canvas id="rhcanvas" width="320" height="240" style="margin:auto"></canvas>
+          <video id="rhvideo" width="320" height="240" style=""></video>
+          <canvas id="rhcanvasResult" width="640" height="480" style="margin:auto"></canvas>
 
           <h4>Left Hand</h4>
           <canvas id="lhcanvas" width="320" height="240" style="margin:auto"></canvas>
+          <video id="lhvideo" width="320" height="240" style=""></video>
+          <canvas id="lhcanvasResult" width="640" height="480" style="margin:auto"></canvas>
         </div>
 
 

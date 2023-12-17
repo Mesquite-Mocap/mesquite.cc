@@ -89,9 +89,18 @@ async function readLoop() {
   }
 }
 
+const mpHands = window;
+const Hands = mpHands.Hands;
+
+function onHResults(results) {
+  console.log(results);
+}
 
 
 var faceVideoOn = false;
+var rhVideoOn = false;
+var lhVideoOn = false;
+
 function logData(line) {
  try{
     var x = JSON.parse(line);
@@ -119,10 +128,18 @@ function logData(line) {
       var canvas = document.getElementById("rhcanvas");
       var ctx = canvas.getContext("2d");
       var img = document.createElement("img");
-      img.onload = function() {
+      img.onload = async function() {
         ctx.drawImage(img, 0, 0);
       }
       img.src = x.rhand;
+      if(!rhVideoOn){
+        rhVideoOn = true;
+        var stream = canvas.captureStream();
+        document.getElementById("rhvideo").srcObject = stream;
+        document.getElementById("rhvideo").play();
+        document.getElementById("rhvideo").muted = true;
+      }
+
       return;
     }
     if(x.lhand){
@@ -133,6 +150,13 @@ function logData(line) {
         ctx.drawImage(img, 0, 0);
       }
       img.src = x.lhand;
+      if(!lhVideoOn){
+        lhVideoOn = true;
+        var stream = canvas.captureStream();
+        document.getElementById("lhvideo").srcObject = stream;
+        document.getElementById("lhvideo").play();
+        document.getElementById("lhvideo").muted = true;
+      }
       return;
     }
 
