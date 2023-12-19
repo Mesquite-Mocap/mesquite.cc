@@ -89,15 +89,23 @@ async function readLoop() {
   }
 }
 
+const mpHands = window;
+const Hands = mpHands.Hands;
+
+function onHResults(results) {
+  console.log(results);
+}
+
+
+var faceVideoOn = false;
+var rhVideoOn = false;
+var lhVideoOn = false;
+
 function logData(line) {
-  //console.log(line);
  try{
     var x = JSON.parse(line);
     //console.log(x);
     if(x.face){
-      //alert(x.face);
-      // document.getElementById("face").src = x.face;
-      // write to canvas
       var canvas = document.getElementById("facecanvas");
       var ctx = canvas.getContext("2d");
       var img = document.createElement("img");
@@ -105,8 +113,53 @@ function logData(line) {
         ctx.drawImage(img, 0, 0);
       }
       img.src = x.face;
+      // capture stream
+      if(!faceVideoOn){
+        faceVideoOn = true;
+        var stream = canvas.captureStream();
+        document.getElementById("facevideo").srcObject = stream;
+        document.getElementById("facevideo").play();
+        document.getElementById("facevideo").muted = true;
+      }
+
       return;
     }
+    if(x.rhand){
+      var canvas = document.getElementById("rhcanvas");
+      var ctx = canvas.getContext("2d");
+      var img = document.createElement("img");
+      img.onload = async function() {
+        ctx.drawImage(img, 0, 0);
+      }
+      img.src = x.rhand;
+      if(!rhVideoOn){
+        rhVideoOn = true;
+        var stream = canvas.captureStream();
+        document.getElementById("rhvideo").srcObject = stream;
+        document.getElementById("rhvideo").play();
+        document.getElementById("rhvideo").muted = true;
+      }
+
+      return;
+    }
+    if(x.lhand){
+      var canvas = document.getElementById("lhcanvas");
+      var ctx = canvas.getContext("2d");
+      var img = document.createElement("img");
+      img.onload = function() {
+        ctx.drawImage(img, 0, 0);
+      }
+      img.src = x.lhand;
+      if(!lhVideoOn){
+        lhVideoOn = true;
+        var stream = canvas.captureStream();
+        document.getElementById("lhvideo").srcObject = stream;
+        document.getElementById("lhvideo").play();
+        document.getElementById("lhvideo").muted = true;
+      }
+      return;
+    }
+
     handleWSMessage(x);
  }
     catch(e){

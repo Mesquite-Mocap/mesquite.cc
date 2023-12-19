@@ -1,15 +1,220 @@
+
+const blendshapesMap = {
+    // '_neutral': '',
+    'browDownLeft': 'browDown_L',
+    'browDownRight': 'browDown_R',
+    'browInnerUp': 'browInnerUp',
+    'browOuterUpLeft': 'browOuterUp_L',
+    'browOuterUpRight': 'browOuterUp_R',
+    'cheekPuff': 'cheekPuff',
+    'cheekSquintLeft': 'cheekSquint_L',
+    'cheekSquintRight': 'cheekSquint_R',
+    'eyeBlinkLeft': 'eyeBlink_L',
+    'eyeBlinkRight': 'eyeBlink_R',
+    'eyeLookDownLeft': 'eyeLookDown_L',
+    'eyeLookDownRight': 'eyeLookDown_R',
+    'eyeLookInLeft': 'eyeLookIn_L',
+    'eyeLookInRight': 'eyeLookIn_R',
+    'eyeLookOutLeft': 'eyeLookOut_L',
+    'eyeLookOutRight': 'eyeLookOut_R',
+    'eyeLookUpLeft': 'eyeLookUp_L',
+    'eyeLookUpRight': 'eyeLookUp_R',
+    'eyeSquintLeft': 'eyeSquint_L',
+    'eyeSquintRight': 'eyeSquint_R',
+    'eyeWideLeft': 'eyeWide_L',
+    'eyeWideRight': 'eyeWide_R',
+    'jawForward': 'jawForward',
+    'jawLeft': 'jawLeft',
+    'jawOpen': 'jawOpen',
+    'jawRight': 'jawRight',
+    'mouthClose': 'mouthClose',
+    'mouthDimpleLeft': 'mouthDimple_L',
+    'mouthDimpleRight': 'mouthDimple_R',
+    'mouthFrownLeft': 'mouthFrown_L',
+    'mouthFrownRight': 'mouthFrown_R',
+    'mouthFunnel': 'mouthFunnel',
+    'mouthLeft': 'mouthLeft',
+    'mouthLowerDownLeft': 'mouthLowerDown_L',
+    'mouthLowerDownRight': 'mouthLowerDown_R',
+    'mouthPressLeft': 'mouthPress_L',
+    'mouthPressRight': 'mouthPress_R',
+    'mouthPucker': 'mouthPucker',
+    'mouthRight': 'mouthRight',
+    'mouthRollLower': 'mouthRollLower',
+    'mouthRollUpper': 'mouthRollUpper',
+    'mouthShrugLower': 'mouthShrugLower',
+    'mouthShrugUpper': 'mouthShrugUpper',
+    'mouthSmileLeft': 'mouthSmile_L',
+    'mouthSmileRight': 'mouthSmile_R',
+    'mouthStretchLeft': 'mouthStretch_L',
+    'mouthStretchRight': 'mouthStretch_R',
+    'mouthUpperUpLeft': 'mouthUpperUp_L',
+    'mouthUpperUpRight': 'mouthUpperUp_R',
+    'noseSneerLeft': 'noseSneer_L',
+    'noseSneerRight': 'noseSneer_R',
+    // '': 'tongueOut'
+};
+
+
+
+import vision from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.3";
+//const { FaceLandmarker, HandLandmarker, FilesetResolver, DrawingUtils } = vision;
+
+
+
+
+import {
+    FilesetResolver,
+    DrawingUtils,
+    FaceLandmarker,
+    HandLandmarker
+} from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.3";
+
+
+async function createFaceLandmarker() {
+    var filesetResolver = await FilesetResolver.forVisionTasks(
+        "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.3/wasm"
+    );
+
+    faceLandmarker = await FaceLandmarker.createFromOptions(filesetResolver, {
+        baseOptions: {
+            modelAssetPath: 'https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task',
+            delegate: "GPU"
+        },
+        outputFaceBlendshapes: true,
+        outputFaceGeometry: true,
+        outputFacialTransformationMatrices: true,
+        runningMode: "VIDEO",
+        numFaces: 1
+    });
+}
+
+async function createHandLandmarker() {
+    const vision = await FilesetResolver.forVisionTasks(
+        // path/to/wasm/root
+        "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm"
+    );
+    hands = await HandLandmarker.createFromOptions(
+        vision,
+        {
+            baseOptions: {
+                modelAssetPath: "https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task",
+            },
+            numHands: 2
+        });
+
+        await hands.setOptions({
+            runningMode: "VIDEO"
+        });
+
+}
+
+
+
+
+createFaceLandmarker();
+createHandLandmarker();
+
+
+document.getElementById("facevideo").addEventListener('play', predictFace);
+let lastVideoTime = -1;
+
+document.getElementById("rhvideo").addEventListener('play', predictRightHand);
+let lastVideoTime_rh = -1;
+
+async function predictRightHand() {
+    let results;
+    const video = document.getElementById("rhvideo");
+    let startTimeMs = performance.now();
+    if (lastVideoTime_rh !== video.currentTime) {
+        lastVideoTime_rh = video.currentTime;
+        results = hands.detectForVideo(video, startTimeMs);
+    }
+    if (results) {
+        console.log(results);
+    }
+    window.requestAnimationFrame(predictRightHand);
+}
+
+
+async function predictFace() {
+    let results;
+    const video = document.getElementById("facevideo");
+    let startTimeMs = performance.now();
+    if (lastVideoTime !== video.currentTime) {
+        lastVideoTime = video.currentTime;
+        results = faceLandmarker.detectForVideo(video, startTimeMs);
+    }
+    if (results) {
+
+        faceResults = results;
+        if (results.faceBlendshapes.length > 0) {
+
+            //console.log(results.faceBlendshapes[0].categories);
+            const face = scene.getObjectByName('mesh_2');
+
+            const faceBlendshapes = results.faceBlendshapes[0].categories;
+
+            for (const blendshape of faceBlendshapes) {
+
+                const categoryName = blendshape.categoryName;
+                const score = blendshape.score;
+
+                const index = face.morphTargetDictionary[blendshapesMap[categoryName]];
+
+                //console.log(index, categoryName, score);
+                if (index !== undefined) {
+
+                    face.morphTargetInfluences[index] = score;
+
+                }
+
+            }
+
+            renderer.render(scene, camera);
+
+        }
+
+        const landmarks = results.faceLandmarks[0];
+        if (landmarks) {
+            //console.log(landmarks);
+
+            positions = new Float32Array(landmarks.length * 3);
+
+
+
+
+            for (let i = 0; i < landmarks.length; i++) {
+                positions[i * 3] = (-landmarks[i].x) * 100
+                positions[i * 3 + 1] = (-landmarks[i].y) * 100 + 90;
+                positions[i * 3 + 2] = (-landmarks[i].z) * 100;
+            }
+        }
+    }
+    window.requestAnimationFrame(predictFace);
+}
+
+
+
+
+
+
 import * as THREE from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc@latest/build/three.module.js";
 import Stats from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc@latest/build/stats.module.js";
 import { OrbitControls } from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc@latest/build/OrbitControls.js";
+// import { GLTFLoader } from "./build/GLTFLoader.js";
+// import { KTX2Loader } from "./build/KTX2Loader.js";
+// import { MeshoptDecoder } from "./build/meshopt_decoder.module.js";
+import { GLTFLoader } from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc/build/GLTFLoader.js";
+import { KTX2Loader } from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc/build/KTX2Loader.js";
+import { MeshoptDecoder } from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc@latest/build/meshopt_decoder.module.js";
 import { FBXLoader } from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc@latest/build/FBXLoader.js";
+//import { FBXLoader } from "./build/FBXLoader.js";
 import { BVHLoader } from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc@latest/build/BVHLoader.js";
 // import {BVHLoader} from "./build/BVHLoader.js"
 
 
 const clock_bvh = new THREE.Clock();
-
-let camera, scene, renderer, stats;
-
 const clock = new THREE.Clock();
 
 let mixer;
@@ -81,6 +286,15 @@ function init() {
     hemiLight.position.set(0, 200, 0);
     scene.add(hemiLight);
 
+    // add face point cloud
+    faceGeometry = new THREE.BufferGeometry();
+    const material = new THREE.PointsMaterial({ size: 2, sizeAttenuation: true, color: 0xFF0000 });
+    const points = new THREE.Points(faceGeometry, material);
+    scene.add(points);
+
+
+
+
     // const dirLight = new THREE.DirectionalLight(0xffffff);
     const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
     dirLight.position.set(0, 200, 100);
@@ -91,41 +305,16 @@ function init() {
     dirLight.shadow.camera.right = 120;
     scene.add(dirLight);
 
-    //  scene.add( new THREE.CameraHelper( dirLight.shadow.camera ) );
-
-    // ground
-    // const textureLoader = new THREE.TextureLoader();
-    // const groundTexture = textureLoader.load('./models/TEXTURE.jpg'); // Use the path to your converted image
-    // groundTexture.wrapS = groundTexture.wrapT = THREE.RepeatWrapping;
-    // groundTexture.repeat.set(25, 25);
-    // groundTexture.anisotropy = 16;
-    // const occlusionMap = textureLoader.load('./models/A0.jpg');
-    // const roughnessMap = textureLoader.load('./models/ROUGHNESSMAP.jpg');
-    // const normalMap = textureLoader.load('./models/NORMALMAP.jpg');
-    // // const heightMap = textureLoader.load('path/to/height-texture.jpg');
-
-    // const groundMaterial = new THREE.MeshStandardMaterial({
-    //     map: groundTexture,
-    //     aoMap: occlusionMap,
-    //     roughnessMap: roughnessMap,
-    //     normalMap: normalMap,
-    //     // displacementMap: heightMap,
-    //     // displacementScale: 1.0, // Adjust this value to control the height effect
-    // });
-
     const mesh = new THREE.Mesh(
-        new THREE.PlaneBufferGeometry(4000, 4000),
-        new THREE.MeshStandardMaterial({ color: 0x999999, depthWrite: false })
-    );
-    // const mesh = new THREE.Mesh(
-    //     new THREE.PlaneBufferGeometry(4000, 4000),
-    //     groundMaterial
-    // );
 
+        new THREE.PlaneGeometry(4000, 4000),
+        new THREE.MeshStandardMaterial({ color: 0xffffff, depthWrite: false })
+    );
 
     mesh.rotation.x = - Math.PI / 2;
     mesh.receiveShadow = true;
     scene.add(mesh);
+
 
     const grid = new THREE.GridHelper(4000, 80, 0x000000, 0x000000);
     grid.material.opacity = 0.2;
@@ -152,7 +341,6 @@ function init() {
 
         object.traverse(function (child) {
             if (child.isMesh) {
-
                 child.castShadow = true;
                 child.receiveShadow = true;
 
@@ -163,57 +351,10 @@ function init() {
 
         var lineMaterial = new THREE.LineBasicMaterial({ color: 0xff0000 });
         var lineGeometry = new THREE.BufferGeometry();
-        
+
         lineGeometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(line_tracker), 3));
         trackingLine = new THREE.Line(lineGeometry, lineMaterial);
         scene.add(trackingLine);
-        
-        
-
-        //     init_bvh();
-        //     animate_bvh();
-        // const loader_bvh = new BVHLoader();
-        //  loader_bvh.load( "models/fbx/Ri_BVH-3-standing.bvh", function ( result ) {
-        // // loader_bvh.load( "models/bvh/" + bvhfile, function ( result ) {
-
-        //     //console.log(result)
-        //     animationDuration = result.clip.duration
-
-        //     skeletonHelper_bvh = new THREE.SkeletonHelper( result.skeleton.bones[ 0 ] );
-        //     skeletonHelper_bvh.skeleton = result.skeleton; // allow animation mixer to bind to THREE.SkeletonHelper directly
-
-        //     const boneContainer = new THREE.Group();
-        //     boneContainer.add( result.skeleton.bones[ 0 ] );
-
-        //     scene_bvh.add( skeletonHelper_bvh );
-        //     scene_bvh.add( boneContainer );
-
-        //     // play animation
-        //     mixer_bvh = new THREE.AnimationMixer( skeletonHelper_bvh );
-        //     animation = mixer_bvh.clipAction( result.clip )
-        //     animation.setEffectiveWeight( 1.0 )
-        // // animation.setLoop(THREE.LoopOnce, 0);
-
-
-        //     animation.play()
-
-
-        // } );
-
-        // const jointInfo = [];
-        // const rootJoint = object.getObjectByName("mixamorigHips");
-        // if (rootJoint) {
-        //   console.log("Root joint found!", rootJoint);
-        //   traverseHierarchy(rootJoint, jointInfo, 0);
-
-        //   // Call generateBVH and save the BVH file here
-        //   const bvhContent = generateBVH(jointInfo);
-        //   const blob = new Blob([bvhContent], { type: "text/plain;charset=utf-8" });
-        //   saveAs(blob, "skeleton.bvh");
-        // } else {
-        //   console.error("Root joint not found!");
-        // }
-        // document.getElementById("stopRecording").disabled = false;
     });
 
     renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -225,24 +366,44 @@ function init() {
 
     container.appendChild(renderer.domElement);
 
-    const controls = new OrbitControls(camera, renderer.domElement);
-    controls.target.set(0, 100, 0);
-    controls.enableZoom = false;
+    // default face 
 
-    controls.update();
-
-    window.addEventListener("resize", onWindowResize, false);
-
-    // stats
-    // stats = new Stats();
-    //			container.appendChild( stats.dom );
+    const ktx2Loader = new KTX2Loader()
+        .setTranscoderPath('build/basis/')
+        .detectSupport(renderer);
 
 
 
-    document.getElementById("splashScreen").style.opacity = "0";
-    setTimeout(function () {
-        document.getElementById("splashScreen").style.display = "none";
-    }, 1000);
+    new GLTFLoader()
+        .setKTX2Loader(ktx2Loader)
+        .setMeshoptDecoder(MeshoptDecoder)
+        .load('./facecap.glb', (gltf) => {
+            //.load('./scene.glb', (gltf) => {
+            facemesh = gltf.scene.children[0];
+            scene.add(facemesh);
+
+            // facemesh.scale.set(11, 10, 10.5);
+            facemesh.scale.set(120, 120, 92);
+
+            facemesh.rotation.set(0, 0, 0);
+
+            facemesh.material = new THREE.MeshStandardMaterial({ color: 0xffffff, depthWrite: false });
+            facemesh.material.metalness = 1;
+            facemesh.material.roughness = 5;
+
+            const controls = new OrbitControls(camera, renderer.domElement);
+            controls.target.set(0, 100, 0);
+            controls.enableZoom = false;
+
+            controls.update();
+
+            window.addEventListener("resize", onWindowResize, false);
+
+            document.getElementById("splashScreen").style.opacity = "0";
+            setTimeout(function () {
+                document.getElementById("splashScreen").style.display = "none";
+            }, 3000);
+        });
 }
 
 function onWindowResize() {
@@ -256,6 +417,60 @@ function onWindowResize() {
 
 function animate() {
     requestAnimationFrame(animate);
+
+
+
+
+    if (model) {
+        var head = model.getObjectByName("mixamorigHead");
+        head.traverse(function (child) {
+            // if (child instanceof THREE.Mesh) {
+            child.scale.set(1, .7, .5);
+            child.color = 0x777777;
+            // }
+        });
+
+
+        if (head && facemesh) {
+            head.getWorldPosition(facemesh.position);
+            head.getWorldQuaternion(facemesh.quaternion);
+
+            //  facemesh.position.y += 8;
+            //  facemesh.position.z += 8;
+            //  facemesh.position.x += 0;
+
+        }
+    }
+
+
+    if (faceResults && faceResults.faceBlendshapes && faceResults.faceBlendshapes.length > 0) {
+
+        const face = scene.getObjectByName('mesh_2');
+
+        const faceBlendshapes = faceResults.faceBlendshapes[0].categories;
+
+        for (const blendshape of faceBlendshapes) {
+
+            const categoryName = blendshape.categoryName;
+            const score = blendshape.score;
+
+            const index = face.morphTargetDictionary[blendshapesMap[categoryName]];
+
+            if (index !== undefined) {
+
+                face.morphTargetInfluences[index] = score;
+
+            }
+
+        }
+
+    }
+
+
+    //faceGeometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3).setUsage(THREE.DynamicDrawUsage));
+    //faceGeometry.computeBoundingSphere();
+    //faceGeometry.computeVertexNormals();
+
 
     //		const delta = clock.getDelta();
 
@@ -278,6 +493,7 @@ function animate_bvh() {
     requestAnimationFrame(animate_bvh);
 
     const delta = clock_bvh.getDelta();
+
 
     if (mixer_bvh) {
         mixer_bvh.update(delta);
@@ -374,6 +590,7 @@ function animate_bvh() {
                 // console.log(child);
             }
             renderer.render(scene, camera);
+
             // stats.update();
         }
     });
@@ -384,7 +601,7 @@ function dothistoInit() {
     rightArm.quaternion.set(0, 0, 0, 1);
 }
 
-
+/*
 document.getElementById("bvhFileInput").addEventListener("change", function (event) {
     const file = event.target.files[0];
     if (!file) {
@@ -398,6 +615,7 @@ document.getElementById("bvhFileInput").addEventListener("change", function (eve
     };
     reader.readAsText(file);
 });
+*/
 
 function loadAndPlayBVH(bvhData) {
     // console.log(bvhData);
@@ -427,5 +645,3 @@ function loadAndPlayBVH(bvhData) {
     // console.log(animation);
     animation.play();
 }
-
-

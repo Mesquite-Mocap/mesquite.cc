@@ -12,7 +12,6 @@
   <script src="mappings.js"></script>
   <script src="quaternion.min.js"></script>
   <script src="three.min.js"></script>
-
   <script src="bvh_converter.js"></script>
 
   <!-- <script src="https://cdn.jsdelivr.net/npm/kalmanjs@1.1.0/lib/kalman.js"></script> -->
@@ -22,13 +21,25 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/kalmanjs@1.1.0/lib/kalman.min.js"></script>
 
-
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
 </head>
 
 <body>
   <script>
+// face points
+var positions;
+var faceGeometry;
+var facemesh;
+var faceLandmarker;
+var hands;
+var faceResults = null;
+var lhResults = null;
+var rhResults = null;
+
+let camera, scene, renderer, stats;
+
+
 
     var statsObjs = {
       "head": {
@@ -333,12 +344,19 @@
         <div id="ext" >
           <h4>Face</h4>
           <canvas id="facecanvas" width="320" height="240" style="margin:auto"></canvas>
+          <video id="facevideo" width="320" height="240" style=""></video>
+          <canvas id="facecanvasResult" width="640" height="480" style="margin:auto"></canvas>
+
 
           <h4>Right Hand</h4>
           <canvas id="rhcanvas" width="320" height="240" style="margin:auto"></canvas>
+          <video id="rhvideo" width="320" height="240" style=""></video>
+          <canvas id="rhcanvasResult" width="640" height="480" style="margin:auto"></canvas>
 
           <h4>Left Hand</h4>
           <canvas id="lhcanvas" width="320" height="240" style="margin:auto"></canvas>
+          <video id="lhvideo" width="320" height="240" style=""></video>
+          <canvas id="lhcanvasResult" width="640" height="480" style="margin:auto"></canvas>
         </div>
 
 
