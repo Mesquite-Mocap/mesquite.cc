@@ -397,7 +397,7 @@ function init() {
             facemesh = gltf.scene.children[0];
             scene.add(facemesh);
 
-            // facemesh.scale.set(11, 10, 10.5);
+             //facemesh.scale.set(11, 10, 10.5);
             facemesh.scale.set(120, 120, 92);
 
             facemesh.rotation.set(0, 0, 0);
