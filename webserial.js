@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
   butConnect.addEventListener('click', clickConnect);
 
   if (!('serial' in navigator)) {
-   alert("Web Serial not supported. Please use Chrome 78+");
+    alert("Web Serial not supported. Please use Chrome 78+");
   }
 
 });
@@ -41,7 +41,7 @@ async function connect() {
     .pipeThrough(new TransformStream(new LineBreakTransformer()));
 
   reader = inputStream.getReader();
-  readLoop().catch(async function(error) {
+  readLoop().catch(async function (error) {
     toggleUIConnected(false);
     await disconnect();
   });
@@ -54,7 +54,7 @@ async function connect() {
 async function disconnect() {
   if (reader) {
     await reader.cancel();
-    await inputDone.catch(() => {});
+    await inputDone.catch(() => { });
     reader = null;
     inputDone = null;
   }
@@ -77,7 +77,7 @@ async function disconnect() {
  */
 async function readLoop() {
   while (true) {
-    const {value, done} = await reader.read();
+    const { value, done } = await reader.read();
     if (value) {
       let plotdata;
     }
@@ -102,19 +102,20 @@ var rhVideoOn = false;
 var lhVideoOn = false;
 
 function logData(line) {
- try{
+  //console.log(line);
+  try {
     var x = JSON.parse(line);
-    //console.log(x);
-    if(x.face){
+    console.log(x);
+    if (x.face) {
       var canvas = document.getElementById("facecanvas");
       var ctx = canvas.getContext("2d");
       var img = document.createElement("img");
-      img.onload = function() {
+      img.onload = function () {
         ctx.drawImage(img, 0, 0);
       }
       img.src = x.face;
       // capture stream
-      if(!faceVideoOn){
+      if (!faceVideoOn) {
         faceVideoOn = true;
         var stream = canvas.captureStream();
         document.getElementById("facevideo").srcObject = stream;
@@ -124,47 +125,46 @@ function logData(line) {
 
       return;
     }
-    if(x.rhand){
-      var canvas = document.getElementById("rhcanvas");
-      var ctx = canvas.getContext("2d");
-      var img = document.createElement("img");
-      img.onload = async function() {
-        ctx.drawImage(img, 0, 0);
+    if (x.hand) {
+      if (x.hand == "right") {
+        var canvas = document.getElementById("rhcanvas");
+        var ctx = canvas.getContext("2d");
+        var img = document.createElement("img");
+        img.onload = async function () {
+          ctx.drawImage(img, 0, 0);
+        }
+        img.src = x.image;
+        if (!rhVideoOn) {
+          rhVideoOn = true;
+          var stream = canvas.captureStream();
+          document.getElementById("rhvideo").srcObject = stream;
+          document.getElementById("rhvideo").play();
+          document.getElementById("rhvideo").muted = true;
+        }
       }
-      img.src = x.rhand;
-      if(!rhVideoOn){
-        rhVideoOn = true;
-        var stream = canvas.captureStream();
-        document.getElementById("rhvideo").srcObject = stream;
-        document.getElementById("rhvideo").play();
-        document.getElementById("rhvideo").muted = true;
+      else if (x.hand == "left") {
+        var canvas = document.getElementById("lhcanvas");
+        var ctx = canvas.getContext("2d");
+        var img = document.createElement("img");
+        img.onload = function () {
+          ctx.drawImage(img, 0, 0);
+        }
+        img.src = x.image;
+        if (!lhVideoOn) {
+          lhVideoOn = true;
+          var stream = canvas.captureStream();
+          document.getElementById("lhvideo").srcObject = stream;
+          document.getElementById("lhvideo").play();
+          document.getElementById("lhvideo").muted = true;
+        }
       }
-
       return;
     }
-    if(x.lhand){
-      var canvas = document.getElementById("lhcanvas");
-      var ctx = canvas.getContext("2d");
-      var img = document.createElement("img");
-      img.onload = function() {
-        ctx.drawImage(img, 0, 0);
-      }
-      img.src = x.lhand;
-      if(!lhVideoOn){
-        lhVideoOn = true;
-        var stream = canvas.captureStream();
-        document.getElementById("lhvideo").srcObject = stream;
-        document.getElementById("lhvideo").play();
-        document.getElementById("lhvideo").muted = true;
-      }
-      return;
-    }
-
     handleWSMessage(x);
- }
-    catch(e){
+  }
+  catch (e) {
     console.log(e);
-    }
+  }
 
 }
 
@@ -175,7 +175,7 @@ function enableStyleSheet(node, enabled) {
 
 async function reset() {
   // Clear the data
-  
+
 }
 
 

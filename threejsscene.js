@@ -132,6 +132,21 @@ async function predictRightHand() {
     }
     if (results) {
         console.log(results);
+        const landmarks = results.landmarks
+        if (landmarks) {
+            //console.log(landmarks);
+
+            positionsR = new Float32Array(landmarks.length * 3);
+
+
+
+
+            for (let i = 0; i < landmarks.length; i++) {
+                positionsR[i * 3] = (-landmarks[i].x) * 100
+                positionsR[i * 3 + 1] = (-landmarks[i].y) * 100 + 90;
+                positionsR[i * 3 + 2] = (-landmarks[i].z) * 100;
+            }
+        }
     }
     window.requestAnimationFrame(predictRightHand);
 }
@@ -175,21 +190,7 @@ async function predictFace() {
 
         }
 
-        const landmarks = results.faceLandmarks[0];
-        if (landmarks) {
-            //console.log(landmarks);
 
-            positions = new Float32Array(landmarks.length * 3);
-
-
-
-
-            for (let i = 0; i < landmarks.length; i++) {
-                positions[i * 3] = (-landmarks[i].x) * 100
-                positions[i * 3 + 1] = (-landmarks[i].y) * 100 + 90;
-                positions[i * 3 + 2] = (-landmarks[i].z) * 100;
-            }
-        }
     }
     window.requestAnimationFrame(predictFace);
 }
@@ -292,6 +293,20 @@ function init() {
     const points = new THREE.Points(faceGeometry, material);
     scene.add(points);
 
+    // add hand point cloud
+    leftHandGeometry = new THREE.BufferGeometry();
+    const material2 = new THREE.PointsMaterial({ size: 12, sizeAttenuation: true, color: 0x0000FF });
+    const points2 = new THREE.Points(leftHandGeometry, material2);
+    scene.add(points2);
+
+    rightHandGeometry = new THREE.BufferGeometry();
+    const material3 = new THREE.PointsMaterial({ size: 12, sizeAttenuation: true, color: 0x00FF00 });
+    const points3 = new THREE.Points(rightHandGeometry, material3);
+    scene.add(points3);
+
+
+
+
 
 
 
@@ -382,7 +397,7 @@ function init() {
             facemesh = gltf.scene.children[0];
             scene.add(facemesh);
 
-            // facemesh.scale.set(11, 10, 10.5);
+             //facemesh.scale.set(11, 10, 10.5);
             facemesh.scale.set(120, 120, 92);
 
             facemesh.rotation.set(0, 0, 0);
@@ -470,6 +485,15 @@ function animate() {
     //faceGeometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3).setUsage(THREE.DynamicDrawUsage));
     //faceGeometry.computeBoundingSphere();
     //faceGeometry.computeVertexNormals();
+
+    leftHandGeometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3).setUsage(THREE.DynamicDrawUsage));
+    leftHandGeometry.computeBoundingSphere();
+    leftHandGeometry.computeVertexNormals();
+
+    rightHandGeometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3).setUsage(THREE.DynamicDrawUsage));
+    rightHandGeometry.computeBoundingSphere();
+    rightHandGeometry.computeVertexNormals();
+
 
 
     //		const delta = clock.getDelta();
