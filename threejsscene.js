@@ -352,9 +352,20 @@ function init() {
         }
 
         mixer = new THREE.AnimationMixer(object);
-
-
+        // console.log(mixer);
         object.traverse(function (child) {
+            // console.log(child);
+            if(child.name === "mixamorigHead"){
+                console.log(child);
+                child.traverse(function (child1) {
+                    // console.log(child);
+                    // if (child instanceof THREE.Mesh) {
+                    child1.scale.set(0.1, .7, .5);
+                    child1.color = 0x777777;
+                    // }
+                });
+                
+            }
             if (child.isMesh) {
                 child.castShadow = true;
                 child.receiveShadow = true;
@@ -395,10 +406,11 @@ function init() {
         .load('./facecap.glb', (gltf) => {
             //.load('./scene.glb', (gltf) => {
             facemesh = gltf.scene.children[0];
+            console.log(facemesh.position);
             scene.add(facemesh);
 
              //facemesh.scale.set(11, 10, 10.5);
-            facemesh.scale.set(120, 120, 92);
+            facemesh.scale.set(120, 120, 120);
 
             facemesh.rotation.set(0, 0, 0);
 
@@ -438,20 +450,22 @@ function animate() {
 
     if (model) {
         var head = model.getObjectByName("mixamorigHead");
-        head.traverse(function (child) {
-            // if (child instanceof THREE.Mesh) {
-            child.scale.set(1, .7, .5);
-            child.color = 0x777777;
-            // }
-        });
+        // head.traverse(function (child) {
+        //     // console.log(child);
+        //     // if (child instanceof THREE.Mesh) {
+        //     child.scale.set(1, .7, .5);
+        //     child.color = 0x777777;
+        //     // }
+        // });
 
 
         if (head && facemesh) {
+            // console.log(facemesh);
             head.getWorldPosition(facemesh.position);
             head.getWorldQuaternion(facemesh.quaternion);
 
-            //  facemesh.position.y += 8;
-            //  facemesh.position.z += 8;
+             facemesh.position.y += 6;
+            //  facemesh.position.z += 0;
             //  facemesh.position.x += 0;
 
         }
@@ -461,6 +475,7 @@ function animate() {
     if (faceResults && faceResults.faceBlendshapes && faceResults.faceBlendshapes.length > 0) {
 
         const face = scene.getObjectByName('mesh_2');
+        // console.log(faceResults.faceBlendshapes[0].categories);
 
         const faceBlendshapes = faceResults.faceBlendshapes[0].categories;
 
