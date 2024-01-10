@@ -402,7 +402,9 @@ function init() {
     scene.add(grid);
 
     const circleGeometry = new THREE.CircleGeometry(28, 32);
-    const circleMaterial = new THREE.MeshBasicMaterial({ color: 0xffa500, side: THREE.DoubleSide });
+    // orange border, transparent inside
+
+    const circleMaterial = new THREE.MeshBasicMaterial({ color: 0xff6600, transparent: true, opacity: 0.5, side: THREE.DoubleSide });
     const circle = new THREE.Mesh(circleGeometry, circleMaterial);
     circle.rotation.x = - Math.PI / 2;
     circle.position.y = -.5;
