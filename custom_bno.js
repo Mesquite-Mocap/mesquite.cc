@@ -121,7 +121,7 @@ function handleWSMessage(obj) {
         }
 
         
-        var sensorPosition = new THREE.Vector3(kfx.filter(obj.sensorPosition.x * positionSensivity - initialPosition.x), kfy.filter(obj.sensorPosition.y * positionSensivity - initialPosition.y) + 100, kfz.filter(obj.sensorPosition.z * positionSensivity - initialPosition.z));
+        var sensorPosition = new THREE.Vector3(obj.sensorPosition.x * positionSensivity - initialPosition.x, obj.sensorPosition.y * positionSensivity - initialPosition.y + 100, obj.sensorPosition.z * positionSensivity - initialPosition.z);
         //set this as position of the bone
         // console.log(sensorPosition);
         
