@@ -14,7 +14,7 @@
   <script src="three.min.js"></script>
   <script src="bvh_converter.js"></script>
 
-  <!-- <script src="https://cdn.jsdelivr.net/npm/kalmanjs@1.1.0/lib/kalman.js"></script> -->
+  <script src="https://cdn.jsdelivr.net/npm/kalmanjs@1.1.0/lib/kalman.js"></script>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
@@ -346,18 +346,18 @@ let camera, scene, renderer, stats;
 
         <div id="ext" >
           <h4>Face</h4>
-          <canvas id="facecanvas" width="320" height="240" style="margin:auto"></canvas>
+          <canvas id="facecanvas" width="320" height="240" style="margin:auto;display:none"></canvas>
           <video id="facevideo" width="320" height="240" style=""></video>
           <canvas id="facecanvasResult" width="640" height="480" style="margin:auto"></canvas>
 
 
           <h4>Right Hand</h4>
-          <canvas id="rhcanvas" width="320" height="240" style="margin:auto"></canvas>
+          <canvas id="rhcanvas" width="320" height="240" style="margin:auto;display:none"></canvas>
           <video id="rhvideo" width="320" height="240" style=""></video>
           <canvas id="rhcanvasResult" width="640" height="480" style="margin:auto"></canvas>
 
           <h4>Left Hand</h4>
-          <canvas id="lhcanvas" width="320" height="240" style="margin:auto"></canvas>
+          <canvas id="lhcanvas" width="320" height="240" style="margin:auto;display:none"></canvas>
           <video id="lhvideo" width="320" height="240" style=""></video>
           <canvas id="lhcanvasResult" width="640" height="480" style="margin:auto"></canvas>
         </div>

@@ -105,7 +105,7 @@ function logData(line) {
   //console.log(line);
   try {
     var x = JSON.parse(line);
-    console.log(x);
+    //console.log(x);
     if (x.face) {
       var canvas = document.getElementById("facecanvas");
       var ctx = canvas.getContext("2d");

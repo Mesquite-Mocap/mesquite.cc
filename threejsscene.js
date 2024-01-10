@@ -103,9 +103,9 @@ async function createHandLandmarker() {
             numHands: 2
         });
 
-        await hands.setOptions({
-            runningMode: "VIDEO"
-        });
+    await hands.setOptions({
+        runningMode: "VIDEO"
+    });
 
 }
 
@@ -133,24 +133,90 @@ async function predictRightHand() {
     if (results) {
         console.log(results);
         const landmarks = results.landmarks
-        if (landmarks) {
-            //console.log(landmarks);
-
-            positionsR = new Float32Array(landmarks.length * 3);
-
-
-
-
-            for (let i = 0; i < landmarks.length; i++) {
-                positionsR[i * 3] = (-landmarks[i].x) * 100
-                positionsR[i * 3 + 1] = (-landmarks[i].y) * 100 + 90;
-                positionsR[i * 3 + 2] = (-landmarks[i].z) * 100;
+        if (landmarks[0]) {
+            positionsR = new Float32Array(landmarks[0].length * 3);
+            for (let i = 0; i < landmarks[0].length; i++) {
+                positionsR[i * 3] = (-landmarks[0][i].x) * 100 - 140;
+                positionsR[i * 3 + 1] = (landmarks[0][i].y) * 100 + 100;
+                positionsR[i * 3 + 2] = (landmarks[0][i].z) * 100;
             }
+            mapHandLandmarks(landmarks, 'Right');
+
         }
     }
     window.requestAnimationFrame(predictRightHand);
 }
 
+var kx = new KalmanFilter({ R: 0.01, Q: 3 });
+var ky = new KalmanFilter({ R: 0.01, Q: 3 });
+
+
+function mapHandLandmarks(landmarks, hand) {
+    var x = calculateAngle(landmarks[0][6], landmarks[0][7], landmarks[0][8]);
+    var index3 = model.getObjectByName("mixamorig" + hand + "HandIndex3");
+    index3.rotation.set(0, 0, x * Math.PI/180, "XYZ");
+    
+    x = calculateAngle(landmarks[0][5], landmarks[0][6], landmarks[0][7]);
+    var index2 = model.getObjectByName("mixamorig" + hand + "HandIndex2");
+    index2.rotation.set(0, 0, x * Math.PI/180, "XYZ");
+
+    x = calculateAngle(landmarks[0][0], landmarks[0][5], landmarks[0][6]);
+    var index1 = model.getObjectByName("mixamorig" + hand + "HandIndex1");
+    index1.rotation.set(0, 0, x * Math.PI/180, "XYZ");
+
+    x = calculateAngle(landmarks[0][10], landmarks[0][11], landmarks[0][12]);
+    var middle3 = model.getObjectByName("mixamorig" + hand + "HandMiddle3");
+    middle3.rotation.set(0, 0, x * Math.PI/180, "XYZ");
+
+    x = calculateAngle(landmarks[0][9], landmarks[0][10], landmarks[0][11]);
+    var middle2 = model.getObjectByName("mixamorig" + hand + "HandMiddle2");
+    middle2.rotation.set(0, 0, x * Math.PI/180, "XYZ");
+
+    x = calculateAngle(landmarks[0][0], landmarks[0][9], landmarks[0][10]);
+    var middle1 = model.getObjectByName("mixamorig" + hand + "HandMiddle1");
+    middle1.rotation.set(0, 0, x * Math.PI/180, "XYZ");
+
+    x = calculateAngle(landmarks[0][14], landmarks[0][15], landmarks[0][16]);
+    var ring3 = model.getObjectByName("mixamorig" + hand + "HandRing3");
+    ring3.rotation.set(0, 0, x * Math.PI/180, "XYZ");
+
+    x = calculateAngle(landmarks[0][13], landmarks[0][14], landmarks[0][15]);
+    var ring2 = model.getObjectByName("mixamorig" + hand + "HandRing2");
+    ring2.rotation.set(0, 0, x * Math.PI/180, "XYZ");
+
+    x = calculateAngle(landmarks[0][0], landmarks[0][13], landmarks[0][14]);
+    var ring1 = model.getObjectByName("mixamorig" + hand + "HandRing1");
+    ring1.rotation.set(0, 0, x * Math.PI/180, "XYZ");
+
+    x = calculateAngle(landmarks[0][18], landmarks[0][19], landmarks[0][20]);
+    var pinky3 = model.getObjectByName("mixamorig" + hand + "HandPinky3");
+    pinky3.rotation.set(0, 0, x * Math.PI/180, "XYZ");
+
+    x = calculateAngle(landmarks[0][17], landmarks[0][18], landmarks[0][19]);
+    var pinky2 = model.getObjectByName("mixamorig" + hand + "HandPinky2");
+    pinky2.rotation.set(0, 0, x * Math.PI/180, "XYZ");
+
+    x = calculateAngle(landmarks[0][0], landmarks[0][17], landmarks[0][18]);
+    var pinky1 = model.getObjectByName("mixamorig" + hand + "HandPinky1");
+    pinky1.rotation.set(0, 0, x * Math.PI/180, "XYZ");
+
+    x = calculateAngle(landmarks[0][2], landmarks[0][3], landmarks[0][4]);
+    var thumb3 = model.getObjectByName("mixamorig" + hand + "HandThumb3");
+    thumb3.rotation.set(0, 0, x * Math.PI/180, "XYZ");
+
+    x = calculateAngle(landmarks[0][1], landmarks[0][2], landmarks[0][3]);
+    var thumb2 = model.getObjectByName("mixamorig" + hand + "HandThumb2");
+    thumb2.rotation.set(0, 0, x * Math.PI/180, "XYZ");
+
+    x = calculateAngle(landmarks[0][5], landmarks[0][0], landmarks[0][1]);
+    var thumb1 = model.getObjectByName("mixamorig" + hand + "HandThumb1");
+    thumb1.rotation.set(0,  -x * Math.PI/180, 0, "XYZ");
+
+
+
+
+
+}
 
 async function predictFace() {
     let results;
@@ -161,42 +227,40 @@ async function predictFace() {
         results = faceLandmarker.detectForVideo(video, startTimeMs);
     }
     if (results) {
-
         faceResults = results;
         if (results.faceBlendshapes.length > 0) {
-
             //console.log(results.faceBlendshapes[0].categories);
             const face = scene.getObjectByName('mesh_2');
-
             const faceBlendshapes = results.faceBlendshapes[0].categories;
-
             for (const blendshape of faceBlendshapes) {
-
                 const categoryName = blendshape.categoryName;
                 const score = blendshape.score;
-
                 const index = face.morphTargetDictionary[blendshapesMap[categoryName]];
-
                 //console.log(index, categoryName, score);
                 if (index !== undefined) {
-
                     face.morphTargetInfluences[index] = score;
-
                 }
-
             }
-
             renderer.render(scene, camera);
-
         }
-
-
     }
     window.requestAnimationFrame(predictFace);
 }
 
 
 
+
+function calculateAngle(landmarkA, landmarkB, landmarkC) {
+    const vectorAB = { x: landmarkB.x - landmarkA.x, y: landmarkB.y - landmarkA.y, z: landmarkB.z - landmarkA.z };
+    const vectorBC = { x: landmarkC.x - landmarkB.x, y: landmarkC.y - landmarkB.y, z: landmarkC.z - landmarkB.z };
+  
+    const dotProduct = vectorAB.x * vectorBC.x + vectorAB.y * vectorBC.y + vectorAB.z * vectorBC.z;
+    const magnitudeAB = Math.sqrt(vectorAB.x**2 + vectorAB.y**2 + vectorAB.z**2);
+    const magnitudeBC = Math.sqrt(vectorBC.x**2 + vectorBC.y**2 + vectorBC.z**2);
+  
+    const angle = Math.acos(dotProduct / (magnitudeAB * magnitudeBC));
+    return angle * (180 / Math.PI); // Convert from radians to degrees
+  }
 
 
 
@@ -300,7 +364,7 @@ function init() {
     scene.add(points2);
 
     rightHandGeometry = new THREE.BufferGeometry();
-    const material3 = new THREE.PointsMaterial({ size: 12, sizeAttenuation: true, color: 0x00FF00 });
+    const material3 = new THREE.PointsMaterial({ size: 4, sizeAttenuation: true, color: 0xFFFF00 });
     const points3 = new THREE.Points(rightHandGeometry, material3);
     scene.add(points3);
 
@@ -360,6 +424,7 @@ function init() {
                 child.receiveShadow = true;
 
             }
+            console.log(child.name);
         });
 
         scene.add(object);
@@ -392,13 +457,13 @@ function init() {
     new GLTFLoader()
         .setKTX2Loader(ktx2Loader)
         .setMeshoptDecoder(MeshoptDecoder)
-        .load('./facecap.glb', (gltf) => {
-            //.load('./scene.glb', (gltf) => {
+        //.load('./facecap.glb', (gltf) => {
+        .load('./scene.glb', (gltf) => {
             facemesh = gltf.scene.children[0];
             scene.add(facemesh);
 
-             //facemesh.scale.set(11, 10, 10.5);
-            facemesh.scale.set(120, 120, 92);
+            facemesh.scale.set(10, 9.5, 9);
+            //facemesh.scale.set(120, 120, 92);
 
             facemesh.rotation.set(0, 0, 0);
 
@@ -408,7 +473,7 @@ function init() {
 
             const controls = new OrbitControls(camera, renderer.domElement);
             controls.target.set(0, 100, 0);
-            controls.enableZoom = false;
+            controls.enableZoom = true;
 
             controls.update();
 
@@ -440,7 +505,7 @@ function animate() {
         var head = model.getObjectByName("mixamorigHead");
         head.traverse(function (child) {
             // if (child instanceof THREE.Mesh) {
-            child.scale.set(1, .7, .5);
+            child.scale.set(.8, .7, .7);
             child.color = 0x777777;
             // }
         });
@@ -486,19 +551,21 @@ function animate() {
     //faceGeometry.computeBoundingSphere();
     //faceGeometry.computeVertexNormals();
 
-    leftHandGeometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3).setUsage(THREE.DynamicDrawUsage));
+    leftHandGeometry.setAttribute('position', new THREE.Float32BufferAttribute(positionsL, 3).setUsage(THREE.DynamicDrawUsage));
     leftHandGeometry.computeBoundingSphere();
     leftHandGeometry.computeVertexNormals();
 
-    rightHandGeometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3).setUsage(THREE.DynamicDrawUsage));
+    rightHandGeometry.setAttribute('position', new THREE.Float32BufferAttribute(positionsR, 3).setUsage(THREE.DynamicDrawUsage));
     rightHandGeometry.computeBoundingSphere();
     rightHandGeometry.computeVertexNormals();
 
 
 
-    //		const delta = clock.getDelta();
 
-    //			if ( mixer ) mixer.update( delta );
+
+
+
+    
 
     renderer.render(scene, camera);
 
