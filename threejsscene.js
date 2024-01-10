@@ -410,6 +410,7 @@ function init() {
     // rotate the circle to lie on the floor
 
     circle.rotation.x = - Math.PI / 2;
+    circle.position.y = -.5;
 
     scene.add(circle);
 
