@@ -102,7 +102,7 @@ var rhVideoOn = false;
 var lhVideoOn = false;
 
 function logData(line) {
-  //console.log(line);
+  console.log(line);
   try {
     var x = JSON.parse(line);
     //console.log(x);

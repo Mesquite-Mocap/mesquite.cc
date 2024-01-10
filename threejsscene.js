@@ -147,8 +147,6 @@ async function predictRightHand() {
     window.requestAnimationFrame(predictRightHand);
 }
 
-var kx = new KalmanFilter({ R: 0.01, Q: 3 });
-var ky = new KalmanFilter({ R: 0.01, Q: 3 });
 
 
 function mapHandLandmarks(landmarks, hand) {
@@ -340,7 +338,7 @@ function init() {
 
     scene = new THREE.Scene();
     // scene.background = new THREE.Color(0xa0a0a0);
-    scene.background = new THREE.Color(0x87ceeb);
+    scene.background = new THREE.Color(0x111111);
     // add transparent background
 
     // scene.fog = new THREE.Fog( 0xa0a0a0, 200, 1000 );
@@ -387,7 +385,7 @@ function init() {
     const mesh = new THREE.Mesh(
 
         new THREE.PlaneGeometry(4000, 4000),
-        new THREE.MeshStandardMaterial({ color: 0xffffff, depthWrite: false })
+        new THREE.MeshStandardMaterial({ color: 0x000000, depthWrite: false })
     );
 
     mesh.rotation.x = - Math.PI / 2;
@@ -395,7 +393,7 @@ function init() {
     scene.add(mesh);
 
 
-    const grid = new THREE.GridHelper(4000, 80, 0x000000, 0x000000);
+    const grid = new THREE.GridHelper(4000, 80, 0x444444, 0x444444);
     grid.material.opacity = 0.2;
     grid.material.transparent = true;
 
@@ -408,8 +406,8 @@ function init() {
     //	loader.load( 'models/fbx/Ch14_nonPBR.fbx', function ( object ) {
     loader.load("models/fbx/" + fbxfile, function (object) {
         model = object;
-        model.children[1].material.color.set(0x222222);
-        model.children[2].material.color.set(0x999999);
+        model.children[1].material.color.set(0x999999);
+        model.children[2].material.color.set(0x222222);
 
         if (zoomLevel) {
             object.scale.multiplyScalar(zoomLevel);
@@ -420,22 +418,17 @@ function init() {
         object.traverse(function (child) {
             // console.log(child);
             if(child.name === "mixamorigHead"){
-                console.log(child);
                 child.traverse(function (child1) {
-                    // console.log(child);
-                    // if (child instanceof THREE.Mesh) {
-                    child1.scale.set(0.1, .7, .5);
-                    child1.color = 0x777777;
-                    // }
+                   child1.scale.set(.8, .85, .75);
                 });
                 
             }
             if (child.isMesh) {
-                child.castShadow = true;
-                child.receiveShadow = true;
+                //child.castShadow = true;
+                //child.receiveShadow = true;
 
             }
-            console.log(child.name);
+            //console.log(child.name);
         });
 
         scene.add(object);
@@ -471,16 +464,14 @@ function init() {
         //.load('./facecap.glb', (gltf) => {
         .load('./scene.glb', (gltf) => {
             facemesh = gltf.scene.children[0];
-            console.log(facemesh.position);
+            facemesh.castShadow = true;
+            facemesh.receiveShadow = true;
             scene.add(facemesh);
 
-<<<<<<< HEAD
+
             facemesh.scale.set(10, 9.5, 9);
             //facemesh.scale.set(120, 120, 92);
-=======
-             //facemesh.scale.set(11, 10, 10.5);
-            facemesh.scale.set(120, 120, 120);
->>>>>>> dd7e0985a900e5e7767574c5b1d9a7af21a09e64
+
 
             facemesh.rotation.set(0, 0, 0);
 
@@ -520,30 +511,12 @@ function animate() {
 
     if (model) {
         var head = model.getObjectByName("mixamorigHead");
-<<<<<<< HEAD
-        head.traverse(function (child) {
-            // if (child instanceof THREE.Mesh) {
-            child.scale.set(.8, .7, .7);
-            child.color = 0x777777;
-            // }
-        });
-=======
-        // head.traverse(function (child) {
-        //     // console.log(child);
-        //     // if (child instanceof THREE.Mesh) {
-        //     child.scale.set(1, .7, .5);
-        //     child.color = 0x777777;
-        //     // }
-        // });
->>>>>>> dd7e0985a900e5e7767574c5b1d9a7af21a09e64
-
-
         if (head && facemesh) {
             // console.log(facemesh);
             head.getWorldPosition(facemesh.position);
             head.getWorldQuaternion(facemesh.quaternion);
 
-             facemesh.position.y += 6;
+            // facemesh.position.y += 6;
             //  facemesh.position.z += 0;
             //  facemesh.position.x += 0;
 
