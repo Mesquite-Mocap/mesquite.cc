@@ -401,6 +401,19 @@ function init() {
     scene.add(axesHelper);
     scene.add(grid);
 
+    // add circle at origin on floor
+
+    const circleGeometry = new THREE.CircleGeometry(28, 32);
+    // orange
+    const circleMaterial = new THREE.MeshBasicMaterial({ color: 0xffa500, side: THREE.DoubleSide });
+    const circle = new THREE.Mesh(circleGeometry, circleMaterial);
+    // rotate the circle to lie on the floor
+
+    circle.rotation.x = - Math.PI / 2;
+
+    scene.add(circle);
+
+
     // model
     const loader = new FBXLoader();
     //	loader.load( 'models/fbx/Ch14_nonPBR.fbx', function ( object ) {
