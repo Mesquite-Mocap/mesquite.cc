@@ -431,7 +431,7 @@ function init() {
             // console.log(child);
             if(child.name === "mixamorigHead"){
                 child.traverse(function (child1) {
-                   child1.scale.set(.8, .85, .75);
+                   child1.scale.set(.9, .85, .67);
                 });
                 
             }
@@ -476,12 +476,12 @@ function init() {
         //.load('./facecap.glb', (gltf) => {
         .load('./scene.glb', (gltf) => {
             facemesh = gltf.scene.children[0];
-            facemesh.castShadow = true;
-            facemesh.receiveShadow = true;
+            facemesh.castShadow = false;
+            facemesh.receiveShadow = false;
             scene.add(facemesh);
 
 
-            facemesh.scale.set(10, 9.5, 9);
+            facemesh.scale.set(10, 9.5, 7.7);
             //facemesh.scale.set(120, 120, 92);
 
 
