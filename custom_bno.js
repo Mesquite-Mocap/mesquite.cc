@@ -2,7 +2,7 @@ var rigPrefix = "mixamorig";
 
 var calibrated = false;
 var initialPosition = {x:0, y:0, z:0}
-var positionSensivity = 80;
+var positionSensivity = 50;
 
 var kfx = new KalmanFilter();
 var kfy = new KalmanFilter();
@@ -54,7 +54,7 @@ function handleWSMessage(obj) {
     statsObjs[lowerFirstLetter(bone)].update();
 
     if(bone=="Spine"){
-        var currentQuaternion = new THREE.Quaternion(obj.w, obj.y, obj.z, obj.x);
+        var currentQuaternion = new THREE.Quaternion(obj.w, -obj.x, obj.y, obj.z);
     }else{
         var currentQuaternion = new THREE.Quaternion(obj.x, obj.y, obj.z, obj.w);
     }
@@ -67,9 +67,9 @@ function handleWSMessage(obj) {
         var localQuaternion = rotateQuaternion(currentQuaternion, rotationQuaternion);
     }
     else if(bone == "Spine"){
-        const euler = new THREE.Euler(Math.PI/2, Math.PI/2, 0, 'XYZ');
+        const euler = new THREE.Euler(0, Math.PI/2, Math.PI, 'XYZ');
         const rotationQuaternion = new THREE.Quaternion().setFromEuler(euler);
-        var localQuaternion = rotateQuaternion(currentQuaternion, rotationQuaternion);
+        localQuaternion = rotateQuaternion(currentQuaternion, rotationQuaternion);
     }
     else {
         const euler = new THREE.Euler(-Math.PI/2,0, Math.PI, 'XYZ');
