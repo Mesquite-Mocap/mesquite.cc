@@ -368,14 +368,7 @@ function init() {
     const material3 = new THREE.PointsMaterial({ size: 4, sizeAttenuation: true, color: 0xFFFF00 });
     const points3 = new THREE.Points(rightHandGeometry, material3);
     scene.add(points3);
-
-
-
-
-
-
-
-    // const dirLight = new THREE.DirectionalLight(0xffffff);
+    
     const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
     dirLight.position.set(0, 200, 100);
     dirLight.castShadow = true;
@@ -414,6 +407,7 @@ function init() {
     circle.position.z = 5;
 
     scene.add(circle);
+
 
 
     // model
