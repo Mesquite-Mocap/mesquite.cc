@@ -1,10 +1,10 @@
 // import * as THREE from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc@latest/build/three.module.js";
-import Stats from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc@latest/build/stats.module.js";
-import { OrbitControls } from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc@latest/build/OrbitControls.js";
-import { FBXLoader } from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc@latest/build/FBXLoader.js";
-import { BVHLoader } from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc@latest/build/BVHLoader.js";
+import Stats from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc@latest/build2/stats.module.js";
+import { OrbitControls } from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc@latest/build2/OrbitControls.js";
+import { FBXLoader } from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc@latest/build2/FBXLoader.js";
+import { BVHLoader } from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc@latest/build2/BVHLoader.js";
 // import {BVHLoader} from "./build/BVHLoader.js"
-import * as THREE from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc@latest/build/three.module.js";
+import * as THREE from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc@latest/build2/three.module.js";
 
 const clock_bvh = new THREE.Clock();
 
@@ -81,20 +81,19 @@ function init() {
     //     // displacementMap: heightMap,
     //     // displacementScale: 1.0, // Adjust this value to control the height effect
     // });
-    console.log(THREE.PlaneBufferGeometry);
-    // const mesh = new THREE.Mesh(
-    //     new THREE.PlaneBufferGeometry(4000, 4000),
-    //     new THREE.MeshStandardMaterial({ color: 0x999999, depthWrite: false })
-    // );
+    const mesh = new THREE.Mesh(
+        new THREE.PlaneBufferGeometry(4000, 4000),
+        new THREE.MeshStandardMaterial({ color: 0x999999, depthWrite: false })
+    );
     // const mesh = new THREE.Mesh(
     //     new THREE.PlaneBufferGeometry(4000, 4000),
     //     groundMaterial
     // );
 
 
-    // mesh.rotation.x = - Math.PI / 2;
-    // mesh.receiveShadow = true;
-    // scene.add(mesh);
+    mesh.rotation.x = - Math.PI / 2;
+    mesh.receiveShadow = true;
+    scene.add(mesh);
 
     const grid = new THREE.GridHelper(4000, 80, 0x000000, 0x000000);
     grid.material.opacity = 0.2;
@@ -185,13 +184,22 @@ function onWindowResize() {
 
 function animate() {
     requestAnimationFrame(animate);
+
+    //		const delta = clock.getDelta();
+
+    //			if ( mixer ) mixer.update( delta );
+
     renderer.render(scene, camera);
+
+    // stats.update();
 }
 function init_bvh() {
     // camera_bvh = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 1, 1000 );
     // camera_bvh.position.set( 0, 200, 300 );
 
     scene_bvh = new THREE.Scene();
+
+    //  setTimeout("dothistoInit()",0)
 }
 
 function animate_bvh() {
@@ -299,6 +307,12 @@ function animate_bvh() {
     });
 }
 
+function dothistoInit() {
+    rightArm = model.getObjectByName("mixamorigRightArm");
+    rightArm.quaternion.set(0, 0, 0, 1);
+}
+
+
 document.getElementById("bvhFileInput").addEventListener("change", function (event) {
     const file = event.target.files[0];
     if (!file) {
@@ -341,4 +355,3 @@ function loadAndPlayBVH(bvhData) {
     // console.log(animation);
     animation.play();
 }
-
