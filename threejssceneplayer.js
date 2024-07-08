@@ -82,7 +82,7 @@ function init() {
     //     // displacementScale: 1.0, // Adjust this value to control the height effect
     // });
     const mesh = new THREE.Mesh(
-        new THREE.PlaneBufferGeometry(4000, 4000),
+        new THREE.PlaneGeometry(4000, 4000),
         new THREE.MeshStandardMaterial({ color: 0x999999, depthWrite: false })
     );
     // const mesh = new THREE.Mesh(
