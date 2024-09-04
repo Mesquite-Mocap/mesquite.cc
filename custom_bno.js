@@ -8,6 +8,11 @@ var kfx = new KalmanFilter();
 var kfy = new KalmanFilter();
 var kfz = new KalmanFilter();
 
+var filtersx = {};
+var filtersy = {};
+var filtersz = {};
+
+
 function calibrate() {
   var keys = Object.keys(mac2Bones);
   for (var i = 0; i < keys.length; i++) {
@@ -140,11 +145,11 @@ function handleWSMessage(obj) {
     //set this as position of the bone
     // console.log(sensorPosition);
 
-    const hipsBone = model.getObjectByName(rigPrefix + "Hips");
+    const hipsBone = model.getObjectByName(rigPrefix + "Spine");
     hipsBone.position.set(
-      sensorPosition.x,
-      sensorPosition.y,
-      -sensorPosition.z
+      kfx.filter(sensorPosition.x),
+      kfy.filter(sensorPosition.y),
+      -kfz.filter(sensorPosition.z)
     );
     updateTrackingLine(hipsBone.position);
   }
@@ -152,12 +157,41 @@ function handleWSMessage(obj) {
   if (parentQuaternion == null) {
     // console.log("currentLocalEuler " + 180 * currentLocalEuler.x / Math.PI, 180 * currentLocalEuler.y / Math.PI, 180 * currentLocalEuler.z / Math.PI);
     // x.quaternion.set(localQuaternion.x, localQuaternion.z, -localQuaternion.y, localQuaternion.w);
+   /*
     x.quaternion.set(
       localQuaternion.x,
       localQuaternion.y,
       localQuaternion.z,
       localQuaternion.w
     );
+    */
+
+  const euler = new THREE.Euler().setFromQuaternion(localQuaternion);
+  if(filtersx[x.name]){
+    x.rotation.x = filtersx[x.name].filter(euler.x);
+  }
+  else{
+    filtersx[x.name] = new KalmanFilter();
+    x.rotation.x = filtersx[x.name].filter(euler.x);
+  }
+  if(filtersy[x.name]){
+    x.rotation.y = filtersy[x.name].filter(euler.y);
+  }
+  else{
+    filtersy[x.name] = new KalmanFilter();
+    x.rotation.y = filtersy[x.name].filter(euler.y);
+  }
+  if(filtersz[x.name]){
+    x.rotation.z = filtersz[x.name].filter(euler.z);
+  }
+  else{
+    filtersz[x.name] = new KalmanFilter();
+    x.rotation.z = filtersz[x.name].filter(euler.z);
+  }
+
+  localQuaternion = new THREE.Quaternion().setFromEuler(x.rotation);
+
+
     setLocal(
       bone,
       localQuaternion.x,
@@ -192,12 +226,39 @@ function handleWSMessage(obj) {
     // console.log("newParentQuaternion", globalQuaternion.x,globalQuaternion.y, globalQuaternion.z,globalQuaternion.w);
 
     // x.quaternion.set(localQuaternion.x, localQuaternion.z, -localQuaternion.y, localQuaternion.w);
+    /*
     x.quaternion.set(
       globalQuaternion.x,
       globalQuaternion.y,
       globalQuaternion.z,
       globalQuaternion.w
     );
+    */
+
+    const euler = new THREE.Euler().setFromQuaternion(localQuaternion);
+  if(filtersx[x.name]){
+    x.rotation.x = filtersx[x.name].filter(euler.x);
+  }
+  else{
+    filtersx[x.name] = new KalmanFilter();
+    x.rotation.x = filtersx[x.name].filter(euler.x);
+  }
+  if(filtersy[x.name]){
+    x.rotation.y = filtersy[x.name].filter(euler.y);
+  }
+  else{
+    filtersy[x.name] = new KalmanFilter();
+    x.rotation.y = filtersy[x.name].filter(euler.y);
+  }
+  if(filtersz[x.name]){
+    x.rotation.z = filtersz[x.name].filter(euler.z);
+  }
+  else{
+    filtersz[x.name] = new KalmanFilter();
+    x.rotation.z = filtersz[x.name].filter(euler.z);
+  }
+
+  localQuaternion = new THREE.Quaternion().setFromEuler(x.rotation);
     setLocal(
       bone,
       globalQuaternion.x,
