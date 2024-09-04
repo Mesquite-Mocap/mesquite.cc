@@ -259,7 +259,6 @@ function handleWSMessage(obj) {
   }
 
   localQuaternion = new THREE.Quaternion().setFromEuler(x.rotation);
-  
     setLocal(
       bone,
       globalQuaternion.x,
