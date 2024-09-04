@@ -12,6 +12,18 @@ var filtersx = {};
 var filtersy = {};
 var filtersz = {};
 
+function adjustQuaternionForThickness(quaternion, thickness) {
+  // Implement the logic to adjust the quaternion based on thickness
+  // This is a placeholder implementation
+  var scale = 1 + thickness; // Example: scale the quaternion components
+  return new THREE.Quaternion(
+    quaternion.x * scale,
+    quaternion.y * scale,
+    quaternion.z * scale,
+    quaternion.w * scale
+  );
+}
+
 
 function calibrate() {
   var keys = Object.keys(mac2Bones);
@@ -60,9 +72,9 @@ function handleWSMessage(obj) {
 
   document.getElementById(lowerFirstLetter(bone) + "Batery").innerHTML =
     parseFloat(obj.batt) * 100;
-  // statsObjs[lowerFirstLetter(bone)].update();
+  statsObjs[lowerFirstLetter(bone)].update();
 
-  if (bone == "Spine") {
+  if (bone == "Hips") {
     var currentQuaternion = new THREE.Quaternion(obj.w, -obj.x, obj.y, obj.z);
   } else {
     var currentQuaternion = new THREE.Quaternion(-obj.y, obj.w, -obj.x, -obj.z);
@@ -89,6 +101,8 @@ function handleWSMessage(obj) {
   
 
   localQuaternion = localQuaternion.multiply(calibratedQuaternion.invert());
+localQuaternion = adjustQuaternionForThickness(localQuaternion, 0.01);
+
   //console.log(localQuaternion);
   mac2Bones[bone].last.x = localQuaternion.x;
   mac2Bones[bone].last.y = localQuaternion.y;
@@ -122,7 +136,7 @@ function handleWSMessage(obj) {
     //set this as position of the bone
     // console.log(sensorPosition);
 
-    const hipsBone = model.getObjectByName(rigPrefix + "Spine");
+    const hipsBone = model.getObjectByName(rigPrefix + "Hips");
     hipsBone.position.set(
       kfx.filter(sensorPosition.x),
       kfy.filter(sensorPosition.y),
@@ -136,17 +150,22 @@ function handleWSMessage(obj) {
   console.log(localQuaternion, parentQuaternion);
 
   if (parentQuaternion == null) {
-    // console.log("currentLocalEuler " + 180 * currentLocalEuler.x / Math.PI, 180 * currentLocalEuler.y / Math.PI, 180 * currentLocalEuler.z / Math.PI);
-    // x.quaternion.set(localQuaternion.x, localQuaternion.z, -localQuaternion.y, localQuaternion.w);
-   /*
+
+//    var t = quaternionToCylinderOrientation(localQuaternion.w, localQuaternion.x, localQuaternion.y, localQuaternion.z, .01);
+//    localQuaternion = new THREE.Quaternion(t.x, t.y, t.z, t.w);
+
+
+
+
     x.quaternion.set(
       localQuaternion.x,
       localQuaternion.y,
       localQuaternion.z,
       localQuaternion.w
     );
-    */
+    
 
+    /*
   const euler = new THREE.Euler().setFromQuaternion(localQuaternion);
   if(filtersx[x.name]){
     x.rotation.x = filtersx[x.name].filter(euler.x);
@@ -173,6 +192,8 @@ function handleWSMessage(obj) {
   localQuaternion = new THREE.Quaternion().setFromEuler(x.rotation);
 
 
+*/
+
     setLocal(
       bone,
       localQuaternion.x,
@@ -197,18 +218,21 @@ function handleWSMessage(obj) {
     var globalQuaternion = newParentQuaternion
       .invert()
       .multiply(localQuaternion);
-    // console.log("newParentQuaternion", globalQuaternion.x,globalQuaternion.y, globalQuaternion.z,globalQuaternion.w);
 
-    // x.quaternion.set(localQuaternion.x, localQuaternion.z, -localQuaternion.y, localQuaternion.w);
-    /*
+    globalQuaternion = adjustQuaternionForThickness(globalQuaternion, 0.01);
+
+    //  var t = quaternionToCylinderOrientation(globalQuaternion.w, globalQuaternion.x, globalQuaternion.y, globalQuaternion.z, .01);
+    //  globalQuaternion = new THREE.Quaternion(t.x, t.y, t.z, t.w);
+
     x.quaternion.set(
       globalQuaternion.x,
       globalQuaternion.y,
       globalQuaternion.z,
       globalQuaternion.w
     );
-    */
+    
 
+    /*
     const euler = new THREE.Euler().setFromQuaternion(globalQuaternion);
   if(filtersx[x.name]){
     x.rotation.x = filtersx[x.name].filter(euler.x);
@@ -233,6 +257,9 @@ function handleWSMessage(obj) {
   }
 
   globalQuaternion = new THREE.Quaternion().setFromEuler(x.rotation);
+
+  */
+
 
     setLocal(
       bone,
