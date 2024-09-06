@@ -73,13 +73,14 @@ function handleWSMessage(obj) {
   document.getElementById(lowerFirstLetter(bone) + "Batery").innerHTML =
     parseFloat(obj.batt) * 100;
   statsObjs[lowerFirstLetter(bone)].update();
+  var currentQuaternion = new THREE.Quaternion(-obj.y, obj.w, -obj.x, -obj.z);
 
   if (bone == "Hips") {
-    var currentQuaternion = new THREE.Quaternion(obj.w, -obj.x, obj.y, obj.z);
-  } else {
-    var currentQuaternion = new THREE.Quaternion(-obj.y, obj.w, -obj.x, -obj.z);
+    currentQuaternion = new THREE.Quaternion(obj.w, -obj.x, obj.y, obj.z);
   }
-
+  else if(bone === "Spine"){
+    currentQuaternion = new THREE.Quaternion(obj.w, obj.z, -obj.x, -obj.y);
+  }
   var localQuaternion = currentQuaternion;
   if (!mac2Bones[bone]) {
     mac2Bones[bone] = {};
@@ -98,10 +99,10 @@ function handleWSMessage(obj) {
     mac2Bones[bone].calibration.w
   );
 
-  
+
 
   localQuaternion = localQuaternion.multiply(calibratedQuaternion.invert());
-localQuaternion = adjustQuaternionForThickness(localQuaternion, 0.01);
+  //localQuaternion = adjustQuaternionForThickness(localQuaternion, 0.1);
 
   //console.log(localQuaternion);
   mac2Bones[bone].last.x = localQuaternion.x;
@@ -151,8 +152,8 @@ localQuaternion = adjustQuaternionForThickness(localQuaternion, 0.01);
 
   if (parentQuaternion == null) {
 
-//    var t = quaternionToCylinderOrientation(localQuaternion.w, localQuaternion.x, localQuaternion.y, localQuaternion.z, .01);
-//    localQuaternion = new THREE.Quaternion(t.x, t.y, t.z, t.w);
+    //    var t = quaternionToCylinderOrientation(localQuaternion.w, localQuaternion.x, localQuaternion.y, localQuaternion.z, .01);
+    //    localQuaternion = new THREE.Quaternion(t.x, t.y, t.z, t.w);
 
 
 
@@ -163,7 +164,7 @@ localQuaternion = adjustQuaternionForThickness(localQuaternion, 0.01);
       localQuaternion.z,
       localQuaternion.w
     );
-    
+
 
     /*
   const euler = new THREE.Euler().setFromQuaternion(localQuaternion);
@@ -219,7 +220,7 @@ localQuaternion = adjustQuaternionForThickness(localQuaternion, 0.01);
       .invert()
       .multiply(localQuaternion);
 
-    globalQuaternion = adjustQuaternionForThickness(globalQuaternion, 0.01);
+    // globalQuaternion = adjustQuaternionForThickness(globalQuaternion, 0.1);
 
     //  var t = quaternionToCylinderOrientation(globalQuaternion.w, globalQuaternion.x, globalQuaternion.y, globalQuaternion.z, .01);
     //  globalQuaternion = new THREE.Quaternion(t.x, t.y, t.z, t.w);
@@ -230,7 +231,7 @@ localQuaternion = adjustQuaternionForThickness(localQuaternion, 0.01);
       globalQuaternion.z,
       globalQuaternion.w
     );
-    
+
 
     /*
     const euler = new THREE.Euler().setFromQuaternion(globalQuaternion);
