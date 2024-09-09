@@ -77,7 +77,7 @@ function handleWSMessage(obj) {
 
   if (bone == "Hips") {
     currentQuaternion =  new THREE.Quaternion(obj.w, -obj.z, obj.x, -obj.y);
-    currentQuaternion = new THREE.Quaternion().setFromEuler(new THREE.Euler(Math.PI, 0, Math.PI)).multiply(currentQuaternion);
+    currentQuaternion = new THREE.Quaternion().setFromEuler(new THREE.Euler(Math.PI, Math.PI, Math.PI)).multiply(currentQuaternion);
   }
   else if(bone === "Spine"){
     currentQuaternion = new THREE.Quaternion(obj.w, obj.z, -obj.x, -obj.y);
