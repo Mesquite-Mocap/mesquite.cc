@@ -79,7 +79,7 @@ function handleWSMessage(obj) {
     currentQuaternion =  new THREE.Quaternion(obj.w, -obj.z, obj.x, -obj.y);
     // reverse euler y
     var euler = new THREE.Euler().setFromQuaternion(currentQuaternion);
-    euler.y = Math.PI - euler.y;
+    euler.y = euler.y + Math.PI;
     currentQuaternion = new THREE.Quaternion().setFromEuler(euler);
   }
   else if(bone === "Spine"){
