@@ -166,7 +166,7 @@ function handleWSMessage(obj) {
     );
 
 
-    /*
+    
   const euler = new THREE.Euler().setFromQuaternion(localQuaternion);
   if(filtersx[x.name]){
     x.rotation.x = filtersx[x.name].filter(euler.x);
@@ -193,7 +193,7 @@ function handleWSMessage(obj) {
   localQuaternion = new THREE.Quaternion().setFromEuler(x.rotation);
 
 
-*/
+
 
     setLocal(
       bone,
@@ -233,7 +233,7 @@ function handleWSMessage(obj) {
     );
 
 
-    /*
+    
     const euler = new THREE.Euler().setFromQuaternion(globalQuaternion);
   if(filtersx[x.name]){
     x.rotation.x = filtersx[x.name].filter(euler.x);
@@ -259,7 +259,7 @@ function handleWSMessage(obj) {
 
   globalQuaternion = new THREE.Quaternion().setFromEuler(x.rotation);
 
-  */
+  
 
 
     setLocal(
