@@ -79,7 +79,7 @@ function handleWSMessage(obj) {
    currentQuaternion =  new THREE.Quaternion(-obj.y, -obj.x, -obj.w, -obj.z);
   }
   else if(bone == "Spine"){
-    currentQuaternion = new THREE.Quaternion(-obj.y, -obj.w, -obj.x, obj.z);
+    currentQuaternion = new THREE.Quaternion(obj.w, obj.y, -obj.z, obj.x);
   }
   var localQuaternion = currentQuaternion;
   if (!mac2Bones[bone]) {
@@ -165,7 +165,7 @@ function handleWSMessage(obj) {
       localQuaternion.w
     );
 
-
+/*
     
   const euler = new THREE.Euler().setFromQuaternion(localQuaternion);
   if(filtersx[x.name]){
@@ -192,7 +192,7 @@ function handleWSMessage(obj) {
 
   localQuaternion = new THREE.Quaternion().setFromEuler(x.rotation);
 
-
+*/
 
 
     setLocal(
@@ -233,7 +233,7 @@ function handleWSMessage(obj) {
     );
 
 
-    
+    /*
     const euler = new THREE.Euler().setFromQuaternion(globalQuaternion);
   if(filtersx[x.name]){
     x.rotation.x = filtersx[x.name].filter(euler.x);
@@ -258,7 +258,7 @@ function handleWSMessage(obj) {
   }
 
   globalQuaternion = new THREE.Quaternion().setFromEuler(x.rotation);
-
+*/
   
 
 
