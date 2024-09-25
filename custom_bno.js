@@ -79,7 +79,7 @@ function handleWSMessage(obj) {
    currentQuaternion =  new THREE.Quaternion(-obj.y, -obj.x, -obj.w, -obj.z);
   }
   else if(bone == "Spine"){
-    currentQuaternion = new THREE.Quaternion(obj.w, obj.y, -obj.z, obj.x);
+    currentQuaternion = new THREE.Quaternion(obj.y, obj.x, obj.z, obj.w);
   }
   var localQuaternion = currentQuaternion;
   if (!mac2Bones[bone]) {
