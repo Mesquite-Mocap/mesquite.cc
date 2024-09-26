@@ -79,7 +79,7 @@ function handleWSMessage(obj) {
    currentQuaternion =  new THREE.Quaternion(-obj.y, -obj.x, -obj.w, -obj.z);
   }
   else if(bone == "Spine"){
-    currentQuaternion = new THREE.Quaternion(obj.y, obj.x, obj.z, obj.w);
+    currentQuaternion = new THREE.Quaternion(obj.w, -obj.z, obj.x, -obj.y);
   }
   var localQuaternion = currentQuaternion;
   if (!mac2Bones[bone]) {
@@ -147,136 +147,21 @@ function handleWSMessage(obj) {
   }
 
 
-  var parentQuaternion = getParentQuaternion(bone);
-  console.log(localQuaternion, parentQuaternion);
-
-  if (parentQuaternion == null) {
-
-    //    var t = quaternionToCylinderOrientation(localQuaternion.w, localQuaternion.x, localQuaternion.y, localQuaternion.z, .01);
-    //    localQuaternion = new THREE.Quaternion(t.x, t.y, t.z, t.w);
-
-
-
-
-    x.quaternion.set(
-      localQuaternion.x,
-      localQuaternion.y,
-      localQuaternion.z,
-      localQuaternion.w
-    );
-
-/*
-    
-  const euler = new THREE.Euler().setFromQuaternion(localQuaternion);
-  if(filtersx[x.name]){
-    x.rotation.x = filtersx[x.name].filter(euler.x);
-  }
-  else{
-    filtersx[x.name] = new KalmanFilter();
-    x.rotation.x = filtersx[x.name].filter(euler.x);
-  }
-  if(filtersy[x.name]){
-    x.rotation.y = filtersy[x.name].filter(euler.y);
-  }
-  else{
-    filtersy[x.name] = new KalmanFilter();
-    x.rotation.y = filtersy[x.name].filter(euler.y);
-  }
-  if(filtersz[x.name]){
-    x.rotation.z = filtersz[x.name].filter(euler.z);
-  }
-  else{
-    filtersz[x.name] = new KalmanFilter();
-    x.rotation.z = filtersz[x.name].filter(euler.z);
-  }
-
-  localQuaternion = new THREE.Quaternion().setFromEuler(x.rotation);
-
-*/
-
-
-    setLocal(
-      bone,
-      localQuaternion.x,
-      localQuaternion.y,
-      localQuaternion.z,
-      localQuaternion.w
-    );
-    setGlobal(
-      bone,
-      localQuaternion.x,
-      localQuaternion.y,
-      localQuaternion.z,
-      localQuaternion.w
-    );
-  } else {
-    var newParentQuaternion = new THREE.Quaternion(
-      parentQuaternion.x,
-      parentQuaternion.y,
-      parentQuaternion.z,
-      parentQuaternion.w
-    );
-    var globalQuaternion = newParentQuaternion
-      .invert()
-      .multiply(localQuaternion);
-
-    // globalQuaternion = adjustQuaternionForThickness(globalQuaternion, 0.1);
-
-    //  var t = quaternionToCylinderOrientation(globalQuaternion.w, globalQuaternion.x, globalQuaternion.y, globalQuaternion.z, .01);
-    //  globalQuaternion = new THREE.Quaternion(t.x, t.y, t.z, t.w);
-
-    x.quaternion.set(
-      globalQuaternion.x,
-      globalQuaternion.y,
-      globalQuaternion.z,
-      globalQuaternion.w
-    );
-
-
-    /*
-    const euler = new THREE.Euler().setFromQuaternion(globalQuaternion);
-  if(filtersx[x.name]){
-    x.rotation.x = filtersx[x.name].filter(euler.x);
-  }
-  else{
-    filtersx[x.name] = new KalmanFilter();
-    x.rotation.x = filtersx[x.name].filter(euler.x);
-  }
-  if(filtersy[x.name]){
-    x.rotation.y = filtersy[x.name].filter(euler.y);
-  }
-  else{
-    filtersy[x.name] = new KalmanFilter();
-    x.rotation.y = filtersy[x.name].filter(euler.y);
-  }
-  if(filtersz[x.name]){
-    x.rotation.z = filtersz[x.name].filter(euler.z);
-  }
-  else{
-    filtersz[x.name] = new KalmanFilter();
-    x.rotation.z = filtersz[x.name].filter(euler.z);
-  }
-
-  globalQuaternion = new THREE.Quaternion().setFromEuler(x.rotation);
-*/
+    setBoneOrientation(x, localQuaternion);
   
+}
 
-
-    setLocal(
-      bone,
-      globalQuaternion.x,
-      globalQuaternion.y,
-      globalQuaternion.z,
-      globalQuaternion.w
-    );
-    setGlobal(
-      bone,
-      localQuaternion.x,
-      localQuaternion.y,
-      localQuaternion.z,
-      localQuaternion.w
-    );
+var data56 = null;
+function setBoneOrientation(bone, quaternion) {
+  if(bone.name == rigPrefix + "Spine"){
+   quaternion = new THREE.Quaternion(quaternion.x, -quaternion.y, quaternion.z, quaternion.w);
+   var hipQuat = new THREE.Quaternion(model.getObjectByName(rigPrefix + "Hips").quaternion.x, model.getObjectByName(rigPrefix + "Hips").quaternion.y, model.getObjectByName(rigPrefix + "Hips").quaternion.z, model.getObjectByName(rigPrefix + "Hips").quaternion.w);
+   quaternion = hipQuat.invert().multiply(quaternion);
   }
+
+
+  bone.quaternion.set(quaternion.x, quaternion.y, quaternion.z, quaternion.w);
+
 }
 
 function quaternionToEuler(q) {
