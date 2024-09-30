@@ -79,7 +79,12 @@ function handleWSMessage(obj) {
    currentQuaternion =  new THREE.Quaternion(-obj.y, -obj.x, -obj.w, -obj.z);
   }
   else if(bone == "Spine"){
-    currentQuaternion = new THREE.Quaternion(obj.w, -obj.z, obj.x, -obj.y);
+   // currentQuaternion = new THREE.Quaternion(obj.w, -obj.z, obj.x, -obj.y);
+    var quaternion = new THREE.Quaternion(obj.w, -obj.z, obj.x, -obj.y);
+    quaternion = new THREE.Quaternion(quaternion.x, -quaternion.y, quaternion.z, quaternion.w);
+    var y = model.getObjectByName(rigPrefix + "Hips").quaternion;
+    var hipQuat = new THREE.Quaternion(y.x, y.y, y.z, y.w);
+    currentQuaternion = hipQuat.invert().multiply(quaternion);
   }
   var localQuaternion = currentQuaternion;
   if (!mac2Bones[bone]) {
@@ -102,9 +107,6 @@ function handleWSMessage(obj) {
 
 
   localQuaternion = localQuaternion.multiply(calibratedQuaternion.invert());
-  //localQuaternion = adjustQuaternionForThickness(localQuaternion, 0.1);
-
-  //console.log(localQuaternion);
   mac2Bones[bone].last.x = localQuaternion.x;
   mac2Bones[bone].last.y = localQuaternion.y;
   mac2Bones[bone].last.z = localQuaternion.z;
@@ -112,32 +114,14 @@ function handleWSMessage(obj) {
 
 
   if (obj.sensorPosition !== undefined) {
-    obj.sensorPosition.x *= -1;
-    if (
-      initialPosition.x == 0 &&
-      initialPosition.y == 0 &&
-      initialPosition.z == 0
-    ) {
-      initialPosition.x = obj.sensorPosition.x * positionSensivity;
-      initialPosition.y = obj.sensorPosition.y * positionSensivity;
-      initialPosition.z = obj.sensorPosition.z * positionSensivity;
-    }
-    if (calibrated == true) {
-      initialPosition.x = obj.sensorPosition.x * positionSensivity;
-      initialPosition.y = obj.sensorPosition.y * positionSensivity;
-      initialPosition.z = obj.sensorPosition.z * positionSensivity;
-      calibrated = false;
-    }
-
     var sensorPosition = new THREE.Vector3(
-      obj.sensorPosition.x * positionSensivity - initialPosition.x,
-      obj.sensorPosition.y * positionSensivity - initialPosition.y + 100,
-      obj.sensorPosition.z * positionSensivity - initialPosition.z
+      obj.sensorPosition.x ,
+      -obj.sensorPosition.y  + 100,
+      obj.sensorPosition.z 
     );
-    //set this as position of the bone
-    // console.log(sensorPosition);
 
     const hipsBone = model.getObjectByName(rigPrefix + "Hips");
+    obj.sensorPosition.y += 200;
     hipsBone.position.set(
       kfx.filter(sensorPosition.x),
       kfy.filter(sensorPosition.y),
@@ -153,12 +137,14 @@ function handleWSMessage(obj) {
 
 var data56 = null;
 function setBoneOrientation(bone, quaternion) {
+  /*
   if(bone.name == rigPrefix + "Spine"){
    quaternion = new THREE.Quaternion(quaternion.x, -quaternion.y, quaternion.z, quaternion.w);
-   var hipQuat = new THREE.Quaternion(model.getObjectByName(rigPrefix + "Hips").quaternion.x, model.getObjectByName(rigPrefix + "Hips").quaternion.y, model.getObjectByName(rigPrefix + "Hips").quaternion.z, model.getObjectByName(rigPrefix + "Hips").quaternion.w);
+   var y = model.getObjectByName(rigPrefix + "Hips").quaternion;
+   var hipQuat = new THREE.Quaternion(y.x, y.y, y.z, y.w);
    quaternion = hipQuat.invert().multiply(quaternion);
   }
-
+   */
 
   bone.quaternion.set(quaternion.x, quaternion.y, quaternion.z, quaternion.w);
 
