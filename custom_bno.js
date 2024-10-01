@@ -68,7 +68,6 @@ function handleWSMessage(obj) {
   //console.log(obj)
   var bone = obj.bone;
   var x = model.getObjectByName(rigPrefix + bone);
-  // console.log(bone, x, lowerFirstLetter(bone));
 
   document.getElementById(lowerFirstLetter(bone) + "Batery").innerHTML =
     parseFloat(obj.batt) * 100;
@@ -79,12 +78,11 @@ function handleWSMessage(obj) {
    currentQuaternion =  new THREE.Quaternion(-obj.y, -obj.x, -obj.w, -obj.z);
   }
   else if(bone == "Spine"){
-   // currentQuaternion = new THREE.Quaternion(obj.w, -obj.z, obj.x, -obj.y);
-    var quaternion = new THREE.Quaternion(obj.w, -obj.z, obj.x, -obj.y);
-    quaternion = new THREE.Quaternion(quaternion.x, -quaternion.y, quaternion.z, quaternion.w);
-    var y = model.getObjectByName(rigPrefix + "Hips").quaternion;
-    var hipQuat = new THREE.Quaternion(y.x, y.y, y.z, y.w);
-    currentQuaternion = hipQuat.invert().multiply(quaternion);
+    currentQuaternion = new THREE.Quaternion(-obj.w, -obj.z, obj.x, obj.y);
+
+   var y = model.getObjectByName(rigPrefix + "Hips").quaternion;
+   var hipQuat = new THREE.Quaternion(y.x, y.y, y.z, y.w);
+   currentQuaternion = hipQuat.invert().multiply(currentQuaternion);
   }
   var localQuaternion = currentQuaternion;
   if (!mac2Bones[bone]) {
@@ -131,23 +129,18 @@ function handleWSMessage(obj) {
   }
 
 
-    setBoneOrientation(x, localQuaternion);
+  if(bone == "Spine"){
+    localQuaternion = new THREE.Quaternion(localQuaternion.x, -localQuaternion.y, -localQuaternion.z, -localQuaternion.w);
+
+  }
+
+  setBoneOrientation(x, localQuaternion);
   
 }
 
 var data56 = null;
 function setBoneOrientation(bone, quaternion) {
-  /*
-  if(bone.name == rigPrefix + "Spine"){
-   quaternion = new THREE.Quaternion(quaternion.x, -quaternion.y, quaternion.z, quaternion.w);
-   var y = model.getObjectByName(rigPrefix + "Hips").quaternion;
-   var hipQuat = new THREE.Quaternion(y.x, y.y, y.z, y.w);
-   quaternion = hipQuat.invert().multiply(quaternion);
-  }
-   */
-
   bone.quaternion.set(quaternion.x, quaternion.y, quaternion.z, quaternion.w);
-
 }
 
 function quaternionToEuler(q) {
