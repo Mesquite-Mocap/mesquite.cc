@@ -130,17 +130,45 @@ function handleWSMessage(obj) {
 
 
   if(bone == "Spine"){
-    localQuaternion = new THREE.Quaternion(localQuaternion.x, -localQuaternion.y, -localQuaternion.z, -localQuaternion.w);
-
+    localQuaternion = new THREE.Quaternion(localQuaternion.y, localQuaternion.x, localQuaternion.z, localQuaternion.w);
+    setBoneOrientation(x, localQuaternion);
   }
 
-  setBoneOrientation(x, localQuaternion);
   
 }
 
+
+function swapXZAxesInQuaternion(quat) {
+  // Create a quaternion representing a 90-degree rotation around the Y axis
+  // This rotation swaps X and Z axes
+  let swapQuat = new THREE.Quaternion();
+  swapQuat.setFromAxisAngle(new THREE.Vector3(0, 1, 0), Math.PI / 2); // 90-degree rotation around Y
+  // Apply the swap quaternion to the original quaternion
+  let swappedQuat = quat.clone().premultiply(swapQuat); // Pre-multiply to apply rotation first
+  return swappedQuat;
+}
+function swapXYAxesInQuaternion(quat) {
+  // Create a quaternion representing a 90-degree rotation around the Z axis
+  // This rotation swaps X and Y axes
+  let swapQuat = new THREE.Quaternion();
+  swapQuat.setFromAxisAngle(new THREE.Vector3(0, 0, 1), Math.PI / 2); // 90-degree rotation around Z
+  // Apply the swap quaternion to the original quaternion
+  let swappedQuat = quat.clone().premultiply(swapQuat); // Pre-multiply to apply rotation first
+  return swappedQuat;
+}
+function swapYZAxesInQuaternion(quat) {
+  // Create a quaternion representing a 90-degree rotation around the X axis
+  // This rotation swaps Y and Z axes
+  let swapQuat = new THREE.Quaternion();
+  swapQuat.setFromAxisAngle(new THREE.Vector3(1, 0, 0), Math.PI / 2); // 90-degree rotation around X
+  // Apply the swap quaternion to the original quaternion
+  let swappedQuat = quat.clone().premultiply(swapQuat); // Pre-multiply to apply rotation first
+  return swappedQuat;
+}
+
 var data56 = null;
-function setBoneOrientation(bone, quaternion) {
-  bone.quaternion.set(quaternion.x, quaternion.y, quaternion.z, quaternion.w);
+function setBoneOrientation(bone, q) {
+  bone.quaternion.set(q.x, q.y, q.z, q.w);
 }
 
 function quaternionToEuler(q) {
