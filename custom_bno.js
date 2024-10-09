@@ -142,7 +142,7 @@ function handleWSMessage(obj) {
     setBoneOrientation(x, localQuaternion);
   }
   if(bone == "RightArm"){
-    localQuaternion = new THREE.Quaternion(localQuaternion.x, localQuaternion.y, localQuaternion.z, localQuaternion.w);
+    localQuaternion = new THREE.Quaternion(localQuaternion.z, localQuaternion.y, -localQuaternion.x, localQuaternion.w);
     setBoneOrientation(x, localQuaternion);
   }
   if(bone == "RightForeArm"){
