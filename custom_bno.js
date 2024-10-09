@@ -63,48 +63,32 @@ function updateTrackingLine(newHipPosition) {
 }
 
 function handleWSMessage(obj) {
-  // console.log(mac2Bones[obj.id].id);
-
-  //console.log(obj)
   var bone = obj.bone;
   var x = model.getObjectByName(rigPrefix + bone);
   // console.log(bone, x, lowerFirstLetter(bone));
 
   document.getElementById(lowerFirstLetter(bone) + "Batery").innerHTML =
     parseFloat(obj.batt) * 100;
-  // statsObjs[lowerFirstLetter(bone)].update();
+
+
+  var rawQuaternion = new THREE.Quaternion(obj.x, obj.y, obj.z, obj.w);
+  var refQuaternion = new THREE.Quaternion(0, 0, 0, 1);
+  if(mac2Bones[bone] && mac2Bones[bone].calibration){
+   refQuaternion = new THREE.Quaternion(
+    mac2Bones[bone].calibration.x,
+    mac2Bones[bone].calibration.y,
+    mac2Bones[bone].calibration.z,
+    mac2Bones[bone].calibration.w
+  );
+  }
+
+  var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
+  var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion);
 
   if (bone == "Spine") {
-    var currentQuaternion = new THREE.Quaternion(obj.w, -obj.x, obj.y, obj.z);
-  } else {
-    var currentQuaternion = new THREE.Quaternion(obj.x, obj.y, obj.z, obj.w);
-  }
-
-  if (
-    bone == "LeftArm" ||
-    bone == "RightArm" ||
-    bone == "RightForeArm" ||
-    bone == "LeftForeArm"
-  ) {
-    // var localQuaternion = currentQuaternion;
-    const euler = new THREE.Euler(-Math.PI / 2, 0, Math.PI, "XYZ");
-    const rotationQuaternion = new THREE.Quaternion().setFromEuler(euler);
-    var localQuaternion = rotateQuaternion(
-      currentQuaternion,
-      rotationQuaternion
-    );
-  } else if (bone == "Spine") {
-    const euler = new THREE.Euler(0, Math.PI / 2, Math.PI, "XYZ");
-    const rotationQuaternion = new THREE.Quaternion().setFromEuler(euler);
-    localQuaternion = rotateQuaternion(currentQuaternion, rotationQuaternion);
-  } else {
-    const euler = new THREE.Euler(-Math.PI / 2, 0, Math.PI, "XYZ");
-    const rotationQuaternion = new THREE.Quaternion().setFromEuler(euler);
-    var localQuaternion = rotateQuaternion(
-      currentQuaternion,
-      rotationQuaternion
-    );
-  }
+    var e = new THREE.Euler().setFromQuaternion(transformedQ.normalize());
+    x.rotation.set(e.x, e.y, e.z);
+  } 
 
   if (!mac2Bones[bone]) {
     mac2Bones[bone] = {};
@@ -114,23 +98,13 @@ function handleWSMessage(obj) {
     mac2Bones[bone].global = { x: 0, y: 0, z: 0, w: 1 };
   }
   // console.log(mac2Bones)
-  mac2Bones[bone].last.x = localQuaternion.x;
-  mac2Bones[bone].last.y = localQuaternion.y;
-  mac2Bones[bone].last.z = localQuaternion.z;
-  mac2Bones[bone].last.w = localQuaternion.w;
+  mac2Bones[bone].last.x = transformedQ.x;
+  mac2Bones[bone].last.y = transformedQ.y;
+  mac2Bones[bone].last.z = transformedQ.z;
+  mac2Bones[bone].last.w = transformedQ.w;
 
-  var calibratedQuaternion = new THREE.Quaternion(
-    mac2Bones[bone].calibration.x,
-    mac2Bones[bone].calibration.y,
-    mac2Bones[bone].calibration.z,
-    mac2Bones[bone].calibration.w
-  );
+  // deal with hip posotion
 
-  localQuaternion = localQuaternion.multiply(calibratedQuaternion.invert());
-  //console.log(localQuaternion);
-
-  var currentLocalEuler = quaternionToEuler(localQuaternion);
-  var parentQuaternion = getParentQuaternion(bone);
   if (obj.sensorPosition !== undefined) {
     obj.sensorPosition.x *= -1;
     if (
@@ -164,71 +138,6 @@ function handleWSMessage(obj) {
       -sensorPosition.z
     );
     updateTrackingLine(hipsBone.position);
-  }
-
-  if (parentQuaternion == null) {
-    // console.log("currentLocalEuler " + 180 * currentLocalEuler.x / Math.PI, 180 * currentLocalEuler.y / Math.PI, 180 * currentLocalEuler.z / Math.PI);
-    // x.quaternion.set(localQuaternion.x, localQuaternion.z, -localQuaternion.y, localQuaternion.w);
-    x.quaternion.set(
-      localQuaternion.x,
-      localQuaternion.y,
-      localQuaternion.z,
-      localQuaternion.w
-    );
-    setLocal(
-      bone,
-      localQuaternion.x,
-      localQuaternion.y,
-      localQuaternion.z,
-      localQuaternion.w
-    );
-    setGlobal(
-      bone,
-      localQuaternion.x,
-      localQuaternion.y,
-      localQuaternion.z,
-      localQuaternion.w
-    );
-  } else {
-    // console.log("localQuaternion ", localQuaternion.x, localQuaternion.y , localQuaternion.z ,localQuaternion.w);
-    // console.log("parentQuaternion ", parentQuaternion.x,parentQuaternion.y, parentQuaternion.z,parentQuaternion.w);
-
-    var parentEuler = quaternionToEuler(parentQuaternion);
-    // console.log("currentLocalEuler " + 180 * currentLocalEuler.x / Math.PI, 180 * currentLocalEuler.y / Math.PI, 180 * currentLocalEuler.z / Math.PI);
-    // console.log("parentEuler " + 180 * parentEuler.x / Math.PI, 180 * parentEuler.y / Math.PI, 180 * parentEuler.z / Math.PI);
-
-    var newParentQuaternion = new THREE.Quaternion(
-      parentQuaternion.x,
-      parentQuaternion.y,
-      parentQuaternion.z,
-      parentQuaternion.w
-    );
-    var globalQuaternion = newParentQuaternion
-      .invert()
-      .multiply(localQuaternion);
-    // console.log("newParentQuaternion", globalQuaternion.x,globalQuaternion.y, globalQuaternion.z,globalQuaternion.w);
-
-    // x.quaternion.set(localQuaternion.x, localQuaternion.z, -localQuaternion.y, localQuaternion.w);
-    x.quaternion.set(
-      globalQuaternion.x,
-      globalQuaternion.y,
-      globalQuaternion.z,
-      globalQuaternion.w
-    );
-    setLocal(
-      bone,
-      globalQuaternion.x,
-      globalQuaternion.y,
-      globalQuaternion.z,
-      globalQuaternion.w
-    );
-    setGlobal(
-      bone,
-      localQuaternion.x,
-      localQuaternion.y,
-      localQuaternion.z,
-      localQuaternion.w
-    );
   }
 }
 
