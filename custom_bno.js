@@ -133,7 +133,22 @@ function handleWSMessage(obj) {
     localQuaternion = new THREE.Quaternion(localQuaternion.y, localQuaternion.x, localQuaternion.z, localQuaternion.w);
     setBoneOrientation(x, localQuaternion);
   }
-
+  if(bone == "LeftArm"){
+    localQuaternion = new THREE.Quaternion(-localQuaternion.z, localQuaternion.y, localQuaternion.x, localQuaternion.w);
+    setBoneOrientation(x, localQuaternion);
+  }
+  if(bone == "LeftForeArm"){
+    localQuaternion = new THREE.Quaternion(-localQuaternion.z, localQuaternion.y, localQuaternion.x, localQuaternion.w);
+    setBoneOrientation(x, localQuaternion);
+  }
+  if(bone == "RightArm"){
+    localQuaternion = new THREE.Quaternion(localQuaternion.x, localQuaternion.y, localQuaternion.z, localQuaternion.w);
+    setBoneOrientation(x, localQuaternion);
+  }
+  if(bone == "RightForeArm"){
+    localQuaternion = new THREE.Quaternion(-localQuaternion.z, localQuaternion.x, localQuaternion.y, localQuaternion.w);
+    setBoneOrientation(x, localQuaternion);
+  }
   
 }
 
