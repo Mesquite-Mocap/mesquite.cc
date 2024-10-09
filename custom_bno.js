@@ -84,6 +84,14 @@ function handleWSMessage(obj) {
    var hipQuat = new THREE.Quaternion(y.x, y.y, y.z, y.w);
    currentQuaternion = hipQuat.invert().multiply(currentQuaternion);
   }
+  else if(bone == "LeftArm"){
+    currentQuaternion = new THREE.Quaternion(-obj.y, obj.w, -obj.x, -obj.z);
+    var y = model.getObjectByName(rigPrefix + "Spine").quaternion;
+    var chestQuat = new THREE.Quaternion(y.x, y.y, y.z, y.w);
+    currentQuaternion = chestQuat.invert().multiply(currentQuaternion);
+  }
+
+
   var localQuaternion = currentQuaternion;
   if (!mac2Bones[bone]) {
     mac2Bones[bone] = {};
@@ -134,7 +142,13 @@ function handleWSMessage(obj) {
     setBoneOrientation(x, localQuaternion);
   }
   if(bone == "LeftArm"){
-    localQuaternion = new THREE.Quaternion(-localQuaternion.z, localQuaternion.y, localQuaternion.x, localQuaternion.w);
+    const euler = new THREE.Euler(-Math.PI / 2, 0, Math.PI, "XYZ");
+    const rotationQuaternion = new THREE.Quaternion().setFromEuler(euler);
+    var localQuaternion = rotateQuaternion(
+      localQuaternion,
+      rotationQuaternion
+    );
+    localQuaternion = new THREE.Quaternion(-localQuaternion.x, localQuaternion.y, localQuaternion.z, localQuaternion.w);
     setBoneOrientation(x, localQuaternion);
   }
   if(bone == "LeftForeArm"){
