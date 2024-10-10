@@ -8,23 +8,6 @@ var kfx = new KalmanFilter();
 var kfy = new KalmanFilter();
 var kfz = new KalmanFilter();
 
-var filtersx = {};
-var filtersy = {};
-var filtersz = {};
-
-function adjustQuaternionForThickness(quaternion, thickness) {
-  // Implement the logic to adjust the quaternion based on thickness
-  // This is a placeholder implementation
-  var scale = 1 + thickness; // Example: scale the quaternion components
-  return new THREE.Quaternion(
-    quaternion.x * scale,
-    quaternion.y * scale,
-    quaternion.z * scale,
-    quaternion.w * scale
-  );
-}
-
-
 function calibrate() {
   var keys = Object.keys(mac2Bones);
   for (var i = 0; i < keys.length; i++) {
@@ -63,56 +46,48 @@ function updateTrackingLine(newHipPosition) {
 }
 
 function handleWSMessage(obj) {
+  // console.log(mac2Bones[obj.id].id);
+
+  //console.log(obj)
   var bone = obj.bone;
   var x = model.getObjectByName(rigPrefix + bone);
   // console.log(bone, x, lowerFirstLetter(bone));
 
   document.getElementById(lowerFirstLetter(bone) + "Batery").innerHTML =
     parseFloat(obj.batt) * 100;
-
-
-  var rawQuaternion = new THREE.Quaternion(obj.x, obj.y, obj.z, obj.w);
-  var refQuaternion = new THREE.Quaternion(0, 0, 0, 1);
-  if(mac2Bones[bone] && mac2Bones[bone].calibration){
-   refQuaternion = new THREE.Quaternion(
-    mac2Bones[bone].calibration.x,
-    mac2Bones[bone].calibration.y,
-    mac2Bones[bone].calibration.z,
-    mac2Bones[bone].calibration.w
-  );
-  }
-
-
+  // statsObjs[lowerFirstLetter(bone)].update();
 
   if (bone == "Spine") {
-    var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
-    var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion);
-   x.quaternion.copy(transformedQ.normalize());
-  } 
-  if (bone == "LeftArm") {
-    var spine = model.getObjectByName(rigPrefix + "Spine");
-    var spineQ = new THREE.Quaternion().copy(spine.quaternion);
-    // caluclate the relative quaternion
-  //  transformedQ = rotateQuaternion(new THREE.Quaternion(transformedQ.x, transformedQ.y, transformedQ.z, transformedQ.w), new THREE.Quaternion(spineQ.x, spineQ.y, spineQ.z, spineQ.w).invert());
+    var currentQuaternion = new THREE.Quaternion(obj.w, -obj.x, obj.y, obj.z);
+  } else {
+    var currentQuaternion = new THREE.Quaternion(obj.x, obj.y, obj.z, obj.w);
+  }
 
-  const euler = new THREE.Euler(-Math.PI / 2, 0, Math.PI, "XYZ");
+  if (
+    bone == "LeftArm" ||
+    bone == "RightArm" ||
+    bone == "RightForeArm" ||
+    bone == "LeftForeArm"
+  ) {
+    // var localQuaternion = currentQuaternion;
+    const euler = new THREE.Euler(-Math.PI / 2, 0, Math.PI, "XYZ");
     const rotationQuaternion = new THREE.Quaternion().setFromEuler(euler);
-    var transformedQ = rotateQuaternion(
-      rawQuaternion.normalize(),
+    var localQuaternion = rotateQuaternion(
+      currentQuaternion,
       rotationQuaternion
     );
-
-    var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
-    var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, transformedQ);
-
-   // transformedQ = new THREE.Quaternion(transformedQ.y, transformedQ.z, transformedQ.x, transformedQ.w);
-
-   transformedQ = new THREE.Quaternion(transformedQ.y, transformedQ.z, transformedQ.x, transformedQ.w);
-
-   var e = new THREE.Euler().setFromQuaternion(transformedQ, 'XYZ');
-
-    x.rotation.set(e.x, e.y + Math.PI, e.z);
-  } 
+  } else if (bone == "Spine") {
+    const euler = new THREE.Euler(0, Math.PI / 2, Math.PI, "XYZ");
+    const rotationQuaternion = new THREE.Quaternion().setFromEuler(euler);
+    localQuaternion = rotateQuaternion(currentQuaternion, rotationQuaternion);
+  } else {
+    const euler = new THREE.Euler(-Math.PI / 2, 0, Math.PI, "XYZ");
+    const rotationQuaternion = new THREE.Quaternion().setFromEuler(euler);
+    var localQuaternion = rotateQuaternion(
+      currentQuaternion,
+      rotationQuaternion
+    );
+  }
 
   if (!mac2Bones[bone]) {
     mac2Bones[bone] = {};
@@ -122,13 +97,23 @@ function handleWSMessage(obj) {
     mac2Bones[bone].global = { x: 0, y: 0, z: 0, w: 1 };
   }
   // console.log(mac2Bones)
-  mac2Bones[bone].last.x = transformedQ.x;
-  mac2Bones[bone].last.y = transformedQ.y;
-  mac2Bones[bone].last.z = transformedQ.z;
-  mac2Bones[bone].last.w = transformedQ.w;
+  mac2Bones[bone].last.x = localQuaternion.x;
+  mac2Bones[bone].last.y = localQuaternion.y;
+  mac2Bones[bone].last.z = localQuaternion.z;
+  mac2Bones[bone].last.w = localQuaternion.w;
 
-  // deal with hip posotion
+  var calibratedQuaternion = new THREE.Quaternion(
+    mac2Bones[bone].calibration.x,
+    mac2Bones[bone].calibration.y,
+    mac2Bones[bone].calibration.z,
+    mac2Bones[bone].calibration.w
+  );
 
+  localQuaternion = localQuaternion.multiply(calibratedQuaternion.invert());
+  //console.log(localQuaternion);
+
+  var currentLocalEuler = quaternionToEuler(localQuaternion);
+  var parentQuaternion = getParentQuaternion(bone);
   if (obj.sensorPosition !== undefined) {
     obj.sensorPosition.x *= -1;
     if (
@@ -163,39 +148,71 @@ function handleWSMessage(obj) {
     );
     updateTrackingLine(hipsBone.position);
   }
-}
 
-function swapXZAxesInQuaternion(quat) {
-  // Create a quaternion representing a 90-degree rotation around the Y axis
-  // This rotation swaps X and Z axes
-  let swapQuat = new THREE.Quaternion();
-  swapQuat.setFromAxisAngle(new THREE.Vector3(0, 1, 0), Math.PI / 2); // 90-degree rotation around Y
-  // Apply the swap quaternion to the original quaternion
-  let swappedQuat = quat.clone().premultiply(swapQuat); // Pre-multiply to apply rotation first
-  return swappedQuat;
-}
-function swapXYAxesInQuaternion(quat) {
-  // Create a quaternion representing a 90-degree rotation around the Z axis
-  // This rotation swaps X and Y axes
-  let swapQuat = new THREE.Quaternion();
-  swapQuat.setFromAxisAngle(new THREE.Vector3(0, 0, 1), Math.PI / 2); // 90-degree rotation around Z
-  // Apply the swap quaternion to the original quaternion
-  let swappedQuat = quat.clone().premultiply(swapQuat); // Pre-multiply to apply rotation first
-  return swappedQuat;
-}
-function swapYZAxesInQuaternion(quat) {
-  // Create a quaternion representing a 90-degree rotation around the X axis
-  // This rotation swaps Y and Z axes
-  let swapQuat = new THREE.Quaternion();
-  swapQuat.setFromAxisAngle(new THREE.Vector3(1, 0, 0), Math.PI / 2); // 90-degree rotation around X
-  // Apply the swap quaternion to the original quaternion
-  let swappedQuat = quat.clone().premultiply(swapQuat); // Pre-multiply to apply rotation first
-  return swappedQuat;
-}
+  if (parentQuaternion == null) {
+    // console.log("currentLocalEuler " + 180 * currentLocalEuler.x / Math.PI, 180 * currentLocalEuler.y / Math.PI, 180 * currentLocalEuler.z / Math.PI);
+    // x.quaternion.set(localQuaternion.x, localQuaternion.z, -localQuaternion.y, localQuaternion.w);
+    x.quaternion.set(
+      localQuaternion.x,
+      localQuaternion.y,
+      localQuaternion.z,
+      localQuaternion.w
+    );
+    setLocal(
+      bone,
+      localQuaternion.x,
+      localQuaternion.y,
+      localQuaternion.z,
+      localQuaternion.w
+    );
+    setGlobal(
+      bone,
+      localQuaternion.x,
+      localQuaternion.y,
+      localQuaternion.z,
+      localQuaternion.w
+    );
+  } else {
+    // console.log("localQuaternion ", localQuaternion.x, localQuaternion.y , localQuaternion.z ,localQuaternion.w);
+    // console.log("parentQuaternion ", parentQuaternion.x,parentQuaternion.y, parentQuaternion.z,parentQuaternion.w);
 
-var data56 = null;
-function setBoneOrientation(bone, q) {
-  bone.quaternion.set(q.x, q.y, q.z, q.w);
+    var parentEuler = quaternionToEuler(parentQuaternion);
+    // console.log("currentLocalEuler " + 180 * currentLocalEuler.x / Math.PI, 180 * currentLocalEuler.y / Math.PI, 180 * currentLocalEuler.z / Math.PI);
+    // console.log("parentEuler " + 180 * parentEuler.x / Math.PI, 180 * parentEuler.y / Math.PI, 180 * parentEuler.z / Math.PI);
+
+    var newParentQuaternion = new THREE.Quaternion(
+      parentQuaternion.x,
+      parentQuaternion.y,
+      parentQuaternion.z,
+      parentQuaternion.w
+    );
+    var globalQuaternion = newParentQuaternion
+      .invert()
+      .multiply(localQuaternion);
+    // console.log("newParentQuaternion", globalQuaternion.x,globalQuaternion.y, globalQuaternion.z,globalQuaternion.w);
+
+    // x.quaternion.set(localQuaternion.x, localQuaternion.z, -localQuaternion.y, localQuaternion.w);
+    x.quaternion.set(
+      globalQuaternion.x,
+      globalQuaternion.y,
+      globalQuaternion.z,
+      globalQuaternion.w
+    );
+    setLocal(
+      bone,
+      globalQuaternion.x,
+      globalQuaternion.y,
+      globalQuaternion.z,
+      globalQuaternion.w
+    );
+    setGlobal(
+      bone,
+      localQuaternion.x,
+      localQuaternion.y,
+      localQuaternion.z,
+      localQuaternion.w
+    );
+  }
 }
 
 function quaternionToEuler(q) {
@@ -234,7 +251,7 @@ function setLocal(id, x, y, z, w) {
 }
 
 function getParentQuaternion(child) {
-  console.log(child);
+  // console.log(child);
 
   var id = dependencyGraph[child];
   var keys = Object.keys(mac2Bones);
