@@ -82,19 +82,36 @@ function handleWSMessage(obj) {
   );
   }
 
-  var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
-  var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion);
+
 
   if (bone == "Spine") {
+    var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
+    var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion);
    x.quaternion.copy(transformedQ.normalize());
   } 
   if (bone == "LeftArm") {
     var spine = model.getObjectByName(rigPrefix + "Spine");
     var spineQ = new THREE.Quaternion().copy(spine.quaternion);
     // caluclate the relative quaternion
-    transformedQ = rotateQuaternion(new THREE.Quaternion(transformedQ.x, transformedQ.y, transformedQ.z, transformedQ.w), new THREE.Quaternion(spineQ.x, spineQ.y, spineQ.z, spineQ.w).invert());
-    transformedQ = new THREE.Quaternion(transformedQ.y, -transformedQ.x, -transformedQ.z, transformedQ.w);
-    x.quaternion.copy(transformedQ.normalize());
+  //  transformedQ = rotateQuaternion(new THREE.Quaternion(transformedQ.x, transformedQ.y, transformedQ.z, transformedQ.w), new THREE.Quaternion(spineQ.x, spineQ.y, spineQ.z, spineQ.w).invert());
+
+  const euler = new THREE.Euler(-Math.PI / 2, 0, Math.PI, "XYZ");
+    const rotationQuaternion = new THREE.Quaternion().setFromEuler(euler);
+    var transformedQ = rotateQuaternion(
+      rawQuaternion.normalize(),
+      rotationQuaternion
+    );
+
+    var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
+    var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, transformedQ);
+
+   // transformedQ = new THREE.Quaternion(transformedQ.y, transformedQ.z, transformedQ.x, transformedQ.w);
+
+   transformedQ = new THREE.Quaternion(transformedQ.y, transformedQ.z, transformedQ.x, transformedQ.w);
+
+   var e = new THREE.Euler().setFromQuaternion(transformedQ, 'XYZ');
+
+    x.rotation.set(e.x, e.y + Math.PI, e.z);
   } 
 
   if (!mac2Bones[bone]) {
