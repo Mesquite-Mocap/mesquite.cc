@@ -91,10 +91,8 @@ function handleWSMessage(obj) {
   if (bone == "LeftArm") {
     var spine = model.getObjectByName(rigPrefix + "Spine");
     var spineQ = new THREE.Quaternion().copy(spine.quaternion);
-    // caluclate the relative quaternion
-    transformedQ = rotateQuaternion(new THREE.Quaternion(transformedQ.x, transformedQ.y, transformedQ.z, transformedQ.w), new THREE.Quaternion(spineQ.x, spineQ.y, spineQ.z, spineQ.w).invert());
-    transformedQ = new THREE.Quaternion(transformedQ.y, -transformedQ.x, -transformedQ.z, transformedQ.w);
-    x.quaternion.copy(transformedQ.normalize());
+    let adjustedArmQ = spineQ.clone().invert().multiply(transformedQ).normalize();
+    x.quaternion.copy(new THREE.Quaternion(-adjustedArmQ.y, adjustedArmQ.z, -adjustedArmQ.x, adjustedArmQ.w));
   } 
 
   if (!mac2Bones[bone]) {

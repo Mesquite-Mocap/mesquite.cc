@@ -8,6 +8,23 @@ var kfx = new KalmanFilter();
 var kfy = new KalmanFilter();
 var kfz = new KalmanFilter();
 
+var filtersx = {};
+var filtersy = {};
+var filtersz = {};
+
+function adjustQuaternionForThickness(quaternion, thickness) {
+  // Implement the logic to adjust the quaternion based on thickness
+  // This is a placeholder implementation
+  var scale = 1 + thickness; // Example: scale the quaternion components
+  return new THREE.Quaternion(
+    quaternion.x * scale,
+    quaternion.y * scale,
+    quaternion.z * scale,
+    quaternion.w * scale
+  );
+}
+
+
 function calibrate() {
   var keys = Object.keys(mac2Bones);
   for (var i = 0; i < keys.length; i++) {
@@ -215,6 +232,39 @@ function handleWSMessage(obj) {
   }
 }
 
+function swapXZAxesInQuaternion(quat) {
+  // Create a quaternion representing a 90-degree rotation around the Y axis
+  // This rotation swaps X and Z axes
+  let swapQuat = new THREE.Quaternion();
+  swapQuat.setFromAxisAngle(new THREE.Vector3(0, 1, 0), Math.PI / 2); // 90-degree rotation around Y
+  // Apply the swap quaternion to the original quaternion
+  let swappedQuat = quat.clone().premultiply(swapQuat); // Pre-multiply to apply rotation first
+  return swappedQuat;
+}
+function swapXYAxesInQuaternion(quat) {
+  // Create a quaternion representing a 90-degree rotation around the Z axis
+  // This rotation swaps X and Y axes
+  let swapQuat = new THREE.Quaternion();
+  swapQuat.setFromAxisAngle(new THREE.Vector3(0, 0, 1), Math.PI / 2); // 90-degree rotation around Z
+  // Apply the swap quaternion to the original quaternion
+  let swappedQuat = quat.clone().premultiply(swapQuat); // Pre-multiply to apply rotation first
+  return swappedQuat;
+}
+function swapYZAxesInQuaternion(quat) {
+  // Create a quaternion representing a 90-degree rotation around the X axis
+  // This rotation swaps Y and Z axes
+  let swapQuat = new THREE.Quaternion();
+  swapQuat.setFromAxisAngle(new THREE.Vector3(1, 0, 0), Math.PI / 2); // 90-degree rotation around X
+  // Apply the swap quaternion to the original quaternion
+  let swappedQuat = quat.clone().premultiply(swapQuat); // Pre-multiply to apply rotation first
+  return swappedQuat;
+}
+
+var data56 = null;
+function setBoneOrientation(bone, q) {
+  bone.quaternion.set(q.x, q.y, q.z, q.w);
+}
+
 function quaternionToEuler(q) {
   var angles = {};
   var den = Math.sqrt(q.w * q.w + q.x * q.x + q.y * q.y + q.z * q.z);
@@ -251,7 +301,7 @@ function setLocal(id, x, y, z, w) {
 }
 
 function getParentQuaternion(child) {
-  // console.log(child);
+  console.log(child);
 
   var id = dependencyGraph[child];
   var keys = Object.keys(mac2Bones);
