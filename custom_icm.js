@@ -89,10 +89,25 @@ function handleWSMessage(obj) {
    x.quaternion.copy(transformedQ.normalize());
   } 
   if (bone == "LeftArm") {
+    
+
+
+    var q = new THREE.Quaternion().copy(transformedQ);
+    var armQ = new THREE.Quaternion(-q.y, q.z, -q.x, q.w).normalize();
+
+
+
     var spine = model.getObjectByName(rigPrefix + "Spine");
-    var spineQ = new THREE.Quaternion().copy(spine.quaternion);
-    let adjustedArmQ = spineQ.clone().invert().multiply(transformedQ).normalize();
-    x.quaternion.copy(new THREE.Quaternion(-adjustedArmQ.y, adjustedArmQ.z, -adjustedArmQ.x, adjustedArmQ.w));
+    const euler = new THREE.Euler(-Math.PI / 2, 0, Math.PI, "XYZ");
+    const rotationQuaternion = new THREE.Quaternion().setFromEuler(euler);
+    var spineQ = rotateQuaternion(
+      spine.quaternion,
+      rotationQuaternion
+    );
+    
+    x.quaternion.copy(armQ);
+
+    
   } 
 
   if (!mac2Bones[bone]) {
