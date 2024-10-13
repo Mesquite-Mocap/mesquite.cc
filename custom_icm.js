@@ -73,42 +73,48 @@ function handleWSMessage(obj) {
 
   var rawQuaternion = new THREE.Quaternion(obj.x, obj.y, obj.z, obj.w);
   var refQuaternion = new THREE.Quaternion(0, 0, 0, 1);
-  if(mac2Bones[bone] && mac2Bones[bone].calibration){
-   refQuaternion = new THREE.Quaternion(
-    mac2Bones[bone].calibration.x,
-    mac2Bones[bone].calibration.y,
-    mac2Bones[bone].calibration.z,
-    mac2Bones[bone].calibration.w
-  );
+  if (mac2Bones[bone] && mac2Bones[bone].calibration) {
+    refQuaternion = new THREE.Quaternion(
+      mac2Bones[bone].calibration.x,
+      mac2Bones[bone].calibration.y,
+      mac2Bones[bone].calibration.z,
+      mac2Bones[bone].calibration.w
+    );
   }
 
-  var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
-  var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion);
+
 
   if (bone == "Spine") {
-   x.quaternion.copy(transformedQ.normalize());
-  } 
+    var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
+    var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion);
+    x.quaternion.copy(transformedQ.normalize());
+  }
   if (bone == "LeftArm") {
-    
+    /*
+    var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
+    var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion);
+    var q = new THREE.Quaternion().copy(transformedQ);
+    var armQ = new THREE.Quaternion(-q.y, q.z, -q.x, q.w).normalize();
+    x.quaternion.copy(armQ);
+    */
 
 
+
+    var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
+    var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion);
     var q = new THREE.Quaternion().copy(transformedQ);
     var armQ = new THREE.Quaternion(-q.y, q.z, -q.x, q.w).normalize();
 
 
-
+    
     var spine = model.getObjectByName(rigPrefix + "Spine");
-    const euler = new THREE.Euler(-Math.PI / 2, 0, Math.PI, "XYZ");
-    const rotationQuaternion = new THREE.Quaternion().setFromEuler(euler);
-    var spineQ = rotateQuaternion(
-      spine.quaternion,
-      rotationQuaternion
-    );
-    
-    x.quaternion.copy(armQ);
+    var spineQ = new THREE.Quaternion().copy(spine.quaternion);
+    var spineQinverse = new THREE.Quaternion().copy(spineQ).invert();
+  //  var spineCorrection = new THREE.Quaternion().copy(spineQinverse).multiply(armQ).normalize().copy(spineQ).normalize();
+    var spineCorrection = new THREE.Quaternion().copy(armQ).multiply(spineQinverse).normalize();
 
-    
-  } 
+    x.quaternion.copy(spineCorrection);
+  }
 
   if (!mac2Bones[bone]) {
     mac2Bones[bone] = {};
