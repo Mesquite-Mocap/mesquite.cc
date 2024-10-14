@@ -98,21 +98,15 @@ function handleWSMessage(obj) {
     x.quaternion.copy(armQ);
     */
 
-
-
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
     var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion);
     var q = new THREE.Quaternion().copy(transformedQ);
     var armQ = new THREE.Quaternion(-q.y, q.z, -q.x, q.w).normalize();
-
-
     
     var spine = model.getObjectByName(rigPrefix + "Spine");
     var spineQ = new THREE.Quaternion().copy(spine.quaternion);
     var spineQinverse = new THREE.Quaternion().copy(spineQ).invert();
-  //  var spineCorrection = new THREE.Quaternion().copy(spineQinverse).multiply(armQ).normalize().copy(spineQ).normalize();
     var spineCorrection = new THREE.Quaternion().copy(spineQinverse).multiply(armQ).normalize();
-    //spineCorrection.multiply(armQ).normalize();
 
     x.quaternion.copy(spineCorrection);
   }
