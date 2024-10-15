@@ -87,7 +87,9 @@ function handleWSMessage(obj) {
   if (bone == "Spine") {
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
     var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion);
+    
     x.quaternion.copy(transformedQ.normalize());
+    
   }
   if (bone == "LeftArm") {
     /*
