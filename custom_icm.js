@@ -87,10 +87,11 @@ function handleWSMessage(obj) {
   if (bone == "Spine") {
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
     var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion);
-    
-    x.quaternion.copy(transformedQ.normalize());
-    
+    var spineQ = new THREE.Quaternion(transformedQ.y, transformedQ.x, -transformedQ.z, transformedQ.w)
+
+    x.quaternion.copy(spineQ.normalize());
   }
+  
   if (bone == "LeftArm") {
     /*
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
@@ -112,6 +113,7 @@ function handleWSMessage(obj) {
 
     x.quaternion.copy(spineCorrection);
   }
+
 
   if (bone == "LeftForeArm") {
     
@@ -159,6 +161,7 @@ function handleWSMessage(obj) {
     x.quaternion.copy(spineCorrection);
     
   }
+  
 
   if (!mac2Bones[bone]) {
     mac2Bones[bone] = {};
