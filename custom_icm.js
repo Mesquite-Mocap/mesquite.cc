@@ -126,6 +126,21 @@ function handleWSMessage(obj) {
 
   }
 
+  if (bone == "RightForeArm") {
+    
+    var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
+    var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion);
+    var q = new THREE.Quaternion().copy(transformedQ);
+    var armQ = new THREE.Quaternion(q.x, -q.z, q.y, q.w).normalize();
+
+    var spine = model.getObjectByName(rigPrefix + "Spine");
+    var spineQ = new THREE.Quaternion().copy(spine.quaternion);
+    var spineQinverse = new THREE.Quaternion().copy(spineQ).invert();
+    var spineCorrection = new THREE.Quaternion().copy(spineQinverse).multiply(armQ).normalize();
+
+    x.quaternion.copy(spineCorrection);
+    
+  }
   if (!mac2Bones[bone]) {
     mac2Bones[bone] = {};
     mac2Bones[bone].last = { x: 0, y: 0, z: 0, w: 1 };
