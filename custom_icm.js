@@ -82,8 +82,6 @@ function handleWSMessage(obj) {
     );
   }
 
-
-
   if (bone == "Spine") {
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
     var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion);
@@ -92,6 +90,8 @@ function handleWSMessage(obj) {
     x.quaternion.copy(spineQ.normalize());
   }
   
+  
+
   if (bone == "LeftArm") {
     /*
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
@@ -104,12 +104,12 @@ function handleWSMessage(obj) {
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
     var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion);
     var q = new THREE.Quaternion().copy(transformedQ);
-    var armQ = new THREE.Quaternion(q.x, -q.z, q.y, q.w).normalize();
+    var leftarmQ = new THREE.Quaternion(-q.x, -q.z, -q.y, q.w).normalize();
     
     var spine = model.getObjectByName(rigPrefix + "Spine");
     var spineQ = new THREE.Quaternion().copy(spine.quaternion);
     var spineQinverse = new THREE.Quaternion().copy(spineQ).invert();
-    var spineCorrection = new THREE.Quaternion().copy(spineQinverse).multiply(armQ).normalize();
+    var spineCorrection = new THREE.Quaternion().copy(spineQinverse).multiply(leftarmQ).normalize();
 
     x.quaternion.copy(spineCorrection);
   }
@@ -120,14 +120,14 @@ function handleWSMessage(obj) {
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
     var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion);
     var q = new THREE.Quaternion().copy(transformedQ);
-    var armQ = new THREE.Quaternion(-q.x, -q.z, -q.y, q.w).normalize();
+    var forearmQ = new THREE.Quaternion(-q.x, -q.z, -q.y, q.w).normalize();
     
-    var spine = model.getObjectByName(rigPrefix + "Spine");
-    var spineQ = new THREE.Quaternion().copy(spine.quaternion);
-    var spineQinverse = new THREE.Quaternion().copy(spineQ).invert();
-    var spineCorrection = new THREE.Quaternion().copy(spineQinverse).multiply(armQ).normalize();
+    var leftArm = model.getObjectByName(rigPrefix + "LeftArm");
+    var leftArmQ = new THREE.Quaternion().copy(leftArm.quaternion);
+    var leftArmQinverse = new THREE.Quaternion().copy(leftArmQ).invert();
+    var leftarmCorrection = new THREE.Quaternion().copy(leftArmQinverse).multiply(forearmQ).normalize();
 
-    x.quaternion.copy(spineCorrection);
+    x.quaternion.copy(leftarmCorrection);
     
   }
 
@@ -135,7 +135,7 @@ function handleWSMessage(obj) {
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
     var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion);
     var q = new THREE.Quaternion().copy(transformedQ);
-    var armQ = new THREE.Quaternion(q.x, -q.z, q.y, q.w).normalize();
+    var armQ = new THREE.Quaternion(-q.x, -q.z, -q.y, q.w).normalize();
 
     var spine = model.getObjectByName(rigPrefix + "Spine");
     var spineQ = new THREE.Quaternion().copy(spine.quaternion);
