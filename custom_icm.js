@@ -232,6 +232,23 @@ function handleWSMessage(obj) {
     
   }
 
+  if (bone == "RightLeg") {
+    
+    var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
+    var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion);
+    var q = new THREE.Quaternion().copy(transformedQ);
+    var rightlegQ = new THREE.Quaternion(-q.y, -q.x, -q.z, q.w).normalize();
+
+    var rightupleg = model.getObjectByName(rigPrefix + "RightUpLeg");
+    var rightuplegQ = new THREE.Quaternion().copy(rightupleg.quaternion);
+    var rightuplegQinverse = new THREE.Quaternion().copy(rightuplegQ).invert();
+    var rightuplegCorrection = new THREE.Quaternion().copy(rightuplegQinverse).multiply(rightlegQ).normalize();
+
+    x.quaternion.copy(rightuplegCorrection);
+    
+    
+  }
+
   if (!mac2Bones[bone]) {
     mac2Bones[bone] = {};
     mac2Bones[bone].last = { x: 0, y: 0, z: 0, w: 1 };
