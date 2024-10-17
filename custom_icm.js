@@ -71,7 +71,10 @@ function handleWSMessage(obj) {
     parseFloat(obj.batt) * 100;
 
 
-  var rawQuaternion = new THREE.Quaternion(obj.x, obj.y, obj.z, obj.w);
+  var rawQuaternion = new THREE.Quaternion(parseFloat(obj.x), parseFloat(obj.y), parseFloat(obj.z), parseFloat(obj.w));
+  if(bone == "Hips"){
+    rawQuaternion = new THREE.Quaternion(-parseFloat(obj.y), -parseFloat(obj.x), -parseFloat(obj.z), parseFloat(obj.w));
+  }
   var refQuaternion = new THREE.Quaternion(0, 0, 0, 1);
   if (mac2Bones[bone] && mac2Bones[bone].calibration) {
     refQuaternion = new THREE.Quaternion(
@@ -82,12 +85,28 @@ function handleWSMessage(obj) {
     );
   }
 
+  if(bone == "Hips"){
+    console.log(obj);
+    var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
+    var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion).normalize();
+    var hipQ = new THREE.Quaternion(transformedQ.x, transformedQ.y, transformedQ.z, transformedQ.w).normalize();
+    x.quaternion.copy(hipQ);
+    transformedQ.copy(hipQ);
+  }
+
   if (bone == "Spine") {
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
     var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion);
-    var spineQ = new THREE.Quaternion(transformedQ.y, transformedQ.x, -transformedQ.z, transformedQ.w)
+    var spineQ = new THREE.Quaternion(transformedQ.y, transformedQ.x, -transformedQ.z, transformedQ.w);
 
-    x.quaternion.copy(spineQ.normalize());
+    var hips = model.getObjectByName(rigPrefix + "Hips");
+    var hipQ = new THREE.Quaternion().copy(hips.quaternion);
+    var hipQinverse = new THREE.Quaternion().copy(hipQ).invert();
+    var hipCorrection = new THREE.Quaternion().copy(hipQinverse).multiply(spineQ).normalize();
+
+
+    x.quaternion.copy(hipCorrection);
+   // transformedQ.copy(hipCorrection);
   }
   
   
@@ -159,6 +178,7 @@ function handleWSMessage(obj) {
     var rightArmCorrection = new THREE.Quaternion().copy(rightArmQinverse).multiply(rightforearmQ).normalize();
 
     x.quaternion.copy(rightArmCorrection);
+    transformedQ.copy(rightArmCorrection);
     
   }
   
