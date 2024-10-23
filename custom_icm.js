@@ -192,8 +192,10 @@ function handleWSMessage(obj) {
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
     var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion);
     var q = new THREE.Quaternion().copy(transformedQ);
-    var leftuplegQ = new THREE.Quaternion(-q.y, -q.x, -q.z, q.w).normalize();
+    var leftuplegQ = new THREE.Quaternion(-q.x, -q.y, q.z, q.w).normalize();
 
+    
+    
     var hips = model.getObjectByName(rigPrefix + "Hips");
     var hipsQ = new THREE.Quaternion().copy(hips.quaternion);
     var hipsQinverse = new THREE.Quaternion().copy(hipsQ).invert();
@@ -209,8 +211,10 @@ function handleWSMessage(obj) {
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
     var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion);
     var q = new THREE.Quaternion().copy(transformedQ);
-    var leftlegQ = new THREE.Quaternion(-q.y, -q.x, -q.z, q.w).normalize();
-
+    var leftlegQ = new THREE.Quaternion(-q.x, -q.y, q.z, q.w).normalize();
+    
+     
+    
     var leftupleg = model.getObjectByName(rigPrefix + "LeftUpLeg");
     var leftuplegQ = new THREE.Quaternion().copy(leftupleg.quaternion);
     var leftuplegQinverse = new THREE.Quaternion().copy(leftuplegQ).invert();
@@ -226,8 +230,9 @@ function handleWSMessage(obj) {
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
     var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion);
     var q = new THREE.Quaternion().copy(transformedQ);
-    var rightuplegQ = new THREE.Quaternion(-q.y, -q.x, -q.z, q.w).normalize();
-
+    var rightuplegQ = new THREE.Quaternion(-q.x, -q.y, q.z, q.w).normalize();
+    
+    
     var hips = model.getObjectByName(rigPrefix + "Hips");
     var hipsQ = new THREE.Quaternion().copy(hips.quaternion);
     var hipsQinverse = new THREE.Quaternion().copy(hipsQ).invert();
@@ -235,6 +240,7 @@ function handleWSMessage(obj) {
 
     x.quaternion.copy(hipsCorrection);
     
+
     
   }
 
@@ -243,8 +249,10 @@ function handleWSMessage(obj) {
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
     var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion);
     var q = new THREE.Quaternion().copy(transformedQ);
-    var rightlegQ = new THREE.Quaternion(-q.y, -q.x, -q.z, q.w).normalize();
+    var rightlegQ = new THREE.Quaternion(-q.x, -q.y, q.z, q.w).normalize();
 
+    
+    
     var rightupleg = model.getObjectByName(rigPrefix + "RightUpLeg");
     var rightuplegQ = new THREE.Quaternion().copy(rightupleg.quaternion);
     var rightuplegQinverse = new THREE.Quaternion().copy(rightuplegQ).invert();
