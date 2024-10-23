@@ -2,7 +2,6 @@ var rigPrefix = "mixamorig";
 
 var calibrated = false;
 var initialPosition = { x: 0, y: 0, z: 0 };
-var positionSensivity = 50;
 
 var kfx = new KalmanFilter();
 var kfy = new KalmanFilter();
@@ -97,8 +96,9 @@ function handleWSMessage(obj) {
   if (bone == "Spine") {
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
     var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion);
-    var spineQ = new THREE.Quaternion(transformedQ.y, transformedQ.x, -transformedQ.z, transformedQ.w);
+    var spineQ = new THREE.Quaternion(-transformedQ.x, -transformedQ.y, transformedQ.z, transformedQ.w);
 
+    
     var hips = model.getObjectByName(rigPrefix + "Hips");
     var hipQ = new THREE.Quaternion().copy(hips.quaternion);
     var hipQinverse = new THREE.Quaternion().copy(hipQ).invert();
@@ -106,6 +106,7 @@ function handleWSMessage(obj) {
 
 
     x.quaternion.copy(hipCorrection);
+    
    // transformedQ.copy(hipCorrection);
   }
   
@@ -123,7 +124,7 @@ function handleWSMessage(obj) {
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
     var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion);
     var q = new THREE.Quaternion().copy(transformedQ);
-    var leftarmQ = new THREE.Quaternion(-q.x, -q.z, -q.y, q.w).normalize();
+    var leftarmQ = new THREE.Quaternion(-q.x, -q.z, q.y, q.w).normalize();
     
     var spine = model.getObjectByName(rigPrefix + "Spine");
     var spineQ = new THREE.Quaternion().copy(spine.quaternion);
@@ -154,7 +155,7 @@ function handleWSMessage(obj) {
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
     var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion);
     var q = new THREE.Quaternion().copy(transformedQ);
-    var rightarmQ = new THREE.Quaternion(q.x, -q.z, q.y, q.w).normalize();
+    var rightarmQ = new THREE.Quaternion(-q.x, -q.z, -q.y, q.w).normalize();
 
     var spine = model.getObjectByName(rigPrefix + "Spine");
     var spineQ = new THREE.Quaternion().copy(spine.quaternion);
@@ -264,6 +265,8 @@ function handleWSMessage(obj) {
 
   // deal with hip posotion
 
+  var positionSensivity = 50;
+
   if (obj.sensorPosition !== undefined) {
     obj.sensorPosition.x *= -1;
     if (
@@ -292,9 +295,9 @@ function handleWSMessage(obj) {
 
     const hipsBone = model.getObjectByName(rigPrefix + "Hips");
     hipsBone.position.set(
-      sensorPosition.x,
-      sensorPosition.y,
-      -sensorPosition.z
+      kfx.filter(sensorPosition.x),
+      kfy.filter(sensorPosition.y),
+      -kfz.filter(sensorPosition.z)
     );
     updateTrackingLine(hipsBone.position);
   }
