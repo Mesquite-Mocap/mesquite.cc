@@ -262,7 +262,7 @@ function handleWSMessage(obj) {
   mac2Bones[bone].last.z = transformedQ.z;
   mac2Bones[bone].last.w = transformedQ.w;
 
-  // deal with hip posotion
+  // deal with hip position
 
   if (obj.sensorPosition !== undefined) {
     obj.sensorPosition.x *= -1;
