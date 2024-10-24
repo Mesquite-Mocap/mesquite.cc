@@ -66,6 +66,8 @@ function handleWSMessage(obj) {
   var x = model.getObjectByName(rigPrefix + bone);
   // console.log(bone, x, lowerFirstLetter(bone));
 
+   statsObjs[lowerFirstLetter(bone)].update();
+
   document.getElementById(lowerFirstLetter(bone) + "Batery").innerHTML =
     parseFloat(obj.batt) * 100;
 
