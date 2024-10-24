@@ -124,7 +124,7 @@ function handleWSMessage(obj) {
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
     var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion);
     var q = new THREE.Quaternion().copy(transformedQ);
-    var leftarmQ = new THREE.Quaternion(-q.y, q.z, q.x, q.w).normalize();
+    var leftarmQ = new THREE.Quaternion(q.y, q.z, q.x , q.w).normalize();
 
     
     
