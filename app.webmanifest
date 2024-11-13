@@ -1,0 +1,26 @@
+{
+  "name": "MESQUITE.cc",
+  "short_name": "Mesquite Mocap",
+  "description": "An open-source, open-hardware, web-based Mocap",
+  "icons": [
+    {
+      "src": "icons/icon.png",
+      "sizes": "400x400",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#000",
+  "background_color": "#acacac",
+  "scope": "/",
+  "file_handlers": [
+    {
+      "action": "/",
+      "launch_type": "single-client",
+      "accept": {
+        "text/*": [".bvh"]
+      }
+    }
+  ]
+}

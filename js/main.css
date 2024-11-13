@@ -1,0 +1,155 @@
+body {
+	margin: 0;
+	background-color: #000;
+	color: #fff;
+	font-family: Monospace;
+	font-size: 13px;
+	line-height: 24px;
+	overscroll-behavior: none;
+}
+
+a {
+	color: #ff0;
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+button {
+	cursor: pointer;
+	text-transform: uppercase;
+}
+
+#info {
+	position: absolute;
+	top: 0px;
+	width: 100%;
+	padding: 10px;
+	box-sizing: border-box;
+	text-align: center;
+	-moz-user-select: none;
+	-webkit-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	pointer-events: none;
+	z-index: 1; /* TODO Solve this in HTML */
+}
+
+a, button, input, select {
+	pointer-events: auto;
+}
+
+.dg.ac {
+	-moz-user-select: none;
+	-webkit-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	z-index: 2 !important; /* TODO Solve this in HTML */
+}
+
+#overlay {
+	position: absolute;
+	z-index: 2;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: rgba(0,0,0,0.7);
+}
+
+	#overlay button {
+		background: #ffffff;
+		border: 0;
+		color: #000000;
+		padding: 16px 20px;
+		text-transform: uppercase;
+		cursor: pointer;
+	}
+
+#notSupported {
+	width: 50%;
+	margin: auto;
+	background-color: #f00;
+	margin-top: 20px;
+	padding: 10px;
+}
+
+
+a.btn.main{
+	position: fixed;
+	text-decoration: none;
+}
+
+a.btn.main i{
+	padding: 0;
+	margin: 0;
+	width: 30px;
+}
+
+#manageModal{
+    min-height: 80vh;
+    max-height: 93vh;
+    overflow-y: hidden;
+    margin-top: -3%;
+	user-select: none;
+	box-shadow: 0px 0px 10px;
+    border: 2px black solid;
+}
+
+.podName{
+	font-size: 1.5em;
+	text-align: right;
+	line-height: 50px;
+}
+
+.dropdown-content li>a, .dropdown-content li>span{
+	padding: 0px 10px!important;
+}
+
+.dropdown-content li{
+	min-height: 30px!important;
+}
+.custom-button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	background-color: white;
+	color: black;
+	font-size: 1.2rem;
+	padding: 10px 16px;
+	border-radius: 4px;
+	text-decoration: none;
+	transition: background-color 0.2s ease-in-out;
+}
+
+.custom-button:hover {
+	background-color: #f5f5f5;
+}
+
+.custom-button i {
+	margin-right: 8px;
+}
+
+
+table.striped.highlight tr td{
+	height: 40px !important;
+}
+
+tbody td, tbody th{
+	padding: 1px 5px !important;
+}
+
+tbody tr td:nth-child(3){
+	transform: scale(1.2);
+	filter: saturate(1.5) brightness(1.5) contrast(1.5) hue-rotate(-70deg) contrast(1.5);
+}
+
+table tbody tr:hover{
+	background-color:rgb(188, 229, 228)!important;
+	box-shadow: 0px 0px 10px;
+}

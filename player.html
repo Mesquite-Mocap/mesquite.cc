@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+  <link rel="manifest" href="app.webmanifest" />
+  <link type="text/css" rel="stylesheet" href="js/main.css" />
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+  <!-- <script src="custom_bno.js"></script> -->
+  <script src="js/mappings.js"></script>
+  <script src="js/quaternion.min.js"></script>
+  <script src="js/three.min.js"></script>
+
+  <script src="js/bvh_converter.js"></script>s
+
+  <!-- <script src="https://cdn.jsdelivr.net/npm/kalmanjs@1.1.0/lib/kalman.js"></script> -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+
+
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+</head>
+
+<body>
+  <script>
+
+    var hash = window.location.hash.replace("#", "");
+    var args = hash.split(",");
+    var fbxfile = args[0] || "ybot.fbx";
+    var bvhfile = args[1] || "blank.bvh";
+    var zoomLevel = args[2] || null;
+    if (zoomLevel) {
+      zoomLevel = parseFloat(zoomLevel);
+    }
+    var model;
+    var animation;
+    var animationDuration;
+    let camera_bvh, controls_bvh, scene_bvh, renderer_bvh;
+    let mixer_bvh, skeletonHelper_bvh;
+
+    var trackingLine;
+    var line_tracker = []; // Start with an empty array
+
+    function animationReset() {
+      animation.time = 0;
+      mixer_bvh.time = 0;
+      animation.paused = false;
+    }
+    let manageModal;
+
+    let recording = false;
+    let recordedMotionData = [];
+    let firstFrameJointData = null;
+
+  </script>
+  <script type="module" src="js/threejssceneplayer.js"></script>
+  <!-- <script type="module" src="webserial.js"></script> -->
+
+
+</script>
+<label for="bvhFileInput" id="bvhFileInputLabel" style="position:absolute; left:0; top:5px; z-index: 1;">
+  <span class="custom-button">
+    <i class="material-icons">upload_file</i>
+    Upload a BVH file
+  </span>
+</label>
+<input type="file" id="bvhFileInput" accept=".bvh" style="position:absolute; left:0; top:5px;opacity: 0; z-index: 2;">
+
+    <div id="splashScreen"
+      style="width:100vw;height:100vh;position:fixed;top:0;left:0;background-color:rgba(0,0,0,0.9);z-index:1000;background-image: url(icons/icon.png); background-repeat: no-repeat;background-position: 50% 30%; background-size: 200px; transition: 1s;">
+      <div class="title" style="top:60vh; text-align:center;font-size:200%; position: absolute; width: 100vw;">
+        Mesquite Mocap
+      </div>
+    </div>
+
+</body>
+<!-- <script src="script.js"></script> -->
+
+</html>
