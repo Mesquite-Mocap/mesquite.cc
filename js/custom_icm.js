@@ -179,8 +179,8 @@ function handleWSMessage(obj) {
 
 
   var rawQuaternion = new THREE.Quaternion(parseFloat(obj.x), parseFloat(obj.y), parseFloat(obj.z), parseFloat(obj.w));
- // if (bone == "Hips") {
- //   rawQuaternion = new THREE.Quaternion(-parseFloat(obj.y), -parseFloat(obj.x), -parseFloat(obj.z), parseFloat(obj.w));
+  // if (bone == "Hips") {
+  //   rawQuaternion = new THREE.Quaternion(-parseFloat(obj.y), -parseFloat(obj.x), -parseFloat(obj.z), parseFloat(obj.w));
   //}
   var refQuaternion = new THREE.Quaternion(0, 0, 0, 1);
   if (mac2Bones[bone] && mac2Bones[bone].calibration) {
@@ -194,7 +194,7 @@ function handleWSMessage(obj) {
 
   if (bone == "Hips") {
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
-//    var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion);
+    //    var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion);
 
     var transformedQ = rawQuaternion.clone().multiply(refQInverse).normalize();
     var hipQ = new THREE.Quaternion(-transformedQ.x, transformedQ.y, -transformedQ.z, transformedQ.w).normalize();
@@ -206,19 +206,16 @@ function handleWSMessage(obj) {
 
   if (bone == "Spine") {
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
-// var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion);
-//var spineQ = new THREE.Quaternion(transformedQ.x, -transformedQ.y, -transformedQ.z, transformedQ.w);
+    // var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion);
+    //var spineQ = new THREE.Quaternion(transformedQ.x, -transformedQ.y, -transformedQ.z, transformedQ.w);
 
-  var transformedQ = rawQuaternion.clone().multiply(refQInverse).normalize();
-  var spineQ = new THREE.Quaternion(transformedQ.x, transformedQ.z, -transformedQ.y, transformedQ.w);
-
-
+    var transformedQ = rawQuaternion.clone().multiply(refQInverse).normalize();
+    var spineQ = new THREE.Quaternion(transformedQ.x, transformedQ.z, -transformedQ.y, transformedQ.w);
 
     var obj = mac2Bones["Hips"].global;
     var hipQ = new THREE.Quaternion(obj.x, obj.y, obj.z, obj.w);
     var hipQinverse = new THREE.Quaternion().copy(hipQ).invert();
     var hipCorrection = new THREE.Quaternion().copy(hipQinverse).multiply(spineQ).normalize();
-
 
     x.quaternion.copy(spineQ);
     setLocal(bone, hipCorrection.x, hipCorrection.y, hipCorrection.z, hipCorrection.w);
@@ -265,7 +262,7 @@ function handleWSMessage(obj) {
 
   if (bone == "RightArm") {
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
-    
+
     //var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion);
     //var q = new THREE.Quaternion().copy(transformedQ);
     var transformedQ = rawQuaternion.clone().multiply(refQInverse).normalize();
@@ -300,7 +297,7 @@ function handleWSMessage(obj) {
 
   if (bone == "LeftUpLeg") {
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
-    
+
     //var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion);
     //var q = new THREE.Quaternion().copy(transformedQ);
     var transformedQ = rawQuaternion.clone().multiply(refQInverse).normalize();
@@ -660,4 +657,3 @@ var boneSelectMarkup =
   "</select>";
 
 
-  
