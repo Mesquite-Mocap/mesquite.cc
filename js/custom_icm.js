@@ -217,7 +217,7 @@ function handleWSMessage(obj) {
     var hipQinverse = new THREE.Quaternion().copy(hipQ).invert();
     var hipCorrection = new THREE.Quaternion().copy(hipQinverse).multiply(spineQ).normalize();
 
-    x.quaternion.copy(spineQ);
+    x.quaternion.copy(hipCorrection);
     setLocal(bone, hipCorrection.x, hipCorrection.y, hipCorrection.z, hipCorrection.w);
     setGlobal(bone, spineQ.x, spineQ.y, spineQ.z, spineQ.w);
   }

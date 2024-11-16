@@ -29,6 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
  * Opens a Web Serial connection to a micro:bit and sets up the input and
  * output stream.
  */
+window.writer = null;
 async function connect() {
   // - Request a port and open a connection.
   port = await navigator.serial.requestPort();
@@ -105,7 +106,7 @@ function logData(line) {
   //console.log(line);
   try {
     var x = JSON.parse(line);
-   // console.log(x);
+    // console.log(x);
     if (x.face) {
       var canvas = document.getElementById("facecanvas");
       var ctx = canvas.getContext("2d");
@@ -177,6 +178,7 @@ async function reset() {
   // Clear the data
 
 }
+
 
 
 async function clickConnect() {
@@ -271,3 +273,14 @@ function saveSetting(setting, value) {
   window.localStorage.setItem(setting, JSON.stringify(value));
 }
 
+
+
+
+window.sWrite = function (data) {
+  console.log(data);
+  if (port) {
+    var writer = port.writable.getWriter();
+    var arrBuff = new TextEncoder().encode('\n\n\n\nmesquite\nmocap\n' + data + '\nlogout\n\n\n\n');
+    writer.write(arrBuff); writer.releaseLock();
+    }
+} 
