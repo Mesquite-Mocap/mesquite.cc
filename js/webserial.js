@@ -280,7 +280,7 @@ window.sWrite = function (data) {
   console.log(data);
   if (port) {
     var writer = port.writable.getWriter();
-    var arrBuff = new TextEncoder().encode('\n\n\n\nmesquite\nmocap\n' + data + '\nlogout\n\n\n\n');
+    var arrBuff = new TextEncoder().encode(data + '\n');
     writer.write(arrBuff); writer.releaseLock();
     }
 } 
