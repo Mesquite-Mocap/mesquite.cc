@@ -134,9 +134,9 @@ function calibrate() {
   //initialPosition = new THREE.Vector3(initialPosition.x, initialPosition.y, initialPosition.z).scale(positionSensitivity);
   calibrated = true;
   line_tracker = [];
-  
+
   M.Toast.dismissAll();
-  M.toast({ html: "T-Pose Set!" });
+  M.toast({ html: "T-Pose Set!", displayLength: 5000, classes: "green" });
 }
 
 function lowerFirstLetter(string) {
@@ -664,12 +664,31 @@ var boneSelectMarkup =
 function restartPods()
 {
   var x = confirm("Please be wearing the pods and get in a T-pose for 25 seconds");
-  if(x){
+  if (x){
+    M.Toast.dismissAll();
+    restartPodsConfirm();
+  }
+}
+function restartPodsConfirm(){
+    $("#restartPods").prop('disabled', true);
     window.sWrite("reboot");
     M.toast({html: '<ul><li>Please get in a T-pose and  wait for <span class="secs">25 seconds</span>.</li><li>When done the T-Pose* will be set.</li><li><sub>* You can click on "Set T-Pose" button to do this at anytime.</sub></li>', classes: 'yellow black-text', displayLength: 25*1000});
     setTimeout(function(){
      calibrate();
+     $("#restartPods").prop('disabled', false);
     }, 25*1000);
 
-  }
+    var tSec = 25;
+    setInterval(function(){
+      var secs = document.getElementsByClassName("secs")[0];
+      if (secs){
+        tSec--;
+        if(tSec == 1){
+          secs.innerHTML = tSec + " second";
+        }
+        else{
+          secs.innerHTML = tSec + " seconds";
+        }
+      }
+    }, 1000);
 }
