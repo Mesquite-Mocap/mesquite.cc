@@ -171,6 +171,12 @@ function handleWSMessage(obj) {
     return;
   }
 
+  mac2Bones[bone].last.x = parseFloat(obj.x);
+  mac2Bones[bone].last.y = parseFloat(obj.y);
+  mac2Bones[bone].last.z = parseFloat(obj.z);
+  mac2Bones[bone].last.w = parseFloat(obj.w);
+
+
   statsObjs[lowerFirstLetter(bone)].update();
 
   document.getElementById(lowerFirstLetter(bone) + "Status").innerHTML = "<b class='green-text'>CONNECTED </b><br><span class='chip'>" +
@@ -393,11 +399,6 @@ function handleWSMessage(obj) {
     mac2Bones[bone].local = { x: 0, y: 0, z: 0, w: 1 };
     mac2Bones[bone].global = { x: 0, y: 0, z: 0, w: 1 };
   }
-  // console.log(mac2Bones)
-  mac2Bones[bone].last.x = transformedQ.x;
-  mac2Bones[bone].last.y = transformedQ.y;
-  mac2Bones[bone].last.z = transformedQ.z;
-  mac2Bones[bone].last.w = transformedQ.w;
 
   // deal with hip position
 
