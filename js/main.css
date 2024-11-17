@@ -153,3 +153,11 @@ table tbody tr:hover{
 	background-color:rgb(188, 229, 228)!important;
 	box-shadow: 0px 0px 10px;
 }
+
+button.auxButton{
+	display:none;
+}
+
+body.connected .auxButton{
+	display:block;
+}

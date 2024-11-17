@@ -35,6 +35,8 @@ async function connect() {
   port = await navigator.serial.requestPort();
   // - Wait for the port to open.toggleUIConnected
   await port.open({ baudRate: 2000000 });
+  $("body").addClass("connected");
+
 
   let decoder = new TextDecoderStream();
   inputDone = port.readable.pipeTo(decoder.writable);
@@ -252,7 +254,12 @@ function convertJSON(chunk) {
 function toggleUIConnected(connected) {
   let lbl = 'Link Pods <i class="material-icons left">settings_ethernet</i>';
   if (connected) {
-    lbl = 'Unlink Pods <i class="material-icons left">settings_ethernet</i>';
+    lbl = 'Start Over <i class="material-icons right large">refresh</i>';
+    $(butConnect).addClass('red white-text').removeClass('white black-text');
+    M.toast({ html: 'Connected to Dongle', classes: 'green text-enter' });
+  }
+  else {
+    window.location.reload();
   }
   butConnect.innerHTML = lbl;
 }
