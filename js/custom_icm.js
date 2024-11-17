@@ -134,6 +134,9 @@ function calibrate() {
   //initialPosition = new THREE.Vector3(initialPosition.x, initialPosition.y, initialPosition.z).scale(positionSensitivity);
   calibrated = true;
   line_tracker = [];
+  
+  M.Toast.dismissAll();
+  M.toast({ html: "T-Pose Set!" });
 }
 
 function lowerFirstLetter(string) {
@@ -658,3 +661,15 @@ var boneSelectMarkup =
   "</select>";
 
 
+function restartPods()
+{
+  var x = confirm("Please be wearing the pods and get in a T-pose for 25 seconds");
+  if(x){
+    window.sWrite("reboot");
+    M.toast({html: '<ul><li>Please get in a T-pose and  wait for <span class="secs">25 seconds</span>.</li><li>When done the T-Pose* will be set.</li><li><sub>* You can click on "Set T-Pose" button to do this at anytime.</sub></li>', classes: 'yellow black-text', displayLength: 25*1000});
+    setTimeout(function(){
+     calibrate();
+    }, 25*1000);
+
+  }
+}
