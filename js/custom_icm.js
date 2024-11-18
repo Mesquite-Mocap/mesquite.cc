@@ -137,7 +137,7 @@ function calibrate() {
 
   M.Toast.dismissAll();
   M.toast({ html: "T-Pose Set!", displayLength: 5000, classes: "green" });
-  M.toast({ html: "All set to go! Good luck with your capture.", displayLength: 5000, classes: "" });
+  M.toast({ html: "Good luck with your capture! Don't forget to record it.", displayLength: 5000, classes: "" });
 }
 
 function lowerFirstLetter(string) {
@@ -185,6 +185,7 @@ function handleWSMessage(obj) {
 
   document.getElementById(lowerFirstLetter(bone) + "Status").innerHTML = "<b class='green-text'>CONNECTED </b><br><span class='chip'>" +
     parseFloat(obj.batt) * 100 + "% battery</span>";
+  $("#" + lowerFirstLetter(bone) + "Status").addClass("connected");
 
 
 
@@ -442,6 +443,11 @@ function handleWSMessage(obj) {
     updateTrackingLine(hipsBone.position);
   }
 
+  var podCount = $("#deviceMapList td.connected").length;
+  $("#podCount").text(podCount);
+
+
+
 }
 
 var lastPosition = {
@@ -678,7 +684,7 @@ function restartPodsConfirm(){
 
     var tSec = 30;
     setInterval(function(){
-      var secs = document.getElementsByClassName("secs")[0];
+      var secs = document.getElementsByClassName("secs")[0] || null;
       if (secs){
         tSec--;
         if(tSec == 1){
@@ -710,7 +716,7 @@ function calibratein5Confirm(){
 
   var tSec = 5;
   setInterval(function(){
-    var secs = document.getElementsByClassName("secs")[0];
+    var secs = document.getElementsByClassName("secs")[0] || null;
     if (secs){
       tSec--;
       if(tSec == 1){
