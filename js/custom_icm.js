@@ -683,7 +683,7 @@ function restartPodsConfirm(){
     }, 30*1000);
 
     var tSec = 30;
-    setInterval(function(){
+    var p = setInterval(function(){
       var secs = document.getElementsByClassName("secs")[0] || null;
       if (secs){
         tSec--;
@@ -695,7 +695,7 @@ function restartPodsConfirm(){
         }
       }
       else{
-        clearInterval();
+        clearInterval(p);
       }
     }, 1000);
 }
@@ -715,7 +715,7 @@ function calibratein5Confirm(){
   }, 5*1000);
 
   var tSec = 5;
-  setInterval(function(){
+  var p = setInterval(function(){
     var secs = document.getElementsByClassName("secs")[0] || null;
     if (secs){
       tSec--;
@@ -727,7 +727,7 @@ function calibratein5Confirm(){
       }
     }
     else{
-      clearInterval();
+      clearInterval(p);
     }
   }, 1000);
 }

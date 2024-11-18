@@ -354,6 +354,7 @@ function init() {
 
     // scene.fog = new THREE.Fog( 0xa0a0a0, 200, 1000 );
 
+    // on window resize
 
 
 
@@ -522,6 +523,8 @@ function init() {
             controls.maxDistance = 3800;
 
             controls.update();
+            window.addEventListener("resize", onWindowResize, false);
+
 
             viewportGizmo = new ViewportGizmo(camera, renderer, {
                 placement: 'top-center'
@@ -536,8 +539,6 @@ function init() {
                 viewportGizmo.update();
             });
         
-
-            window.addEventListener("resize", onWindowResize, false);
 
             document.getElementById("splashScreen").style.opacity = "0";
             setTimeout(function () {

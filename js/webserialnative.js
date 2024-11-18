@@ -10,7 +10,6 @@ async function connectToPort(port)
 {
    port = port ||  await getSelectedPort();
 
-
   if(!port){
     console.log("No port selected");
     return;
@@ -23,13 +22,15 @@ async function connectToPort(port)
   try {
     await port.open(options);
     console.log('<CONNECTED>');
-    $(".usbstatus").removeClass("red").addClass("green");
+   // $(".usbstatus").removeClass("red").addClass("green");
     // store port in localStorage
     localStorage.setItem("port", port.getInfo().usbProductId);
-    calibrate();
+    //calibrate();
+    toggleUIConnected(true);
+    $("body").addClass("connected");
   } catch (e) {
     console.error(e);
-    $(".usbstatus").removeClass("green").addClass("red");
+   // $(".usbstatus").removeClass("green").addClass("red");
     return;
   }
 
@@ -40,32 +41,27 @@ async function connectToPort(port)
       while (true) {
         const { value, done } = await reader.read();
         if (done) {
-          console.log("Reader done", done);
-          $(".usbstatus").removeClass("green").addClass("red");
+          toggleUIConnected(true);
           break;
         }
         line += new TextDecoder().decode(value);
         if (line.includes("\n")) {
           var txt = line.split("\n")[0];
           try{
-            hip = JSON.parse(txt);
+            handleWSMessage(JSON.parse(txt));
           }catch(e){
             console.error(e);
           }
-          isCalibrated = true;
-          line = line.slice(line.indexOf("\n") + 1);
-          
+          line = line.slice(line.indexOf("\n") + 1);          
         }
       }
     } catch (e) {
       console.error(e);
-      $(".usbstatus").removeClass("green").addClass("red");
+      window.location.reload();
     } finally {
       reader.releaseLock();
     }
-  }
-
-  
+  }  
 }
 
 async function disconnectFromPort()
@@ -78,6 +74,9 @@ async function disconnectFromPort()
 
 function toggleConnect()
 {
+  if($("body").hasClass("connected")){
+    window.location.reload();
+  }
   if (port) {
     disconnectFromPort();
   } else {
@@ -97,3 +96,38 @@ navigator.serial.addEventListener("connect", (e) => {
         connectToPort(port);
     }
 });
+
+
+const butConnect = document.getElementById('linkPods');
+
+document.addEventListener('DOMContentLoaded', () => {
+  butConnect.addEventListener('click', toggleConnect);
+
+  if (!('serial' in navigator)) {
+    alert("Web Serial not supported. Please use Chrome 78+");
+  }
+
+});
+
+function toggleUIConnected(connected) {
+  let lbl = 'Link Pods <i class="material-icons left">settings_ethernet</i>';
+  if (connected) {
+    lbl = 'Start Over <i class="material-icons right large">refresh</i>';
+    $(butConnect).addClass('red white-text').removeClass('white black-text');
+    M.toast({ html: 'Connected to Dongle', classes: 'green text-enter' });
+  }
+  else {
+    window.location.reload();
+  }
+  butConnect.innerHTML = lbl;
+}
+
+
+window.sWrite = function (data) {
+  console.log(data);
+  if (port) {
+    var writer = port.writable.getWriter();
+    var arrBuff = new TextEncoder().encode(data + '\n');
+    writer.write(arrBuff); writer.releaseLock();
+    }
+} 
