@@ -411,9 +411,9 @@ function init() {
 
 
     const circleGeometry = new THREE.CircleGeometry(9, 32);
-    // orange border, transparent inside
 
-    const circleMaterial = new THREE.MeshBasicMaterial({ color: 0xff6600, transparent: true, opacity: 0.9, side: THREE.DoubleSide });
+
+    const circleMaterial = new THREE.MeshBasicMaterial({ color: 0xffeb3b, transparent: true, opacity: 0.9, side: THREE.DoubleSide });
     const circle = new THREE.Mesh(circleGeometry, circleMaterial);
     circle.rotation.x = - Math.PI / 2;
     circle.position.y = .5;
@@ -423,7 +423,7 @@ function init() {
 
     // white circle border
     const circleGeometry2 = new THREE.CircleGeometry(10, 32);
-    const circleMaterial2 = new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.DoubleSide });
+    const circleMaterial2 = new THREE.MeshBasicMaterial({ color: 0x343434, side: THREE.DoubleSide });
     const circle2 = new THREE.Mesh(circleGeometry2, circleMaterial2);
     circle2.rotation.x = - Math.PI / 2;
     circle2.position.y = .4;
@@ -468,7 +468,7 @@ function init() {
 
         scene.add(model);
 
-        var lineMaterial = new THREE.LineBasicMaterial({ color: 0xff00ff });
+        var lineMaterial = new THREE.LineBasicMaterial({ color: 0xffeb3b });
         var lineGeometry = new THREE.BufferGeometry();
 
         lineGeometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(line_tracker), 3));
