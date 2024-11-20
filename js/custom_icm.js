@@ -253,32 +253,13 @@ function handleWSMessage(obj) {
   }
 
 
-  if (bone == "RightArm") {
-    var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
-
-    //var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion);
-    //var q = new THREE.Quaternion().copy(transformedQ);
-    var transformedQ = rawQuaternion.clone().multiply(refQInverse).normalize();
-    var rightarmQ = new THREE.Quaternion(transformedQ.x, transformedQ.z, -transformedQ.y, transformedQ.w).normalize();
-
-    var obj = mac2Bones["Spine"].global;
-    var spineQ = new THREE.Quaternion(obj.x, obj.y, obj.z, obj.w);
-    var spineQinverse = new THREE.Quaternion().copy(spineQ).invert();
-    var spineCorrection = new THREE.Quaternion().copy(spineQinverse).multiply(rightarmQ).normalize();
-
-    x.quaternion.copy(spineCorrection);
-    setLocal(bone, spineCorrection.x, spineCorrection.y, spineCorrection.z, spineCorrection.w);
-    setGlobal(bone, rightarmQ.x, rightarmQ.y, rightarmQ.z, rightarmQ.w);
-  }
-
-
   if (bone == "LeftForeArm") {
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
 
     //var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion);
     //var q = new THREE.Quaternion().copy(transformedQ);
     var transformedQ = rawQuaternion.clone().multiply(refQInverse).normalize();
-    var leftforearmQ = new THREE.Quaternion(transformedQ.x, transformedQ.z, -transformedQ.y, transformedQ.w).normalize();
+    var leftforearmQ = new THREE.Quaternion(-transformedQ.x, transformedQ.z, transformedQ.y, transformedQ.w).normalize();
 
     var obj = mac2Bones["LeftArm"].global;
     var leftarmQ = new THREE.Quaternion(obj.x, obj.y, obj.z, obj.w);
