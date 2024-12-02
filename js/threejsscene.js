@@ -309,7 +309,6 @@ $('.tabs').tabs();
 $('#deviceMapListB').click();
 $('#ext').fadeOut(0);
 
-/// load stats.js
 
 
 
