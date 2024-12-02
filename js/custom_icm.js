@@ -240,7 +240,7 @@ function handleWSMessage(obj) {
     var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion);
 
     //var transformedQ = rawQuaternion.clone().multiply(refQInverse).normalize();
-    var headQ = new THREE.Quaternion(transformedQ.x, transformedQ.z, -transformedQ.y, transformedQ.w);
+    var headQ = new THREE.Quaternion(transformedQ.x, -transformedQ.y, -transformedQ.z, transformedQ.w);
 
     var obj = mac2Bones["Spine"].global;
     var hipQ = new THREE.Quaternion(obj.x, obj.y, obj.z, obj.w);
@@ -325,26 +325,24 @@ function handleWSMessage(obj) {
   if (bone == "LeftUpLeg") {
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
 
-    //var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion);
-    //var q = new THREE.Quaternion().copy(transformedQ);
-    var transformedQ = rawQuaternion.clone().multiply(refQInverse).normalize();
-    var leftuplegQ = new THREE.Quaternion(transformedQ.x, -transformedQ.y, -transformedQ.z, transformedQ.w).normalize();
+    var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion);
+    //var transformedQ = rawQuaternion.clone().multiply(refQInverse).normalize();
+    var leftuplegQ = new THREE.Quaternion(-transformedQ.x, transformedQ.y, -transformedQ.z, transformedQ.w).normalize();
 
     var obj = mac2Bones["Hips"].global;
     var hipsQ = new THREE.Quaternion(obj.x, obj.y, obj.z, obj.w);
     var hipsQinverse = new THREE.Quaternion().copy(hipsQ).invert();
     var hipsCorrection = new THREE.Quaternion().copy(hipsQinverse).multiply(leftuplegQ).normalize();
 
-    x.quaternion.copy(hipsCorrection);
+    x.quaternion.copy(leftuplegQ);
     setLocal(bone, hipsCorrection.x, hipsCorrection.y, hipsCorrection.z, hipsCorrection.w);
     setGlobal(bone, leftuplegQ.x, leftuplegQ.y, leftuplegQ.z, leftuplegQ.w);
   }
 
   if (bone == "LeftLeg") {
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
-    //var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion);
-    //var q = new THREE.Quaternion().copy(transformedQ);
-    var transformedQ = rawQuaternion.clone().multiply(refQInverse).normalize();
+    var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion);
+    //var transformedQ = rawQuaternion.clone().multiply(refQInverse).normalize();
     var leftlegQ = new THREE.Quaternion(transformedQ.x, -transformedQ.z, -transformedQ.y, transformedQ.w).normalize();
 
 
@@ -360,15 +358,15 @@ function handleWSMessage(obj) {
 
   if (bone == "RightUpLeg") {
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
-    //var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion);
+    var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion);
     //var q = new THREE.Quaternion().copy(transformedQ);
-    var transformedQ = rawQuaternion.clone().multiply(refQInverse).normalize();
-    var rightuplegQ = new THREE.Quaternion(transformedQ.y, transformedQ.z, transformedQ.x, transformedQ.w).normalize();
+    //var transformedQ = rawQuaternion.clone().multiply(refQInverse).normalize();
+    var rightuplegQ = new THREE.Quaternion(-transformedQ.x, transformedQ.y, -transformedQ.z, transformedQ.w).normalize();
 
     var obj = mac2Bones["Hips"].global;
     var hipsQ = new THREE.Quaternion(obj.x, obj.y, obj.z, obj.w);
     var hipsQinverse = new THREE.Quaternion().copy(hipsQ).invert();
-    var hipsCorrection = new THREE.Quaternion().copy(hipsQinverse).multiply(rightuplegQ).normalize();
+    var hipsCorrection = new THREE.Quaternion().copy(rightuplegQ).multiply(hipsQinverse).normalize();
 
     x.quaternion.copy(hipsCorrection);
     setLocal(bone, hipsCorrection.x, hipsCorrection.y, hipsCorrection.z, hipsCorrection.w);

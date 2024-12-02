@@ -354,9 +354,6 @@ function init() {
 
     // scene.fog = new THREE.Fog( 0xa0a0a0, 200, 1000 );
 
-    // on window resize
-
-
 
 
 
@@ -481,12 +478,11 @@ function init() {
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.shadowMap.enabled = true;
 
-    // renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
     container.appendChild(renderer.domElement);
 
   
-
     // default face 
 
     const ktx2Loader = new KTX2Loader()
@@ -523,9 +519,8 @@ function init() {
             controls.maxDistance = 3800;
 
             controls.update();
-            window.addEventListener("resize", onWindowResize, false);
 
-
+/*
             viewportGizmo = new ViewportGizmo(camera, renderer, {
                 placement: 'top-center'
             });
@@ -538,6 +533,7 @@ function init() {
             controls.addEventListener("change", () => {
                 viewportGizmo.update();
             });
+            */
         
 
             document.getElementById("splashScreen").style.opacity = "0";
@@ -545,13 +541,33 @@ function init() {
                 document.getElementById("splashScreen").style.display = "none";
             }, 3000);
         });
+
 }
 
+
+function debounce(func, time){
+    var time = time || 100; // 100 by default if no param
+    var timer;
+    return function(event){
+        if(timer) clearTimeout(timer);
+        timer = setTimeout(func, time, event);
+    };
+}
+
+// Eventlistener
+//window.addEventListener("resize", debounce( onWindowResize, 150 ));
+window.addEventListener("resize", onWindowResize);
+
 function onWindowResize() {
+
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
 
+
     renderer.setSize(window.innerWidth, window.innerHeight);
+
+
+
 }
 
 //
