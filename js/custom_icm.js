@@ -191,9 +191,7 @@ function handleWSMessage(obj) {
 
 
   var rawQuaternion = new THREE.Quaternion(parseFloat(obj.x), parseFloat(obj.y), parseFloat(obj.z), parseFloat(obj.w));
-  // if (bone == "Hips") {
-  //   rawQuaternion = new THREE.Quaternion(-parseFloat(obj.y), -parseFloat(obj.x), -parseFloat(obj.z), parseFloat(obj.w));
-  //}
+
   var refQuaternion = new THREE.Quaternion(0, 0, 0, 1);
   if (mac2Bones[bone] && mac2Bones[bone].calibration) {
     refQuaternion = new THREE.Quaternion(
@@ -218,11 +216,11 @@ function handleWSMessage(obj) {
 
   if (bone == "Spine") {
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
-    //var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion);
-    //var spineQ = new THREE.Quaternion(transformedQ.x, -transformedQ.y, -transformedQ.z, transformedQ.w);
+    var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion);
+    var spineQ = new THREE.Quaternion(transformedQ.y, transformedQ.x, -transformedQ.z, transformedQ.w);
 
-    var transformedQ = rawQuaternion.clone().multiply(refQInverse).normalize();
-    var spineQ = new THREE.Quaternion(transformedQ.x, transformedQ.y, -transformedQ.z, transformedQ.w);
+   // var transformedQ = rawQuaternion.clone().multiply(refQInverse).normalize();
+   // var spineQ = new THREE.Quaternion(-transformedQ.x, transformedQ.y, -transformedQ.z, transformedQ.w);
 
     var obj = mac2Bones["Hips"].global;
     var hipQ = new THREE.Quaternion(obj.x, obj.y, obj.z, obj.w);
