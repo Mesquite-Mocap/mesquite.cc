@@ -207,7 +207,7 @@ function handleWSMessage(obj) {
     //    var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion);
 
     var transformedQ = rawQuaternion.clone().multiply(refQInverse).normalize();
-    var hipQ = new THREE.Quaternion(-transformedQ.x, transformedQ.y, -transformedQ.z, transformedQ.w).normalize();
+    var hipQ = new THREE.Quaternion(transformedQ.x, transformedQ.z, -transformedQ.y, transformedQ.w).normalize();
 
     x.quaternion.copy(hipQ);
     setLocal(bone, hipQ.x, hipQ.y, hipQ.z, hipQ.w);
