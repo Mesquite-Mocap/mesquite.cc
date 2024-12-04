@@ -322,6 +322,42 @@ function handleWSMessage(obj) {
     setGlobal(bone, rightforearmQ.x, rightforearmQ.y, rightforearmQ.z, rightforearmQ.w);
   }
 
+  if (bone == "RighHand") {
+    var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
+    var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion);
+    //var q = new THREE.Quaternion().copy(transformedQ);
+    //var transformedQ = rawQuaternion.clone().multiply(refQInverse).normalize();
+    var righthandQ = new THREE.Quaternion(-transformedQ.y, -transformedQ.z, transformedQ.x, transformedQ.w).normalize();
+
+
+    var obj = mac2Bones["RightForeArm"].global;
+    var rightforearmQ = new THREE.Quaternion(obj.x, obj.y, obj.z, obj.w);
+    var rightforearmQinverse = new THREE.Quaternion().copy(rightforearmQ).invert();
+    var rightforearmCorrection = new THREE.Quaternion().copy(rightforearmQinverse).multiply(righthandQ).normalize();
+
+    x.quaternion.copy(rightforearmCorrection);
+    setLocal(bone, rightforearmCorrection.x, rightforearmCorrection.y, rightforearmCorrection.z, rightforearmCorrection.w);
+    setGlobal(bone, righthandQ.x, righthandQ.y, righthandQ.z, righthandQ.w);
+  }
+
+  if (bone == "LeftHand") {
+    var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
+    var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion);
+    //var q = new THREE.Quaternion().copy(transformedQ);
+    //var transformedQ = rawQuaternion.clone().multiply(refQInverse).normalize();
+    var lefthandQ = new THREE.Quaternion(-transformedQ.y, -transformedQ.z, transformedQ.x, transformedQ.w).normalize();
+
+
+    var obj = mac2Bones["LeftForeArm"].global;
+    var leftforearmQ = new THREE.Quaternion(obj.x, obj.y, obj.z, obj.w);
+    var leftforearmQinverse = new THREE.Quaternion().copy(leftforearmQ).invert();
+    var leftforearmCorrection = new THREE.Quaternion().copy(leftforearmQinverse).multiply(lefthandQ).normalize();
+
+    x.quaternion.copy(leftforearmCorrection);
+    setLocal(bone, leftforearmCorrection.x, leftforearmCorrection.y, leftforearmCorrection.z, leftforearmCorrection.w);
+    setGlobal(bone, lefthandQ.x, lefthandQ.y, lefthandQ.z, lefthandQ.w);
+  }
+
   if (bone == "LeftUpLeg") {
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
     var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion);
