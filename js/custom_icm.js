@@ -222,7 +222,7 @@ function handleWSMessage(obj) {
     //var spineQ = new THREE.Quaternion(transformedQ.x, -transformedQ.y, -transformedQ.z, transformedQ.w);
 
     var transformedQ = rawQuaternion.clone().multiply(refQInverse).normalize();
-    var spineQ = new THREE.Quaternion(transformedQ.z, transformedQ.y, -transformedQ.x, transformedQ.w);
+    var spineQ = new THREE.Quaternion(transformedQ.x, transformedQ.y, -transformedQ.z, transformedQ.w);
 
     var obj = mac2Bones["Hips"].global;
     var hipQ = new THREE.Quaternion(obj.x, obj.y, obj.z, obj.w);
