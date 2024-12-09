@@ -29,91 +29,91 @@ var flag = true;
 function initGlobalLocalLast() {
   flag = false;
   var bone = model.getObjectByName(rigPrefix + "Hips");
-  mac2Bones["Hips"] = { calibration: { x: 0, y: 0, z: 0, w: 1 }, last: { x: 0, y: 0, z: 0, w: 1 }, global: { x: 0, y: 0, z: 0, w: 1 }, local: { x: 0, y: 0, z: 0, w: 1 } };
+  mac2Bones["Hips"] = { calibration: { x: 0, y: 0, z: 0, w: 1 }, last: { x: 0, y: 0, z: 0, w: 1 }, global: { x: 0, y: 0, z: 0, w: 1 }, local: { x: 0, y: 0, z: 0, w: 1 }, bcalibration: { x: 0, y: 0, z: 0, w: 1 } };
   setGlobal("Hips", bone.quaternion.x, bone.quaternion.y, bone.quaternion.z, bone.quaternion.w);
   setLocal("Hips", bone.quaternion.x, bone.quaternion.y, bone.quaternion.z, bone.quaternion.w);
   initInitialPosition("Hips", bone.quaternion.x, bone.quaternion.y, bone.quaternion.z, bone.quaternion.w);
 
   bone = model.getObjectByName(rigPrefix + "Spine");
-  mac2Bones["Spine"] = { calibration: { x: 0, y: 0, z: 0, w: 1 }, last: { x: 0, y: 0, z: 0, w: 1 }, global: { x: 0, y: 0, z: 0, w: 1 }, local: { x: 0, y: 0, z: 0, w: 1 } };
+  mac2Bones["Spine"] = { calibration: { x: 0, y: 0, z: 0, w: 1 }, last: { x: 0, y: 0, z: 0, w: 1 }, global: { x: 0, y: 0, z: 0, w: 1 }, local: { x: 0, y: 0, z: 0, w: 1 }, bcalibration: { x: 0, y: 0, z: 0, w: 1 } };
   setGlobal("Spine", bone.quaternion.x, bone.quaternion.y, bone.quaternion.z, bone.quaternion.w);
   setLocal("Spine", bone.quaternion.x, bone.quaternion.y, bone.quaternion.z, bone.quaternion.w);
   initInitialPosition("Spine", bone.quaternion.x, bone.quaternion.y, bone.quaternion.z, bone.quaternion.w);
 
   bone = model.getObjectByName(rigPrefix + "Head");
-  mac2Bones["Head"] = { calibration: { x: 0, y: 0, z: 0, w: 1 }, last: { x: 0, y: 0, z: 0, w: 1 }, global: { x: 0, y: 0, z: 0, w: 1 }, local: { x: 0, y: 0, z: 0, w: 1 } };
+  mac2Bones["Head"] = { calibration: { x: 0, y: 0, z: 0, w: 1 }, last: { x: 0, y: 0, z: 0, w: 1 }, global: { x: 0, y: 0, z: 0, w: 1 }, local: { x: 0, y: 0, z: 0, w: 1 }, bcalibration: { x: 0, y: 0, z: 0, w: 1 } };
   setGlobal("Head", bone.quaternion.x, bone.quaternion.y, bone.quaternion.z, bone.quaternion.w);
   setLocal("Head", bone.quaternion.x, bone.quaternion.y, bone.quaternion.z, bone.quaternion.w);
   initInitialPosition("Head", bone.quaternion.x, bone.quaternion.y, bone.quaternion.z, bone.quaternion.w);
 
   bone = model.getObjectByName(rigPrefix + "LeftArm");
-  mac2Bones["LeftArm"] = { calibration: { x: 0, y: 0, z: 0, w: 1 }, last: { x: 0, y: 0, z: 0, w: 1 }, global: { x: 0, y: 0, z: 0, w: 1 }, local: { x: 0, y: 0, z: 0, w: 1 } };
+  mac2Bones["LeftArm"] = { calibration: { x: 0, y: 0, z: 0, w: 1 }, last: { x: 0, y: 0, z: 0, w: 1 }, global: { x: 0, y: 0, z: 0, w: 1 }, local: { x: 0, y: 0, z: 0, w: 1 }, bcalibration: { x: 0, y: 0, z: 0, w: 1 } };
   setGlobal("LeftArm", bone.quaternion.x, bone.quaternion.y, bone.quaternion.z, bone.quaternion.w);
   setLocal("LeftArm", bone.quaternion.x, bone.quaternion.y, bone.quaternion.z, bone.quaternion.w);
   initInitialPosition("LeftArm", bone.quaternion.x, bone.quaternion.y, bone.quaternion.z, bone.quaternion.w);
 
   bone = model.getObjectByName(rigPrefix + "LeftForeArm");
-  mac2Bones["LeftForeArm"] = { calibration: { x: 0, y: 0, z: 0, w: 1 }, last: { x: 0, y: 0, z: 0, w: 1 }, global: { x: 0, y: 0, z: 0, w: 1 }, local: { x: 0, y: 0, z: 0, w: 1 } };
+  mac2Bones["LeftForeArm"] = { calibration: { x: 0, y: 0, z: 0, w: 1 }, last: { x: 0, y: 0, z: 0, w: 1 }, global: { x: 0, y: 0, z: 0, w: 1 }, local: { x: 0, y: 0, z: 0, w: 1 }, bcalibration: { x: 0, y: 0, z: 0, w: 1 } };
   setGlobal("LeftForeArm", bone.quaternion.x, bone.quaternion.y, bone.quaternion.z, bone.quaternion.w);
   setLocal("LeftForeArm", bone.quaternion.x, bone.quaternion.y, bone.quaternion.z, bone.quaternion.w);
   initInitialPosition("LeftForeArm", bone.quaternion.x, bone.quaternion.y, bone.quaternion.z, bone.quaternion.w);
 
   bone = model.getObjectByName(rigPrefix + "RightArm");
-  mac2Bones["RightArm"] = { calibration: { x: 0, y: 0, z: 0, w: 1 }, last: { x: 0, y: 0, z: 0, w: 1 }, global: { x: 0, y: 0, z: 0, w: 1 }, local: { x: 0, y: 0, z: 0, w: 1 } };
+  mac2Bones["RightArm"] = { calibration: { x: 0, y: 0, z: 0, w: 1 }, last: { x: 0, y: 0, z: 0, w: 1 }, global: { x: 0, y: 0, z: 0, w: 1 }, local: { x: 0, y: 0, z: 0, w: 1 }, bcalibration: { x: 0, y: 0, z: 0, w: 1 } };
   setGlobal("RightArm", bone.quaternion.x, bone.quaternion.y, bone.quaternion.z, bone.quaternion.w);
   setLocal("RightArm", bone.quaternion.x, bone.quaternion.y, bone.quaternion.z, bone.quaternion.w);
   initInitialPosition("RightArm", bone.quaternion.x, bone.quaternion.y, bone.quaternion.z, bone.quaternion.w);
 
   bone = model.getObjectByName(rigPrefix + "RightForeArm");
-  mac2Bones["RightForeArm"] = { calibration: { x: 0, y: 0, z: 0, w: 1 }, last: { x: 0, y: 0, z: 0, w: 1 }, global: { x: 0, y: 0, z: 0, w: 1 }, local: { x: 0, y: 0, z: 0, w: 1 } };
+  mac2Bones["RightForeArm"] = { calibration: { x: 0, y: 0, z: 0, w: 1 }, last: { x: 0, y: 0, z: 0, w: 1 }, global: { x: 0, y: 0, z: 0, w: 1 }, local: { x: 0, y: 0, z: 0, w: 1 }, bcalibration: { x: 0, y: 0, z: 0, w: 1 } };
   setGlobal("RightForeArm", bone.quaternion.x, bone.quaternion.y, bone.quaternion.z, bone.quaternion.w);
   setLocal("RightForeArm", bone.quaternion.x, bone.quaternion.y, bone.quaternion.z, bone.quaternion.w);
   initInitialPosition("RightForeArm", bone.quaternion.x, bone.quaternion.y, bone.quaternion.z, bone.quaternion.w);
 
   bone = model.getObjectByName(rigPrefix + "LeftUpLeg");
-  mac2Bones["LeftUpLeg"] = { calibration: { x: 0, y: 0, z: 0, w: 1 }, last: { x: 0, y: 0, z: 0, w: 1 }, global: { x: 0, y: 0, z: 0, w: 1 }, local: { x: 0, y: 0, z: 0, w: 1 } };
+  mac2Bones["LeftUpLeg"] = { calibration: { x: 0, y: 0, z: 0, w: 1 }, last: { x: 0, y: 0, z: 0, w: 1 }, global: { x: 0, y: 0, z: 0, w: 1 }, local: { x: 0, y: 0, z: 0, w: 1 }, bcalibration: { x: 0, y: 0, z: 0, w: 1 } };
   setGlobal("LeftUpLeg", bone.quaternion.x, bone.quaternion.y, bone.quaternion.z, bone.quaternion.w);
   setLocal("LeftUpLeg", bone.quaternion.x, bone.quaternion.y, bone.quaternion.z, bone.quaternion.w);
   initInitialPosition("LeftUpLeg", bone.quaternion.x, bone.quaternion.y, bone.quaternion.z, bone.quaternion.w);
 
   bone = model.getObjectByName(rigPrefix + "LeftLeg");
-  mac2Bones["LeftLeg"] = { calibration: { x: 0, y: 0, z: 0, w: 1 }, last: { x: 0, y: 0, z: 0, w: 1 }, global: { x: 0, y: 0, z: 0, w: 1 }, local: { x: 0, y: 0, z: 0, w: 1 } };
+  mac2Bones["LeftLeg"] = { calibration: { x: 0, y: 0, z: 0, w: 1 }, last: { x: 0, y: 0, z: 0, w: 1 }, global: { x: 0, y: 0, z: 0, w: 1 }, local: { x: 0, y: 0, z: 0, w: 1 }, bcalibration: { x: 0, y: 0, z: 0, w: 1 } };
   setGlobal("LeftLeg", bone.quaternion.x, bone.quaternion.y, bone.quaternion.z, bone.quaternion.w);
   setLocal("LeftLeg", bone.quaternion.x, bone.quaternion.y, bone.quaternion.z, bone.quaternion.w);
   initInitialPosition("LeftLeg", bone.quaternion.x, bone.quaternion.y, bone.quaternion.z, bone.quaternion.w);
 
   bone = model.getObjectByName(rigPrefix + "RightUpLeg");
-  mac2Bones["RightUpLeg"] = { calibration: { x: 0, y: 0, z: 0, w: 1 }, last: { x: 0, y: 0, z: 0, w: 1 }, global: { x: 0, y: 0, z: 0, w: 1 }, local: { x: 0, y: 0, z: 0, w: 1 } };
+  mac2Bones["RightUpLeg"] = { calibration: { x: 0, y: 0, z: 0, w: 1 }, last: { x: 0, y: 0, z: 0, w: 1 }, global: { x: 0, y: 0, z: 0, w: 1 }, local: { x: 0, y: 0, z: 0, w: 1 }, bcalibration: { x: 0, y: 0, z: 0, w: 1 } };
   setGlobal("RightUpLeg", bone.quaternion.x, bone.quaternion.y, bone.quaternion.z, bone.quaternion.w);
   setLocal("RightUpLeg", bone.quaternion.x, bone.quaternion.y, bone.quaternion.z, bone.quaternion.w);
   initInitialPosition("RightUpLeg", bone.quaternion.x, bone.quaternion.y, bone.quaternion.z, bone.quaternion.w);
 
   bone = model.getObjectByName(rigPrefix + "RightLeg");
-  mac2Bones["RightLeg"] = { calibration: { x: 0, y: 0, z: 0, w: 1 }, last: { x: 0, y: 0, z: 0, w: 1 }, global: { x: 0, y: 0, z: 0, w: 1 }, local: { x: 0, y: 0, z: 0, w: 1 } };
+  mac2Bones["RightLeg"] = { calibration: { x: 0, y: 0, z: 0, w: 1 }, last: { x: 0, y: 0, z: 0, w: 1 }, global: { x: 0, y: 0, z: 0, w: 1 }, local: { x: 0, y: 0, z: 0, w: 1 }, bcalibration: { x: 0, y: 0, z: 0, w: 1 } };
   setGlobal("RightLeg", bone.quaternion.x, bone.quaternion.y, bone.quaternion.z, bone.quaternion.w);
   setLocal("RightLeg", bone.quaternion.x, bone.quaternion.y, bone.quaternion.z, bone.quaternion.w);
   initInitialPosition("RightLeg", bone.quaternion.x, bone.quaternion.y, bone.quaternion.z, bone.quaternion.w);
 
   bone = model.getObjectByName(rigPrefix + "LeftFoot");
-  mac2Bones["LeftFoot"] = { calibration: { x: 0, y: 0, z: 0, w: 1 }, last: { x: 0, y: 0, z: 0, w: 1 }, global: { x: 0, y: 0, z: 0, w: 1 }, local: { x: 0, y: 0, z: 0, w: 1 } };
+  mac2Bones["LeftFoot"] = { calibration: { x: 0, y: 0, z: 0, w: 1 }, last: { x: 0, y: 0, z: 0, w: 1 }, global: { x: 0, y: 0, z: 0, w: 1 }, local: { x: 0, y: 0, z: 0, w: 1 }, bcalibration: { x: 0, y: 0, z: 0, w: 1 } };
   setGlobal("LeftFoot", bone.quaternion.x, bone.quaternion.y, bone.quaternion.z, bone.quaternion.w);
   setLocal("LeftFoot", bone.quaternion.x, bone.quaternion.y, bone.quaternion.z, bone.quaternion.w);
   initInitialPosition("LeftFoot", bone.quaternion.x, bone.quaternion.y, bone.quaternion.z, bone.quaternion.w);
 
   bone = model.getObjectByName(rigPrefix + "RightFoot");
-  mac2Bones["RightFoot"] = { calibration: { x: 0, y: 0, z: 0, w: 1 }, last: { x: 0, y: 0, z: 0, w: 1 }, global: { x: 0, y: 0, z: 0, w: 1 }, local: { x: 0, y: 0, z: 0, w: 1 } };
+  mac2Bones["RightFoot"] = { calibration: { x: 0, y: 0, z: 0, w: 1 }, last: { x: 0, y: 0, z: 0, w: 1 }, global: { x: 0, y: 0, z: 0, w: 1 }, local: { x: 0, y: 0, z: 0, w: 1 }, bcalibration: { x: 0, y: 0, z: 0, w: 1 } };
   setGlobal("RightFoot", bone.quaternion.x, bone.quaternion.y, bone.quaternion.z, bone.quaternion.w);
   setLocal("RightFoot", bone.quaternion.x, bone.quaternion.y, bone.quaternion.z, bone.quaternion.w);
   initInitialPosition("RightFoot", bone.quaternion.x, bone.quaternion.y, bone.quaternion.z, bone.quaternion.w);
 
   bone = model.getObjectByName(rigPrefix + "LeftHand");
-  mac2Bones["LeftHand"] = { calibration: { x: 0, y: 0, z: 0, w: 1 }, last: { x: 0, y: 0, z: 0, w: 1 }, global: { x: 0, y: 0, z: 0, w: 1 }, local: { x: 0, y: 0, z: 0, w: 1 } };
+  mac2Bones["LeftHand"] = { calibration: { x: 0, y: 0, z: 0, w: 1 }, last: { x: 0, y: 0, z: 0, w: 1 }, global: { x: 0, y: 0, z: 0, w: 1 }, local: { x: 0, y: 0, z: 0, w: 1 }, bcalibration: { x: 0, y: 0, z: 0, w: 1 } };
   setGlobal("LeftHand", bone.quaternion.x, bone.quaternion.y, bone.quaternion.z, bone.quaternion.w);
   setLocal("LeftHand", bone.quaternion.x, bone.quaternion.y, bone.quaternion.z, bone.quaternion.w);
   initInitialPosition("LeftHand", bone.quaternion.x, bone.quaternion.y, bone.quaternion.z, bone.quaternion.w);
 
   bone = model.getObjectByName(rigPrefix + "RightHand");
-  mac2Bones["RightHand"] = { calibration: { x: 0, y: 0, z: 0, w: 1 }, last: { x: 0, y: 0, z: 0, w: 1 }, global: { x: 0, y: 0, z: 0, w: 1 }, local: { x: 0, y: 0, z: 0, w: 1 } };
+  mac2Bones["RightHand"] = { calibration: { x: 0, y: 0, z: 0, w: 1 }, last: { x: 0, y: 0, z: 0, w: 1 }, global: { x: 0, y: 0, z: 0, w: 1 }, local: { x: 0, y: 0, z: 0, w: 1 }, bcalibration: { x: 0, y: 0, z: 0, w: 1 } };
   setGlobal("RightHand", bone.quaternion.x, bone.quaternion.y, bone.quaternion.z, bone.quaternion.w);
   setLocal("RightHand", bone.quaternion.x, bone.quaternion.y, bone.quaternion.z, bone.quaternion.w);
   initInitialPosition("RightHand", bone.quaternion.x, bone.quaternion.y, bone.quaternion.z, bone.quaternion.w);
@@ -139,6 +139,18 @@ function calibrate() {
   M.toast({ html: "T-Pose Set!", displayLength: 5000, classes: "green" });
   M.toast({ html: "Good luck with your capture! Don't forget to record it.", displayLength: 5000, classes: "" });
 }
+
+
+function boxCalibrate() {
+  var keys = Object.keys(mac2Bones);
+  for (var i = 0; i < keys.length; i++) {
+    mac2Bones[keys[i]].bcalibration.x = mac2Bones[keys[i]].last.x;
+    mac2Bones[keys[i]].bcalibration.y = mac2Bones[keys[i]].last.y;
+    mac2Bones[keys[i]].bcalibration.z = mac2Bones[keys[i]].last.z;
+    mac2Bones[keys[i]].bcalibration.w = mac2Bones[keys[i]].last.w;
+  }
+}
+
 
 function lowerFirstLetter(string) {
   return string.charAt(0).toLowerCase() + string.slice(1);
@@ -204,6 +216,8 @@ function handleWSMessage(obj) {
     );
   }
 
+  var bc = new THREE.Quaternion(mac2Bones[bone].bcalibration.x, mac2Bones[bone].bcalibration.y, mac2Bones[bone].bcalibration.z, mac2Bones[bone].bcalibration.w);
+
   if (bone == "Hips") {
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
     //    var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion);
@@ -221,7 +235,11 @@ function handleWSMessage(obj) {
     //var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion);
     //var spineQ = new THREE.Quaternion(transformedQ.x, -transformedQ.y, -transformedQ.z, transformedQ.w);
 
-    var transformedQ = rawQuaternion.clone().multiply(refQInverse).normalize();
+    //var transformedQ = rawQuaternion.clone().multiply(refQInverse).normalize();
+   // var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion, bc);
+   // var spineQ = new THREE.Quaternion(transformedQ.x, transformedQ.y, -transformedQ.z, transformedQ.w);
+
+    var transformedQ = new THREE.Quaternion().multiplyQuaternions(rawQuaternion, refQInverse, bc);
     var spineQ = new THREE.Quaternion(transformedQ.x, transformedQ.z, -transformedQ.y, transformedQ.w);
 
     var obj = mac2Bones["Hips"].global;
@@ -255,7 +273,7 @@ function handleWSMessage(obj) {
   if (bone == "LeftArm") {
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
 
-    var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion);
+    var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion, bc);
     //var q = new THREE.Quaternion().copy(transformedQ);
 
     //var transformedQ = rawQuaternion.clone().multiply(refQInverse).normalize();
@@ -289,9 +307,10 @@ function handleWSMessage(obj) {
   if (bone == "LeftForeArm") {
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
 
-    var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion);
-    //var q = new THREE.Quaternion().copy(transformedQ);
     //var transformedQ = rawQuaternion.clone().multiply(refQInverse).normalize();
+    //var leftforearmQ = new THREE.Quaternion(transformedQ.y, transformedQ.z, -transformedQ.x, transformedQ.w).normalize();
+
+    var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion, bc);
     var leftforearmQ = new THREE.Quaternion(transformedQ.y, -transformedQ.z, -transformedQ.x, transformedQ.w).normalize();
 
     var obj = mac2Bones["LeftArm"].global;
