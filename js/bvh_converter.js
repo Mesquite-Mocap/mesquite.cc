@@ -66,7 +66,7 @@ function traverseHierarchy(joint, jointInfo, level = 0) {
         var position = joint.position;
         position  = position.toArray();
         if (name === "Hips") {
-            position[1] -= 100;
+            position[1] -= 0;
         }
         const rotation = quaternionToEulerDegrees(joint.quaternion);
 
