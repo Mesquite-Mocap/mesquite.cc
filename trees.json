@@ -1,0 +1,95 @@
+{
+    "thorny": {
+        "name": "GY-ICM Prototype",
+        "Spine": {
+            "axis":{
+                "order": "XYZ",
+                "sign": "+++"
+            }
+        },
+        "Hips": {
+            "axis":{
+                "order": "XYZ",
+                "sign": "+++"
+            }
+        },
+        "Head": {
+            "axis":{
+                "order": "XYZ",
+                "sign": "+++"
+            }
+        },
+        "LeftArm": {
+            "axis":{
+                "order": "XYZ",
+                "sign": "+++"
+            }
+        },
+        "RightArm": {
+            "axis":{
+                "order": "XYZ",
+                "sign": "+++"
+            }
+        },
+        "LeftLeg": {
+            "axis":{
+                "order": "XYZ",
+                "sign": "+++"
+            }
+        },
+        "RightLeg": {
+            "axis":{
+                "order": "XYZ",
+                "sign": "+++"
+            }
+        },
+        "LeftForeArm": {
+            "axis":{
+                "order": "XYZ",
+                "sign": "+++"
+            }
+        },
+        "RightForeArm": {
+            "axis":{
+                "order": "XYZ",
+                "sign": "+++"
+            }
+        },
+        "LeftUpLeg": {
+            "axis":{
+                "order": "XYZ",
+                "sign": "+++"
+            }
+        },
+        "RightUpLeg": {
+            "axis":{
+                "order": "XYZ",
+                "sign": "+++"
+            }
+        },
+        "LeftFoot": {
+            "axis":{
+                "order": "XYZ",
+                "sign": "+++"
+            }
+        },
+        "RightFoot": {
+            "axis":{
+                "order": "XYZ",
+                "sign": "+++"
+            }
+        },
+        "LeftHand": {
+            "axis":{
+                "order": "XYZ",
+                "sign": "+++"
+            }
+        },
+        "RightHand": {
+            "axis":{
+                "order": "XYZ",
+                "sign": "+++"
+            }
+        }
+    }
+}
