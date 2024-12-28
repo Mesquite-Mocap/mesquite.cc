@@ -48,6 +48,8 @@
 // read trees.json
 var trees = [];
 
+var treeType = "thorny";
+
 function readTextFile(file, callback) {
   var rawFile = new XMLHttpRequest();
   rawFile.overrideMimeType("application/json");
@@ -236,10 +238,18 @@ readTextFile("trees.json", function(text){
 
 
 
+
   <button onclick='calibratein5()' style='right:0;bottom:0; position: absolute'
     class="auxButton main btn waves-effect waves-light white black-text large">Set
     <i class="material-icons " style="vertical-align:middle;font-size:200%">accessibility</i> Pose
   </button>
+
+
+<button id='boxcalibratein30' onclick='boxCalibrateIn30()' style='right:0;bottom:0; position: absolute'
+class="auxButton main btn waves-effect waves-light white black-text large">
+<i class="material-icons " style="vertical-align:middle;font-size:200%">blur_circular</i> Box Calibrate
+</button>
+
 
   <button id="recordButton" style="position:absolute; left:0; bottom:0px; z-index: 1;"
     class="auxButton main btn waves-effect waves-light green black-text large" onclick="toggleRecording()">
@@ -248,7 +258,7 @@ readTextFile("trees.json", function(text){
   </button>
 
 
-  <button id="restartPods" style="position:absolute; left:50vw; margin-left: -90px; width: 180px; bottom:0px; z-index: 1;"
+  <button id="restartPods" style="display:none;position:absolute; left:50vw; margin-left: -90px; width: 180px; bottom:0px; z-index: 1;"
     class="auxButton main btn waves-effect waves-light red white-text large" onclick="restartPods()">
     <i class="material-icons" style="vertical-align:middle;font-size:200%">sync</i>
     Restart Pods
@@ -265,6 +275,7 @@ readTextFile("trees.json", function(text){
     <i class="material-icons left">grain</i>
   </button>
 
+  
 
   <div id="manageModal" style="overflow-y:auto" class="modal">
     <div class="modal-content black-text">

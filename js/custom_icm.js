@@ -754,6 +754,42 @@ function calibratein5()
   M.toast({html: 'Please wear the pods and get in a T-pose for 5 seconds.<br> <button class="btn-flat toast-action green" style="margin-right:20px" onclick="M.Toast.dismissAll();calibratein5Confirm()">Start Timer</button>', classes: 'yellow black-text', displayLength: 10000});
 }
 
+function boxCalibrateIn30(){
+  M.Toast.dismissAll();
+  M.toast({html: '<p>Please turn on all pods in the box before clicking START.</p></br> <button class="btn-flat toast-action green" style="margin-right:20px" onclick="M.Toast.dismissAll();boxCalibratein30Confirm()">Start</button>', classes: 'yellow black-text', displayLength: 10000});
+}
+
+function boxCalibratein30Confirm(){
+  $("#boxcalibratein30").prop('disabled', true);
+  window.sWrite("reboot");
+  var tSec = 45;
+
+  M.toast({html: '<ul><li>Please keep all pods <span class="chip green white-text" style="font-weight:bold">ON</span> in the box on a still and flat surface for <span class="secs" style="font-size:200%;font-weight:bold">45 seconds</span></li>', classes: 'yellow black-text', displayLength: tSec*1000});
+  setTimeout(function(){
+   boxCalibrate();
+   M.toast({html: 'Box Calibration done!', classes: 'green black-text', displayLength: 5000});
+   M.toast({html: 'You can now start T-Pose calibration.', classes: 'white black-text', displayLength: 5000});
+   $("#boxcalibratein30").remove();
+  }, tSec*1000);
+
+  var p = setInterval(function(){
+    var secs = document.getElementsByClassName("secs")[0] || null;
+    if (secs){
+      tSec--;
+      if(tSec == 1){
+        secs.innerHTML = tSec + " second";
+      }
+      else{
+        secs.innerHTML = tSec + " seconds";
+      }
+    }
+    else{
+      clearInterval(p);
+    }
+  }, 1000);
+}
+
+
 function calibratein5Confirm(){
   $("#calibratein5").prop('disabled', true);
   M.toast({html: '<ul><li>Please get in a T-pose and  wait for <span class="secs" style="font-size:200%;font-weight:bold">5 seconds</span>.</li><li>When done the T-Pose* will be set.</li><li><sub>* You can click on "Set T-Pose" button to do this at anytime.</sub></li>', classes: 'yellow black-text', displayLength: 5*1000});
