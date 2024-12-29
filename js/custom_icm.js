@@ -192,7 +192,7 @@ function handleWSMessage(obj) {
   mac2Bones[bone].last.z = parseFloat(obj.z);
   mac2Bones[bone].last.w = parseFloat(obj.w);
 
-  console.log(obj);
+  // console.log(obj);
 
   statsObjs[lowerFirstLetter(bone)].update();
 
@@ -756,7 +756,7 @@ function calibratein5()
 
 function boxCalibrateIn30(){
   M.Toast.dismissAll();
-  M.toast({html: '<p>Please turn on all pods in the box before clicking START.</p></br> <button class="btn-flat toast-action green" style="margin-right:20px" onclick="M.Toast.dismissAll();boxCalibratein30Confirm()">Start</button>', classes: 'yellow black-text', displayLength: 10000});
+  M.toast({html: '<p>Please turn on all pods in the box before continuing....</p></br> <button class="btn-flat toast-action green" style="margin-right:20px" onclick="M.Toast.dismissAll();boxCalibratein30Confirm()">Start</button>', classes: 'yellow black-text', displayLength: 10000});
 }
 
 function boxCalibratein30Confirm(){
@@ -768,7 +768,7 @@ function boxCalibratein30Confirm(){
   setTimeout(function(){
    boxCalibrate();
    M.toast({html: 'Box Calibration done!', classes: 'green black-text', displayLength: 5000});
-   M.toast({html: 'You can now start T-Pose calibration.', classes: 'white black-text', displayLength: 5000});
+   M.toast({html: 'You can now wear the pods and proceed with T-Pose calibration.', classes: 'white black-text', displayLength: 5000});
    $("#boxcalibratein30").remove();
   }, tSec*1000);
 
