@@ -192,25 +192,32 @@ function handleWSMessage(obj) {
   mac2Bones[bone].last.z = parseFloat(obj.z);
   mac2Bones[bone].last.w = parseFloat(obj.w);
 
-  console.log(obj);
+  // console.log(obj);
 
   statsObjs[lowerFirstLetter(bone)].update();
 
   var millis = obj.millis || -1;
+  var count = obj.count || -1;
+  var countText = "";
 
   var millText = millis == -1 ? "" : "<br><span class='chip'>" + millis + "ms</span>";
 
   if(millis > 0){
-    var now = moment(new Date().getTime() - millis);
-    let result = now.fromNow(true);
+    var t = moment(new Date().getTime() - millis);
+    let result = t.fromNow(true);
 
     millText = "<br><span class=''>On for " + result + ".</span>";
   }
 
-  document.getElementById(lowerFirstLetter(bone) + "Status").innerHTML = "<b class='green-text'>CONNECTED </b>"+ millText + "<br><span class='chip'>" +
-    parseFloat(obj.batt) * 100 + "% battery</span>";
+  if (count > 0) {
+    countText = " " + count + " frames.";
+  }
+
+  document.getElementById(lowerFirstLetter(bone) + "Status").innerHTML = "<b class='green-text'>CONNECTED </b>"+ millText + countText + "<br><span class='chip'>"  +
+    parseFloat(obj.batt) * 100 + "% battery left</span>";
   $("#" + lowerFirstLetter(bone) + "Status").addClass("connected");
 
+  document.getElementById(lowerFirstLetter(bone) + "Status").dataset.last = new Date().getTime();
 
 
   var rawQuaternion = new THREE.Quaternion(parseFloat(obj.x), parseFloat(obj.y), parseFloat(obj.z), parseFloat(obj.w));
@@ -826,3 +833,16 @@ function calibratein5Confirm(){
     }
   }, 1000);
 }
+
+
+setInterval(function () {
+  $("td.connected").each(function () {
+    var last = parseInt($(this).attr("data-last"));
+    var now = new Date().getTime();
+
+    if (Math.abs(now - last) > 3000) {
+      $(this).removeClass("connected");
+      $(this).html("<b class='red-text'>DISCONNECTED</b>");
+    }
+  });
+}, 1000);
