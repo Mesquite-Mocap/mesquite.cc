@@ -182,10 +182,19 @@ function mapRange(value, low1, high1, low2, high2) {
   return low2 + (high2 - low2) * (value - low1) / (high1 - low1);
 }
 
-function getTransformedQuaternion(transformedQ){
-  var mapping = trees[treeType];
-  console.log(mapping);
-  return new THREE.Quaternion(transformedQ.x, -transformedQ.y, -transformedQ.z, transformedQ.w);
+function getTransformedQuaternion(transformedQ, bone){
+  var mapping = trees[treeType][bone];
+
+
+  var axisOrder = mapping.axis.order.toLowerCase();
+  var axisSign = mapping.axis.sign;
+  console.log(axisOrder, axisSign);
+
+  var x = transformedQ[axisOrder[0]] * parseInt(axisSign[0]+1);
+  var y = transformedQ[axisOrder[1]] * parseInt(axisSign[1]+1);
+  var z = transformedQ[axisOrder[2]] * parseInt(axisSign[2]+1);
+
+  return new THREE.Quaternion(x, y, z, transformedQ.w);
 }
 function handleWSMessage(obj) {
   if (flag) {
