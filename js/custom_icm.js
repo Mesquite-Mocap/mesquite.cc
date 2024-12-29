@@ -176,6 +176,10 @@ function updateTrackingLine(newHipPosition) {
   trackingLine.geometry.setDrawRange(0, line_tracker.length / 3);
 }
 
+function mapRange(value, low1, high1, low2, high2) {
+  return low2 + (high2 - low2) * (value - low1) / (high1 - low1);
+}
+
 function handleWSMessage(obj) {
   if (flag) {
     initGlobalLocalLast();
@@ -206,15 +210,20 @@ function handleWSMessage(obj) {
     var t = moment(new Date().getTime() - millis);
     let result = t.fromNow(true);
 
-    millText = "<br><span class=''>On for " + result + ".</span>";
+    millText = "<span class=''> for " + result + ".</span>";
   }
 
   if (count > 0) {
-    countText = " " + count + " frames.";
+    countText = "<br> <span class='chip'>" + count + " frames</span>";
   }
 
-  document.getElementById(lowerFirstLetter(bone) + "Status").innerHTML = "<b class='green-text'>CONNECTED </b>"+ millText + countText + "<br><span class='chip'>"  +
-    parseFloat(obj.batt) * 100 + "% battery left</span>";
+  var newBatt = parseFloat(obj.batt) * 100 - 80;
+  newBatt *= 9;
+  newBatt = Math.min(100, Math.max(0, newBatt));
+
+
+  document.getElementById(lowerFirstLetter(bone) + "Status").innerHTML = "<b class='green-text'>CONNECTED </b>"+ millText + countText + "<span class='chip'>"  + "<i style='transform:rotate(90deg);vertical-align:middle' class='material-icons'>battery_full</i> " +
+    newBatt + "%</span>";
   $("#" + lowerFirstLetter(bone) + "Status").addClass("connected");
 
   document.getElementById(lowerFirstLetter(bone) + "Status").dataset.last = new Date().getTime();
