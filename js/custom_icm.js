@@ -192,11 +192,22 @@ function handleWSMessage(obj) {
   mac2Bones[bone].last.z = parseFloat(obj.z);
   mac2Bones[bone].last.w = parseFloat(obj.w);
 
-  // console.log(obj);
+  console.log(obj);
 
   statsObjs[lowerFirstLetter(bone)].update();
 
-  document.getElementById(lowerFirstLetter(bone) + "Status").innerHTML = "<b class='green-text'>CONNECTED </b><br><span class='chip'>" +
+  var millis = obj.millis || -1;
+
+  var millText = millis == -1 ? "" : "<br><span class='chip'>" + millis + "ms</span>";
+
+  if(millis > 0){
+    var now = moment(new Date().getTime() - millis);
+    let result = now.fromNow(true);
+
+    millText = "<br><span class=''>On for " + result + ".</span>";
+  }
+
+  document.getElementById(lowerFirstLetter(bone) + "Status").innerHTML = "<b class='green-text'>CONNECTED </b>"+ millText + "<br><span class='chip'>" +
     parseFloat(obj.batt) * 100 + "% battery</span>";
   $("#" + lowerFirstLetter(bone) + "Status").addClass("connected");
 
