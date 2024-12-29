@@ -207,11 +207,13 @@ function handleWSMessage(obj) {
   var millText = millis == -1 ? "" : "<br><span class='chip'>" + millis + "ms</span>";
 
   if(millis > 0){
-    var t = moment(new Date().getTime());
-   // let result = t.fromNow(true);
-    let result = t.diff(moment(new Date().getTime() - millis), 'minutes');
+   // var t = moment(new Date().getTime());
+   // let result = t.diff(moment(new Date().getTime() - millis), 'minutes') + " minutes";
+   
+   var t = moment(new Date().getTime() - millis);
+   let result = t.fromNow(true);
 
-    millText = "<span class=''> for " + result + " minutes</span>";
+    millText = "<span class=''> for " + result + "</span>";
   }
 
   if (count > 0) {
@@ -806,9 +808,15 @@ function boxCalibratein30Confirm(){
   window.sWrite("reboot");
   var tSec = 45;
 
-  M.toast({html: '<ul><li>Please keep all pods <span class="chip green white-text" style="font-weight:bold">ON</span> in the box on a still and flat surface for <span class="secs" style="font-size:200%;font-weight:bold">45 seconds</span></li>', classes: 'yellow black-text', displayLength: tSec*1000});
+  M.toast({html: '<ul><li>Please make sure: \
+    <ol><li>all pods are turned <span class="chip green white-text" style="line-height:30px;margin-bottom:-10px;margin-top:-5px;font-size:20px;text-shadow:0px 0px 2px;font-weight:bold">ON</span> </li>\
+    <li> in the box </li>\
+    <li> is kept still on flat surface</li>\
+    <li> is facing you</li></ol><br>\
+     for <span class="secs" style="font-size:200%;font-weight:bold">45 seconds</span></li>', classes: 'yellow black-text', displayLength: tSec*1000});
   setTimeout(function(){
    boxCalibrate();
+   M.Toast.dismissAll();
    M.toast({html: 'Box Calibration done!', classes: 'green black-text', displayLength: 5000});
    M.toast({html: 'You can now wear the pods and proceed with T-Pose calibration.', classes: 'white black-text', displayLength: 5000});
    $("#boxcalibratein30").remove();
