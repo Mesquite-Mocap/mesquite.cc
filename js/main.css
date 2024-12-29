@@ -137,7 +137,7 @@ a.btn.main i{
 
 
 table.striped.highlight tr td{
-	height: 40px !important;
+	height: 50px !important;
 }
 
 tbody td, tbody th{
@@ -160,4 +160,9 @@ button.auxButton{
 
 body.connected .auxButton{
 	display:block;
+}
+
+table.striped tr{
+	min-height: 60px!important;
+	height: 60px!important;
 }

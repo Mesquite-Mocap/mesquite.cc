@@ -233,7 +233,7 @@ function handleWSMessage(obj) {
     battClass = "green-text";
   }
   
-  document.getElementById(lowerFirstLetter(bone) + "Status").innerHTML = "<b class='green-text'>CONNECTED </b>"+ millText + countText + "<span class='chip'>"  + "<i style='transform:rotate(90deg);vertical-align:middle' class='material-icons " + battClass + "'>battery_full</i> " +
+  document.getElementById(lowerFirstLetter(bone) + "Status").innerHTML = "<b class='green-text'>CONNECTED </b>"+ millText + countText + "<span class='chip'>"  + "<i style='transform:rotate(90deg);vertical-align:middle;text-shadow:0px 0px 1px black' class='material-icons " + battClass + "'>battery_full</i> " +
     newBatt + "%</span>";
   $("#" + lowerFirstLetter(bone) + "Status").addClass("connected");
 
