@@ -142,10 +142,16 @@ table.striped.highlight tr td{
 
 tbody td, tbody th{
 	padding: 1px 5px !important;
+	font-size: 20px;
 }
 
+table.centered thead tr th{
+	font-size: 24px!important;
+}
+
+
 tbody tr td:nth-child(3){
-	transform: scale(1.2);
+	transform: scale(1.5);
 	filter: saturate(1.5) brightness(1.5) contrast(1.5) hue-rotate(-70deg) contrast(1.5);
 }
 

@@ -138,6 +138,8 @@ function calibrate() {
   M.Toast.dismissAll();
   M.toast({ html: "T-Pose Set!", displayLength: 5000, classes: "green" });
   M.toast({ html: "Good luck with your capture! Don't forget to record it.", displayLength: 5000, classes: "" });
+
+  $(".looks_3").remove();
 }
 
 
