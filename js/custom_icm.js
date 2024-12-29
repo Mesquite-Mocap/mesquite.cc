@@ -222,7 +222,18 @@ function handleWSMessage(obj) {
   newBatt = Math.min(100, Math.max(0, newBatt));
 
 
-  document.getElementById(lowerFirstLetter(bone) + "Status").innerHTML = "<b class='green-text'>CONNECTED </b>"+ millText + countText + "<span class='chip'>"  + "<i style='transform:rotate(90deg);vertical-align:middle' class='material-icons'>battery_full</i> " +
+  var battClass = "";
+  if (newBatt < 20) {
+    battClass = "red-text";
+  } else if (newBatt < 40) {
+    battClass = "orange-text";
+  } else if (newBatt < 60) {
+    battClass = "yellow-text";
+  } else {
+    battClass = "green-text";
+  }
+  
+  document.getElementById(lowerFirstLetter(bone) + "Status").innerHTML = "<b class='green-text'>CONNECTED </b>"+ millText + countText + "<span class='chip'>"  + "<i style='transform:rotate(90deg);vertical-align:middle' class='material-icons " + battClass + "'>battery_full</i> " +
     newBatt + "%</span>";
   $("#" + lowerFirstLetter(bone) + "Status").addClass("connected");
 
