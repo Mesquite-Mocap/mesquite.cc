@@ -16,13 +16,13 @@
         "Head": {
             "axis":{
                 "order": "XYZ",
-                "sign": "+++"
+                "sign": "+--"
             }
         },
         "LeftArm": {
             "axis":{
-                "order": "XYZ",
-                "sign": "+++"
+                "order": "YZX",
+                "sign": "+--"
             }
         },
         "RightArm": {
