@@ -217,8 +217,11 @@ function handleWSMessage(obj) {
     countText = "<br> <span class='chip'>" + count + " frames</span>";
   }
 
+  /*
   var newBatt = parseFloat(obj.batt) * 100 - 80;
   newBatt *= 9;
+  */
+  var newBatt = parseFloat(obj.batt) * 100;
   newBatt = Math.min(100, Math.max(0, newBatt));
 
 
