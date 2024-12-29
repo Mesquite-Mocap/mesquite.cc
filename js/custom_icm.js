@@ -207,10 +207,11 @@ function handleWSMessage(obj) {
   var millText = millis == -1 ? "" : "<br><span class='chip'>" + millis + "ms</span>";
 
   if(millis > 0){
-    var t = moment(new Date().getTime() - millis);
-    let result = t.fromNow(true);
+    var t = moment(new Date().getTime());
+   // let result = t.fromNow(true);
+    let result = t.diff(moment(new Date().getTime() - millis), 'minutes');
 
-    millText = "<span class=''> for " + result + ".</span>";
+    millText = "<span class=''> for " + result + " minutes</span>";
   }
 
   if (count > 0) {
