@@ -182,6 +182,11 @@ function mapRange(value, low1, high1, low2, high2) {
   return low2 + (high2 - low2) * (value - low1) / (high1 - low1);
 }
 
+function getTransformedQuaternion(transformedQ){
+  var mapping = trees[treeType];
+  console.log(mapping);
+  return new THREE.Quaternion(transformedQ.x, -transformedQ.y, -transformedQ.z, transformedQ.w);
+}
 function handleWSMessage(obj) {
   if (flag) {
     initGlobalLocalLast();
@@ -249,9 +254,7 @@ function handleWSMessage(obj) {
 
 
   var rawQuaternion = new THREE.Quaternion(parseFloat(obj.x), parseFloat(obj.y), parseFloat(obj.z), parseFloat(obj.w));
-  // if (bone == "Hips") {
-  //   rawQuaternion = new THREE.Quaternion(-parseFloat(obj.y), -parseFloat(obj.x), -parseFloat(obj.z), parseFloat(obj.w));
-  //}
+
   var refQuaternion = new THREE.Quaternion(0, 0, 0, 1);
   if (mac2Bones[bone] && mac2Bones[bone].calibration) {
     refQuaternion = new THREE.Quaternion(
@@ -278,15 +281,10 @@ function handleWSMessage(obj) {
 
   if (bone == "Spine") {
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
-    //var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion);
-    //var spineQ = new THREE.Quaternion(transformedQ.x, -transformedQ.y, -transformedQ.z, transformedQ.w);
-
-    //var transformedQ = rawQuaternion.clone().multiply(refQInverse).normalize();
-   // var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion, bc);
-   // var spineQ = new THREE.Quaternion(transformedQ.x, transformedQ.y, -transformedQ.z, transformedQ.w);
-
     var transformedQ = new THREE.Quaternion().multiplyQuaternions(rawQuaternion, refQInverse, bc);
-    var spineQ = new THREE.Quaternion(transformedQ.x, transformedQ.z, -transformedQ.y, transformedQ.w);
+    
+    //var spineQ = new THREE.Quaternion(transformedQ.x, transformedQ.z, -transformedQ.y, transformedQ.w);
+    var spineQ = getTransformedQuaternion(transformedQ, bone);
 
     var obj = mac2Bones["Hips"].global;
     var hipQ = new THREE.Quaternion(obj.x, obj.y, obj.z, obj.w);
@@ -800,9 +798,24 @@ function calibratein5()
   M.toast({html: 'Please wear the pods and get in a T-pose for 5 seconds.<br> <button class="btn-flat toast-action green" style="margin-right:20px" onclick="M.Toast.dismissAll();calibratein5Confirm()">Start Timer</button>', classes: 'yellow black-text', displayLength: 10000});
 }
 
+function quickBoxCalibrate(){
+  boxCalibrate();
+  //M.Toast.dismissAll();
+  M.toast({html: 'Box Calibration values saved!', classes: 'blue black-text', displayLength: 5000});
+  M.toast({html: 'You can now wear the pods and proceed with T-Pose calibration.', classes: 'white black-text', displayLength: 5000});
+  $("#boxcalibratein30").remove();
+}
+
+
+function skipBoxCalibrate(){
+  M.toast({html: 'Box Calibration skipped!', classes: 'red white-text', displayLength: 5000});
+  M.toast({html: 'You can now wear the pods and proceed with T-Pose calibration.', classes: 'white black-text', displayLength: 5000});
+  $("#boxcalibratein30").remove();
+}
+
 function boxCalibrateIn30(){
   M.Toast.dismissAll();
-  M.toast({html: '<p>Please turn on all pods in the box before continuing....</p></br> <button class="btn-flat toast-action green" style="margin-right:20px" onclick="M.Toast.dismissAll();boxCalibratein30Confirm()">Start</button>', classes: 'yellow black-text', displayLength: 10000});
+  M.toast({html: '<p>Please turn on all pods in the box before continuing....</p></br> <button class="btn-flat toast-action green" style="margin-right:0px" onclick="M.Toast.dismissAll();boxCalibratein30Confirm()">Start</button><button class="btn-flat toast-action blue" style="margin-right:0px" onclick="M.Toast.dismissAll();quickBoxCalibrate()">Quick Calibrate</button><button class="btn-flat toast-action red" style="margin-right:0px" onclick="M.Toast.dismissAll();skipBoxCalibrate()">Skip</button>', classes: 'yellow black-text', displayLength: 10000});
 }
 
 function boxCalibratein30Confirm(){
