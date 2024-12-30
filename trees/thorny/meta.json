@@ -1,0 +1,95 @@
+{
+    "thorny": {
+        "name": "GY-ICM Prototype",
+        "Spine": {
+            "axis":{
+                "order": "XZY",
+                "sign": "++-"
+            }
+        },
+        "Hips": {
+            "axis":{
+                "order": "XYZ",
+                "sign": "+++"
+            }
+        },
+        "Head": {
+            "axis":{
+                "order": "XYZ",
+                "sign": "+--"
+            }
+        },
+        "LeftArm": {
+            "axis":{
+                "order": "YZX",
+                "sign": "+--"
+            }
+        },
+        "RightArm": {
+            "axis":{
+                "order": "YZX",
+                "sign": "--+"
+            }
+        },
+        "LeftLeg": {
+            "axis":{
+                "order": "XYZ",
+                "sign": "+--"
+            }
+        },
+        "RightLeg": {
+            "axis":{
+                "order": "XYZ",
+                "sign": "+--"
+            }
+        },
+        "LeftForeArm": {
+            "axis":{
+                "order": "YZX",
+                "sign": "+--"
+            }
+        },
+        "RightForeArm": {
+            "axis":{
+                "order": "YZX",
+                "sign": "--+"
+            }
+        },
+        "LeftUpLeg": {
+            "axis":{
+                "order": "XYZ",
+                "sign": "+--"
+            }
+        },
+        "RightUpLeg": {
+            "axis":{
+                "order": "XYZ",
+                "sign": "+--"
+            }
+        },
+        "LeftFoot": {
+            "axis":{
+                "order": "XYZ",
+                "sign": "+++"
+            }
+        },
+        "RightFoot": {
+            "axis":{
+                "order": "XYZ",
+                "sign": "+++"
+            }
+        },
+        "LeftHand": {
+            "axis":{
+                "order": "YZX",
+                "sign": "--+"
+            }
+        },
+        "RightHand": {
+            "axis":{
+                "order": "YZX",
+                "sign": "--+"
+            }
+        }
+    }
+}

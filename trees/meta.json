@@ -34,37 +34,37 @@
         "LeftLeg": {
             "axis":{
                 "order": "XYZ",
-                "sign": "+++"
+                "sign": "+--"
             }
         },
         "RightLeg": {
             "axis":{
                 "order": "XYZ",
-                "sign": "+++"
+                "sign": "+--"
             }
         },
         "LeftForeArm": {
             "axis":{
-                "order": "XYZ",
-                "sign": "+++"
+                "order": "YZX",
+                "sign": "+--"
             }
         },
         "RightForeArm": {
             "axis":{
-                "order": "XYZ",
-                "sign": "+++"
+                "order": "YZX",
+                "sign": "--+"
             }
         },
         "LeftUpLeg": {
             "axis":{
                 "order": "XYZ",
-                "sign": "+++"
+                "sign": "+--"
             }
         },
         "RightUpLeg": {
             "axis":{
                 "order": "XYZ",
-                "sign": "+++"
+                "sign": "+--"
             }
         },
         "LeftFoot": {
@@ -81,14 +81,14 @@
         },
         "LeftHand": {
             "axis":{
-                "order": "XYZ",
-                "sign": "+++"
+                "order": "YZX",
+                "sign": "--+"
             }
         },
         "RightHand": {
             "axis":{
-                "order": "XYZ",
-                "sign": "+++"
+                "order": "YZX",
+                "sign": "--+"
             }
         }
     }
