@@ -47,24 +47,32 @@
   <script>
 
 // read trees.json
-var trees = [];
+var trees = {};
 
-var treeType = "thorny";
+var treeType = localStorage.getItem('treeType') || 'thorny';
 
-function readTextFile(file, callback) {
+function readTextFile(file, callback, id) {
   var rawFile = new XMLHttpRequest();
   rawFile.overrideMimeType("application/json");
   rawFile.open("GET", file, true);
   rawFile.onreadystatechange = function() {
     if (rawFile.readyState === 4 && rawFile.status == "200") {
-      callback(rawFile.responseText);
+      callback(rawFile.responseText, id);
     }
   }
   rawFile.send(null);
 }
 
-readTextFile("trees.json", function(text){
-  trees = JSON.parse(text);
+readTextFile("trees/meta.json", function(text){
+  var allTrees = JSON.parse(text);
+  console.log(allTrees);
+  for (var i = 0; i < allTrees.length; i++) {
+    var id = allTrees[i].id;
+    readTextFile("trees/" + allTrees[i].id + "/meta.json", function(text, id){
+      console.log(JSON.parse(text));
+      trees[id] = JSON.parse(text);
+    }, id);
+  }
 });
 
      var mac2Bones = {};
