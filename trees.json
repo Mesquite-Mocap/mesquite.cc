@@ -27,8 +27,8 @@
         },
         "RightArm": {
             "axis":{
-                "order": "XYZ",
-                "sign": "+++"
+                "order": "YZX",
+                "sign": "--+"
             }
         },
         "LeftLeg": {

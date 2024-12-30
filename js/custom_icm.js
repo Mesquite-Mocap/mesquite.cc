@@ -191,6 +191,32 @@ function getTransformedQuaternion(transformedQ, bone){
   var y = transformedQ[axisOrder[1]] * parseInt(axisSign[1]+1);
   var z = transformedQ[axisOrder[2]] * parseInt(axisSign[2]+1);
 
+
+  /*
+  var q = new THREE.Quaternion(x, y, z, transformedQ.w);
+  var e = new THREE.Euler().setFromQuaternion(q, "XYZ");
+
+  if(filtersx[bone] == undefined){
+    filtersx[bone] = new KalmanFilter();
+  }
+  x = filtersx[bone].filter(e.x);
+
+  if(filtersy[bone] == undefined){
+    filtersy[bone] = new KalmanFilter();
+  }
+  y = filtersy[bone].filter(e.y);
+
+  if(filtersz[bone] == undefined){
+    filtersz[bone] = new KalmanFilter();
+  }
+  z = filtersz[bone].filter(e.z);
+
+  e = new THREE.Euler(x, y, z, "XYZ");
+
+  var q2 = new THREE.Quaternion().setFromEuler(e, "XYZ");
+  return q2;
+  */
+
   return new THREE.Quaternion(x, y, z, transformedQ.w);
 }
 
@@ -338,9 +364,8 @@ function handleWSMessage(obj) {
   if (bone == "RightArm") {
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
     var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion, bc);
-    //var q = new THREE.Quaternion().copy(transformedQ);
-   // var transformedQ = rawQuaternion.clone().multiply(refQInverse).normalize();
-    var rightarmQ = new THREE.Quaternion(-transformedQ.y, -transformedQ.z, transformedQ.x, transformedQ.w).normalize();
+
+    var rightarmQ = getTransformedQuaternion(transformedQ, bone);
     var obj = mac2Bones["Spine"].global;
     var spineQ = new THREE.Quaternion(obj.x, obj.y, obj.z, obj.w);
     var spineQinverse = new THREE.Quaternion().copy(spineQ).invert();
@@ -352,9 +377,6 @@ function handleWSMessage(obj) {
 
   if (bone == "LeftForeArm") {
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
-
-    //var transformedQ = rawQuaternion.clone().multiply(refQInverse).normalize();
-    //var leftforearmQ = new THREE.Quaternion(transformedQ.y, transformedQ.z, -transformedQ.x, transformedQ.w).normalize();
 
     var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion, bc);
     var leftforearmQ = new THREE.Quaternion(transformedQ.y, -transformedQ.z, -transformedQ.x, transformedQ.w).normalize();
