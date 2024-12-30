@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+  <link rel="manifest" href="app.webmanifest" />
+  <link type="text/css" rel="stylesheet" href="js/main.css" />
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/kalmanjs@1.1.0/lib/kalman.min.js"></script>
+  <script src="js/moment.min.js" integrity="sha512-hUhvpC5f8cgc04OZb55j0KNGh4eh7dLxd/dPSJ5VyzqDWxsayYbojWyl5Tkcgrmb/RVKCRJI1jNlRbVP4WWC4w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+  <title> MESQUITE.cc </title>
+  <style>
+    /* fallback */
+    @font-face {
+      font-family: 'Material Icons';
+      font-style: normal;
+      font-weight: 400;
+      src: url(js/mi.woff2) format('woff2');
+    }
+
+    .material-icons {
+      font-family: 'Material Icons';
+      font-weight: normal;
+      font-style: normal;
+      font-size: 24px;
+      line-height: 1;
+      letter-spacing: normal;
+      text-transform: none;
+      display: inline-block;
+      white-space: nowrap;
+      word-wrap: normal;
+      direction: ltr;
+      -moz-font-feature-settings: 'liga';
+      -moz-osx-font-smoothing: grayscale;
+    }
+  </style>
+</head>
+
+<body>
+  <script>
+
+// read trees.json
+var trees = {};
+
+var treeType = localStorage.getItem('treeType') || 'thorny';
+
+function readTextFile(file, callback, id) {
+  var rawFile = new XMLHttpRequest();
+  rawFile.overrideMimeType("application/json");
+  rawFile.open("GET", file, true);
+  rawFile.onreadystatechange = function() {
+    if (rawFile.readyState === 4 && rawFile.status == "200") {
+      callback(rawFile.responseText, id);
+    }
+  }
+  rawFile.send(null);
+}
+
+readTextFile("trees/meta.json", function(text){
+  var allTrees = JSON.parse(text);
+  console.log(allTrees);
+  for (var i = 0; i < allTrees.length; i++) {
+    var id = allTrees[i].id;
+    readTextFile("trees/" + allTrees[i].id + "/meta.json", function(text, id){
+      console.log(JSON.parse(text));
+      trees[id] = JSON.parse(text);
+    }, id);
+  }
+});
+
+     var mac2Bones = {};
+    // face points
+    var positions;
+    var positionsR;
+    var positionsL;
+    var faceGeometry;
+    var leftHandGeometry;
+    var rightHandGeometry;
+    var facemesh;
+    var faceLandmarker;
+    var hands;
+    var faceResults = null;
+    var lhResults = null;
+    var rhResults = null;
+
+    let camera, scene, renderer, stats, viewportGizmo, grid;
+
+
+
+    var statsObjs = {
+      "head": {
+        "status": "Not Connected",
+        "stats": null
+      },
+      "spine": {
+        "status": "Not Connected",
+        "stats": null
+      },
+      "hips": {
+        "status": "Not Connected",
+        "stats": null
+      },
+      "leftArm": {
+        "status": "Not Connected",
+        "stats": null
+      },
+      "leftForeArm": {
+        "status": "Not Connected",
+        "stats": null
+      },
+      "rightArm": {
+        "status": "Not Connected",
+        "stats": null
+      },
+      "rightForeArm": {
+        "status": "Not Connected",
+        "stats": null
+      },
+      "leftUpLeg": {
+        "status": "Not Connected",
+        "stats": null
+      },
+      "leftLeg": {
+        "status": "Not Connected",
+        "stats": null
+      },
+      "rightUpLeg": {
+        "status": "Not Connected",
+        "stats": null
+      },
+      "rightLeg": {
+        "status": "Not Connected",
+        "stats": null
+      },
+      "leftHand": {
+        "status": "Not Connected",
+        "stats": null
+      },
+      "rightHand": {
+        "status": "Not Connected",
+        "stats": null
+      },
+      "leftFoot": {
+        "status": "Not Connected",
+        "stats": null
+      },
+      "rightFoot": {
+        "status": "Not Connected",
+        "stats": null
+      }
+    }
+
+
+    var hash = window.location.hash.replace("#", "");
+    var args = hash.split(",");
+    var fbxfile = args[0] || "ybot.fbx";
+    var bvhfile = args[1] || "blank.bvh";
+    var zoomLevel = args[2] || null;
+    // console.log("fbxfile", fbxfile, "bvhfile", bvhfile, "zoomLevel", zoomLevel);
+    if (zoomLevel) {
+      zoomLevel = parseFloat(zoomLevel);
+    }
+    var model;
+    var animation;
+    var animationDuration;
+    let camera_bvh, controls_bvh, scene_bvh, renderer_bvh;
+    let mixer_bvh, skeletonHelper_bvh;
+
+    var trackingLine;
+    var line_tracker = []; // Start with an empty array
+
+    function animationReset() {
+      animation.time = 0;
+      mixer_bvh.time = 0;
+      animation.paused = false;
+    }
+    let manageModal;
+
+    let recording = false;
+    let recordedMotionData = [];
+    let firstFrameJointData = null;
+
+  </script>
+  <script type="module" src="js/threejsscene.js"></script>
+  <script type="module" src="js/webserial.js"></script>
+
+  <script>
+    let isRecording = false;
+
+    function toggleRecording() {
+      const recordButton = document.getElementById('recordButton');
+      const recordIcon = recordButton.querySelector('i');
+
+      if (!isRecording) {
+        startRecording();
+        recordButton.classList.remove('green');
+        recordButton.classList.add('red');
+        recordIcon.textContent = 'stop';
+        recordButton.innerHTML = recordButton.innerHTML.replace('Record BVH', 'Stop Recording');
+      } else {
+        stopRecording();
+        recordButton.classList.remove('red');
+        recordButton.classList.add('green');
+        recordIcon.textContent = 'fiber_manual_record';
+        recordButton.innerHTML = recordButton.innerHTML.replace('Stop Recording', 'Record BVH');
+      }
+
+      isRecording = !isRecording;
+    }
+    function startRecording() {
+      recording = true;
+      recordedMotionData = [];
+
+      // Store the first frame's joint data
+      firstFrameJointData = updateMotionData();
+
+      // Call updateMotionData every 50ms
+      const intervalId = setInterval(() => {
+        if (recording) {
+          updateMotionData();
+        } else {
+          clearInterval(intervalId);
+        }
+      }, 25);
+    }
+
+    function stopRecording() {
+      recording = false;
+
+      // Call generateBVH and save the BVH file
+      const bvhContent = generateBVH(firstFrameJointData, recordedMotionData);
+      const blob = new Blob([bvhContent], { type: "text/plain;charset=utf-8" });
+      const date = new Date();
+      const dateString = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}-${date.getHours()}-${date.getMinutes()}-${date.getSeconds()}`;
+      const file_name = `MMcap_bvh_${dateString}.bvh`;
+      saveAs(blob, file_name);
+    }
+
+  </script>
+
+
+
+
+  <button onclick='calibratein5()' style='right:0;bottom:0; position: absolute'
+    class="auxButton main btn waves-effect waves-light white black-text large">
+    <i class="material-icons looks_3" style="vertical-align:middle;font-size:200%">looks_3</i>
+    Set
+    <i class="material-icons " style="vertical-align:middle;font-size:200%">accessibility</i> Pose
+  </button>
+
+
+<button id='boxcalibratein30' onclick='boxCalibrateIn30()' style='right:0;bottom:0; position: absolute'
+class="auxButton main btn waves-effect waves-light white black-text large">
+<i class="material-icons " style="vertical-align:middle;font-size:200%">looks_two</i> Box Calibrate
+</button>
+
+
+  <button id="recordButton" style="position:absolute; left:0; bottom:0px; z-index: 1;"
+    class="auxButton main btn waves-effect waves-light green black-text large" onclick="toggleRecording()">
+    <i class="material-icons" style="vertical-align:middle;font-size:200%">fiber_manual_record</i>
+    Record BVH
+  </button>
+
+
+  <button id="restartPods" style="display:none;position:absolute; left:50vw; margin-left: -90px; width: 180px; bottom:0px; z-index: 1;"
+    class="auxButton main btn waves-effect waves-light red white-text large" onclick="restartPods()">
+    <i class="material-icons" style="vertical-align:middle;font-size:200%">sync</i>
+    Restart Pods
+  </button>
+
+
+  <button id='linkPods' class="main btn waves-effect waves-light white black-text">Link Dongle
+    <i style='font-size:200%;vertical-align:middle' class="material-icons left">looks_one</i>
+  </button>
+
+
+  <button onclick="manageModal.open()" id='settingsButton' style='position:fixed;right:0;top:0'
+    class="auxButton main btn waves-effect waves-light white black-text large">Branches <span id='podCount' class="chip">0</span>
+    <i style='font-size:200%;vertical-align:middle' class="material-icons left">widgets</i>
+  </button>
+
+  
+
+  <div id="manageModal" style="overflow-y:auto" class="modal">
+    <div class="modal-content black-text">
+      <h4 style="text-align:center"></h4>
+      <!-- tab -->
+      <div class="row" style="">
+        <div class="col s12">
+          <ul class="tabs" style="background-color: transparent;color:black;display:none">
+            <li class="tab col s6"><a id='deviceMapListB' style='text-decoration: none; color:black' class="active"
+                onclick="$('#ext').fadeOut(0); $('#deviceMapList').fadeIn(0)">Network Stats</a></li>
+            <li class="tab col s6"><a style='text-decoration: none; color:black'
+                onclick="$('#deviceMapList').fadeOut(0); $('#ext').fadeIn(0)">Add Ons</a></li>
+          </ul>
+        </div>
+
+
+
+
+        <div id="deviceMapList">
+          <table class="striped highlight centered">
+            <thead>
+              <tr>
+                <th>Bone</th>
+                <th>Status</th>
+                <th>Stats</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr>
+                <td>Head</td>
+                <td id="headStatus">Not Connected</td>
+                <td id="headStats"></td>
+              </tr>
+              <tr>
+                <td>Spine</td>
+                <td id="spineStatus">Not Connected</td>
+                <td id="spineStats"></td>
+              </tr>
+              <tr>
+                <td>Hips</td>
+                <td id="hipsStatus">Not Connected</td>
+                <td id="hipsStats"></td>
+              </tr>
+              <tr>
+                <td>Left Upper Arm</td>
+                <td id="leftArmStatus">Not Connected</td>
+                <td id="leftArmStats"></td>
+              </tr>
+              <tr>
+                <td>Left Forearm</td>
+                <td id="leftForeArmStatus">Not Connected</td>
+                <td id="leftForeArmStats"></td>
+              </tr>
+              <tr>
+                <td>Right Upper Arm</td>
+                <td id="rightArmStatus">Not Connected</td>
+                <td id="rightArmStats"></td>
+              </tr>
+              <tr>
+                <td>Right Forearm</td>
+                <td id="rightForeArmStatus">Not Connected</td>
+                <td id="rightForeArmStats"></td>
+              </tr>
+              <tr>
+                <td>Left Upper Leg</td>
+                <td id="leftUpLegStatus">Not Connected</td>
+                <td id="leftUpLegStats"></td>
+              </tr>
+              <tr>
+                <td>Left Lower Leg</td>
+                <td id="leftLegStatus">Not Connected</td>
+                <td id="leftLegStats"></td>
+              </tr>
+              <tr>
+                <td>Right Upper Leg</td>
+                <td id="rightUpLegStatus">Not Connected</td>
+                <td id="rightUpLegStats"></td>
+              </tr>
+              <tr>
+                <td>Right Lower Leg</td>
+                <td id="rightLegStatus">Not Connected</td>
+                <td id="rightLegStats"></td>
+              </tr>
+              <tr>
+                <td>Left Hand</td>
+                <td id="leftHandStatus">Not Connected</td>
+                <td id="leftHandStats"></td>
+              </tr>
+              <tr>
+                <td>Right Hand</td>
+                <td id="rightHandStatus">Not Connected</td>
+                <td id="rightHandStats"></td>
+              </tr>
+              <tr>
+                <td>Left Foot</td>
+                <td id="leftFootStatus">Not Connected</td>
+                <td id="leftFootStats"></td>
+              </tr>
+              <tr>
+                <td>Right Foot</td>
+                <td id="rightFootStatus">Not Connected</td>
+                <td id="rightFootStats"></td>
+              </tr>
+
+
+            </tbody>
+          </table>
+
+        </div>
+
+        <div id="ext">
+          <h4>Face</h4>
+          <canvas id="facecanvas" width="320" height="240" style="margin:auto;display:none"></canvas>
+          <video id="facevideo" width="320" height="240" style=""></video>
+          <canvas id="facecanvasResult" width="640" height="480" style="margin:auto"></canvas>
+
+
+          <h4>Right Hand</h4>
+          <canvas id="rhcanvas" width="320" height="240" style="margin:auto;display:none"></canvas>
+          <video id="rhvideo" width="320" height="240" style=""></video>
+          <canvas id="rhcanvasResult" width="640" height="480" style="margin:auto"></canvas>
+
+          <h4>Left Hand</h4>
+          <canvas id="lhcanvas" width="320" height="240" style="margin:auto;display:none"></canvas>
+          <video id="lhvideo" width="320" height="240" style=""></video>
+          <canvas id="lhcanvasResult" width="640" height="480" style="margin:auto"></canvas>
+        </div>
+
+
+      </div>
+
+      <div id="splashScreen"
+        style="width:100vw;height:100vh;position:fixed;top:0;left:0;background-color:rgba(0,0,0,0.9);z-index:1000;background-image: url(icons/icon.png); background-repeat: no-repeat;background-position: 50% 30%; background-size: 200px; transition: 1s;">
+        <div class="title" style="top:60vh; text-align:center;font-size:200%; position: absolute; width: 100vw;">
+          Mesquite Mocap
+        </div>
+      </div>
+
+</body>
+
+
+<script src="js/custom_icm.js"></script>
+<script src="js/three.min.js"></script>
+<script src="js/bvh_converter.js"></script>
+
+<script>
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("./js/sw.js");
+  }
+</script>
+
+</html>
