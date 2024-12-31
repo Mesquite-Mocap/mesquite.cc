@@ -5,7 +5,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
   <link rel="manifest" href="app.webmanifest" />
-  <link type="text/css" rel="stylesheet" href="js/main.css" />
+  <link type="text/css" rel="stylesheet" href="../../../js/main.css" />
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
 
@@ -13,7 +13,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/kalmanjs@1.1.0/lib/kalman.min.js"></script>
-  <script src="js/moment.min.js" integrity="sha512-hUhvpC5f8cgc04OZb55j0KNGh4eh7dLxd/dPSJ5VyzqDWxsayYbojWyl5Tkcgrmb/RVKCRJI1jNlRbVP4WWC4w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="../../../js/moment.min.js" integrity="sha512-hUhvpC5f8cgc04OZb55j0KNGh4eh7dLxd/dPSJ5VyzqDWxsayYbojWyl5Tkcgrmb/RVKCRJI1jNlRbVP4WWC4w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
   <title> MESQUITE.cc </title>
   <style>
@@ -45,35 +45,6 @@
 
 <body>
   <script>
-
-// read trees.json
-var trees = {};
-
-var treeType = localStorage.getItem('treeType') || 'thorny';
-
-function readTextFile(file, callback, id) {
-  var rawFile = new XMLHttpRequest();
-  rawFile.overrideMimeType("application/json");
-  rawFile.open("GET", file, true);
-  rawFile.onreadystatechange = function() {
-    if (rawFile.readyState === 4 && rawFile.status == "200") {
-      callback(rawFile.responseText, id);
-    }
-  }
-  rawFile.send(null);
-}
-
-readTextFile("trees/meta.json", function(text){
-  var allTrees = JSON.parse(text);
-  console.log(allTrees);
-  for (var i = 0; i < allTrees.length; i++) {
-    var id = allTrees[i].id;
-    readTextFile("trees/" + allTrees[i].id + "/meta.json", function(text, id){
-      console.log(JSON.parse(text));
-      trees[id] = JSON.parse(text);
-    }, id);
-  }
-});
 
      var mac2Bones = {};
     // face points
@@ -188,8 +159,7 @@ readTextFile("trees/meta.json", function(text){
     let firstFrameJointData = null;
 
   </script>
-  <script type="module" src="js/threejsscene.js"></script>
-  <script type="module" src="js/webserial.js"></script>
+  <script type="module" src="threejsscene.js"></script>
 
   <script>
     let isRecording = false;
@@ -245,46 +215,6 @@ readTextFile("trees/meta.json", function(text){
 
   </script>
 
-
-
-
-  <button onclick='calibratein5()' style='right:0;bottom:0; position: absolute'
-    class="auxButton main btn waves-effect waves-light white black-text large">
-    <i class="material-icons looks_3" style="vertical-align:middle;font-size:200%">looks_3</i>
-    Set
-    <i class="material-icons " style="vertical-align:middle;font-size:200%">accessibility</i> Pose
-  </button>
-
-
-<button id='boxcalibratein30' onclick='boxCalibrateIn30()' style='right:0;bottom:0; position: absolute'
-class="auxButton main btn waves-effect waves-light white black-text large">
-<i class="material-icons " style="vertical-align:middle;font-size:200%">looks_two</i> Box Calibrate
-</button>
-
-
-  <button id="recordButton" style="position:absolute; left:0; bottom:0px; z-index: 1;"
-    class="auxButton main btn waves-effect waves-light green black-text large" onclick="toggleRecording()">
-    <i class="material-icons" style="vertical-align:middle;font-size:200%">fiber_manual_record</i>
-    Record BVH
-  </button>
-
-
-  <button id="restartPods" style="display:none;position:absolute; left:50vw; margin-left: -90px; width: 180px; bottom:0px; z-index: 1;"
-    class="auxButton main btn waves-effect waves-light red white-text large" onclick="restartPods()">
-    <i class="material-icons" style="vertical-align:middle;font-size:200%">sync</i>
-    Restart Pods
-  </button>
-
-
-  <button id='linkPods' class="main btn waves-effect waves-light white black-text">Link Dongle
-    <i style='font-size:200%;vertical-align:middle' class="material-icons left">looks_one</i>
-  </button>
-
-
-  <button onclick="manageModal.open()" id='settingsButton' style='position:fixed;right:0;top:0'
-    class="auxButton main btn waves-effect waves-light white black-text large">Branches <span id='podCount' class="chip">0</span>
-    <i style='font-size:200%;vertical-align:middle' class="material-icons left">widgets</i>
-  </button>
 
   
 
@@ -429,9 +359,7 @@ class="auxButton main btn waves-effect waves-light white black-text large">
 </body>
 
 
-<script src="js/custom_icm.js"></script>
-<script src="js/three.min.js"></script>
-<script src="js/bvh_converter.js"></script>
+<script src="../../../js/three.min.js"></script>
 
 <script>
   if ("serviceWorker" in navigator) {

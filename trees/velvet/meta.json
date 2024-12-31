@@ -1,10 +1,10 @@
 {
-      "id": "thorny",
+      "id": "velvet",
       "name": "GY-ICM Prototype",
       "Spine": {
         "axis": {
-          "order": "XZY",
-          "sign": "++-"
+          "order": "YZX",
+          "sign": "-+-"
         }
       },
       "Hips": {
