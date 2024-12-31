@@ -279,7 +279,7 @@ function handleWSMessage(obj) {
     battClass = "green-text";
   }
   
-  document.getElementById(lowerFirstLetter(bone) + "Status").innerHTML = "<b class='green-text'>CONNECTED </b>"+ millText + countText + "<span class='chip'>"  + "<i style='transform:rotate(90deg);vertical-align:middle;text-shadow:0px 0px 1px black' class='material-icons " + battClass + "'>battery_full</i> " +
+  document.getElementById(lowerFirstLetter(bone) + "Status").innerHTML = "<b style='margin-right:0;font-size:25px;text-shadow:0px 0px 1px' class='green white-text chip'>ON</b>"+ millText + countText + "<span class='chip'>"  + "<i style='transform:rotate(90deg);vertical-align:middle;text-shadow:0px 0px 1px black' class='material-icons " + battClass + "'>battery_full</i> " +
     newBatt + "%</span>";
   $("#" + lowerFirstLetter(bone) + "Status").addClass("connected");
 
@@ -485,7 +485,7 @@ function handleWSMessage(obj) {
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
     var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion, bc);
     var rightlegQ = getTransformedQuaternion(transformedQ, bone);
-    
+
     var obj = mac2Bones["RightUpLeg"].global;
     var rightuplegQ = new THREE.Quaternion(obj.x, obj.y, obj.z, obj.w);
     var rightuplegQinverse = new THREE.Quaternion().copy(rightuplegQ).invert();
