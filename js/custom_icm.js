@@ -247,13 +247,10 @@ function handleWSMessage(obj) {
   var millText = millis == -1 ? "" : "<br><span class='chip'>" + millis + "ms</span>";
 
   if(millis > 0){
-   // var t = moment(new Date().getTime());
-   // let result = t.diff(moment(new Date().getTime() - millis), 'minutes') + " minutes";
-   
    var t = moment(new Date().getTime() - millis);
    let result = t.fromNow(true);
 
-    millText = "<span class=''> for " + result + "</span>";
+  millText = "<span class=''>for over " + result + "</span>";
   }
 
   if (count > 0) {
@@ -279,7 +276,7 @@ function handleWSMessage(obj) {
     battClass = "green-text";
   }
   
-  document.getElementById(lowerFirstLetter(bone) + "Status").innerHTML = "<b style='margin-right:0;font-size:25px;text-shadow:0px 0px 1px' class='green white-text chip'>ON</b>"+ millText + countText + "<span class='chip'>"  + "<i style='transform:rotate(90deg);vertical-align:middle;text-shadow:0px 0px 1px black' class='material-icons " + battClass + "'>battery_full</i> " +
+  document.getElementById(lowerFirstLetter(bone) + "Status").innerHTML = "<b style='margin-right:2px;font-size:25px;text-shadow:0px 0px 1px' class='green white-text chip'>ON</b>"+ millText + countText + "<span class='chip'>"  + "<i style='transform:rotate(90deg);vertical-align:middle;text-shadow:0px 0px 1px black' class='material-icons " + battClass + "'>battery_full</i> " +
     newBatt + "%</span>";
   $("#" + lowerFirstLetter(bone) + "Status").addClass("connected");
 
