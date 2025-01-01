@@ -230,14 +230,17 @@ function loadAllPods() {
             var pod = object.scene;
             window.podArray.push(pod);
             // aquamarine
-            pod.children[0].material.color.set(0x000000);
-            pod.children[1].material.color.set(0x7d7d7d); 
-          //  pod.children[2].material.color.set(0x7d7d7d);
+            pod.children[0].children[0].material.color.set(0x7fffd4);
+            pod.children[0].children[1].material.color.set(0x696969);
+         
+            //make material shine
+            pod.children[0].children[0].material.metalness = 1;
+            pod.children[0].children[0].material.roughness = 0.5;
+            pod.children[0].children[1].material.metalness = 1;
+            pod.children[0].children[1].material.roughness = 0.5;
+            
 
-            //metalness
-            pod.children[1].material.metalness = 1;
-            pod.children[1].material.roughness = 0.5;
-
+  
             // cast and receive shadow
             pod.children[0].castShadow = true;
             pod.children[0].receiveShadow = true;
