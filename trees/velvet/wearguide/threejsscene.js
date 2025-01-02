@@ -148,13 +148,55 @@ function init() {
             facemesh.material.metalness = 1;
             facemesh.material.roughness = 5;
 
-            const controls = new OrbitControls(camera, renderer.domElement);
+            controls = new OrbitControls(camera, renderer.domElement);
             controls.target.set(0, 100, 0);
             controls.enableZoom = true;
             controls.minDistance = 100;
             controls.maxDistance = 3800;
 
             controls.update();
+
+
+// Raycaster and Mouse
+const raycaster = new THREE.Raycaster();
+const mouse = new THREE.Vector2();
+
+// Function to handle clicks
+function onMouseClick(event) {
+    // Calculate mouse position in normalized device coordinates
+    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+    // Update the raycaster with the camera and mouse position
+    raycaster.setFromCamera(mouse, camera);
+
+    // Check for intersections with objects
+    const intersects = raycaster.intersectObjects(scene.children);
+    if (intersects.length > 0) {
+        const clickedObject = intersects[0].object;
+
+        // Calculate a position for the camera to move towards
+        const targetPosition = clickedObject.position.clone();
+        const direction = camera.position.clone().sub(targetPosition).normalize();
+        const newCameraPosition = targetPosition.clone().add(direction.multiplyScalar(5));
+
+        // Smoothly move the camera
+        gsap.to(camera.position, {
+            x: newCameraPosition.x,
+            y: newCameraPosition.y,
+            z: newCameraPosition.z,
+            duration: 1,
+            onComplete: () => {
+                // Once the camera stops moving, ensure it looks at the target
+                controls.target.copy(targetPosition);
+                controls.update();
+            },
+        });
+    }
+}
+
+// Add the event listener for mouse click
+//window.addEventListener('click', onMouseClick, false);
 
 
             viewportGizmo = new ViewportGizmo(camera, renderer, {
@@ -213,6 +255,8 @@ function animate() {
     }
 
     renderer.render(scene, camera);
+    if(controls)
+        controls.update();
 
     if(viewportGizmo)
         viewportGizmo.render();
@@ -294,7 +338,7 @@ function loadAllPods() {
 
         // right forearm
         var pod = window.podArray[3];
-        pod.position.set(-56, 147.5, -4);
+        pod.position.set(-56, 147, -4);
         pod.rotation.set(-Math.PI, 0, Math.PI-Math.PI/180*8);
 
         // right hand
@@ -309,7 +353,7 @@ function loadAllPods() {
 
         // left forearm
         var pod = window.podArray[6];
-        pod.position.set(58, 147.5, -8);
+        pod.position.set(58, 147, -8);
         pod.rotation.set(-Math.PI, Math.PI, Math.PI - Math.PI/180*8);
 
         // left hand
