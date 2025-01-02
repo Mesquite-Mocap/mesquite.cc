@@ -222,6 +222,30 @@ function animate() {
 
 window.podArray = [];
 function loadAllPods() {
+
+    // load phone.glb
+    var phoneLoader = new GLTFLoader();
+    phoneLoader.load("./glbs/phone.glb", function (object) {
+        window.phone = object.scene;
+
+        phone.children[0].material.color.set(0x000000);
+        phone.children[1].material.color.set(0xffffff);
+        // aquamarine
+        phone.children[2].material.color.set(0xffffff);
+        phone.children[3].material.color.set(0x000000);
+        phone.children[4].material.color.set(0x000000);
+
+        // metalness and roughness
+        phone.children[1].material.metalness = 1;
+        phone.children[1].material.roughness = 0.5;
+        phone.castShadow = true;
+        phone.receiveShadow = true;
+        phone.scale.set(3, 3, 3);
+        phone.rotation.set(0, Math.PI, 0);
+        phone.position.set(0, 100, 12);
+        scene.add(phone);
+    });
+
     // load 14 pods, 1 for each bone glbs/pod.glb
     var podLoader = new GLTFLoader();
     var podCount = 14;
@@ -229,16 +253,17 @@ function loadAllPods() {
         podLoader.load("./glbs/pod.glb", function (object) {
             var pod = object.scene;
             window.podArray.push(pod);
-            // aquamarine
-            pod.children[0].children[0].material.color.set(0x7fffd4);
-            pod.children[0].children[1].material.color.set(0x696969);
+
+            pod.children[0].children[1].material.color.set(0x7d7d7d);
+            pod.children[0].children[0].material.color.set(0xffffff);
          
+
             //make material shine
             pod.children[0].children[0].material.metalness = 1;
             pod.children[0].children[0].material.roughness = 0.5;
             pod.children[0].children[1].material.metalness = 1;
             pod.children[0].children[1].material.roughness = 0.5;
-            
+
 
   
             // cast and receive shadow
@@ -253,74 +278,75 @@ function loadAllPods() {
     setTimeout(function () {
         // head
         var pod = window.podArray[0];
-        pod.position.set(2, 174, 5);
-        pod.rotation.set(Math.PI/2 - Math.PI/180*20, -Math.PI/2, 0);
+        pod.position.set(-2, 168, 8);
+        pod.rotation.set(Math.PI/2 - Math.PI/180*20, Math.PI/2, 0);
 
 
         // spine
         var pod = window.podArray[1];
-        pod.position.set(2, 142, 11);
-        pod.rotation.set(Math.PI/2 - Math.PI/180*20, -Math.PI/2, 0);
+        pod.position.set(-2, 137, 14);
+        pod.rotation.set(Math.PI/2 - Math.PI/180*20, Math.PI/2, 0);
 
         // right arm
         var pod = window.podArray[2];
-        pod.position.set(-35, 147.5, -8);
-        pod.rotation.set(Math.PI, -Math.PI, Math.PI);
+        pod.position.set(-30, 148, -4);
+        pod.rotation.set(-Math.PI, 0, Math.PI - Math.PI/180*10);
 
         // right forearm
         var pod = window.podArray[3];
-        pod.position.set(-64, 146, -8);
-        pod.rotation.set(Math.PI, -Math.PI, Math.PI);
+        pod.position.set(-56, 147.5, -4);
+        pod.rotation.set(-Math.PI, 0, Math.PI-Math.PI/180*8);
 
         // right hand
         var pod = window.podArray[4];
-        pod.position.set(-84, 145, -8);
-        pod.rotation.set(Math.PI, -Math.PI, Math.PI);
+        pod.position.set(-77, 146, -4);
+        pod.rotation.set(Math.PI, 0, Math.PI);
 
         // left arm
         var pod = window.podArray[5];
-        pod.position.set(38, 147, -4.5);
-        pod.rotation.set(Math.PI, 0, Math.PI);
+        pod.position.set(30, 148, -8);
+        pod.rotation.set(-Math.PI, Math.PI, Math.PI - Math.PI/180*10);
 
         // left forearm
         var pod = window.podArray[6];
-        pod.position.set(66, 146, -4.5);
-        pod.rotation.set(Math.PI, 0, Math.PI);
+        pod.position.set(58, 147.5, -8);
+        pod.rotation.set(-Math.PI, Math.PI, Math.PI - Math.PI/180*8);
 
         // left hand
         var pod = window.podArray[7];
-        pod.position.set(86, 145, -4.5);
-        pod.rotation.set(Math.PI, 0, Math.PI);
+        pod.position.set(77, 146, -8);
+        pod.rotation.set(Math.PI, Math.PI, Math.PI);
+
 
         // right thigh
         var pod = window.podArray[8];
-        pod.position.set(-8, 70, 7);
-        pod.rotation.set(Math.PI+ Math.PI/180*10, -Math.PI/2, Math.PI/2);
+        pod.position.set(-12, 65, 6.5);
+        pod.rotation.set( Math.PI/180*15, Math.PI/2, Math.PI/2);
 
         // right calf
         var pod = window.podArray[9];
-        pod.position.set(-7, 35, 2.2);
-        pod.rotation.set(Math.PI+ Math.PI/180*10, -Math.PI/2, Math.PI/2);
+        pod.position.set(-11, 30, 2.2);
+        pod.rotation.set(Math.PI/180*10, Math.PI/2, Math.PI/2);
 
         // right foot
         var pod = window.podArray[10];
         pod.position.set(-7, 9, 4);
-        pod.rotation.set(Math.PI/2 + Math.PI/180*20, -Math.PI/2, Math.PI/2);
+        pod.rotation.set(0, -Math.PI/2, -Math.PI/180*20);
 
         // left thigh
         var pod = window.podArray[11];
-        pod.position.set(12, 70, 7);
-        pod.rotation.set(Math.PI + Math.PI/180*10, -Math.PI/2, Math.PI/2);
+        pod.position.set(8, 65, 6.5);
+        pod.rotation.set( Math.PI/180*15, Math.PI/2, Math.PI/2);
 
         // left calf
         var pod = window.podArray[12];
-        pod.position.set(11, 35, 2.2);
-        pod.rotation.set(Math.PI + Math.PI/180*10, -Math.PI/2, Math.PI/2);
+        pod.position.set(7, 30, 2.2);
+        pod.rotation.set(Math.PI/180*10, Math.PI/2, Math.PI/2);
 
         // left foot
         var pod = window.podArray[13];
         pod.position.set(11, 9, 4);
-        pod.rotation.set(Math.PI/2 + Math.PI/180*20, -Math.PI/2, Math.PI/2);
+        pod.rotation.set(0, -Math.PI/2, -Math.PI/180*20);
 
 
     }, 300);
