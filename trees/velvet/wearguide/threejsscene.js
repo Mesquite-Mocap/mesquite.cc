@@ -319,6 +319,8 @@ function loadAllPods() {
         });
     }
 
+    M.toast({ html: "Hold down shift key and drag to pan the camera when zoomed" });
+
     setTimeout(function () {
         // head
         var pod = window.podArray[0];
