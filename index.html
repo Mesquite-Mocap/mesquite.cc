@@ -75,7 +75,7 @@
         }, id);
         if (i == allTrees.length - 1) {
           setTimeout(function () {
-            console.log(trees);
+            //console.log(trees);
             var ttSelect = document.getElementById('ttSelect');
             for (var key in trees) {
               var option = document.createElement("option");
@@ -331,12 +331,14 @@
             <div class="col s2" style="text-align:right;vertical-align:middle;line-height:40px">
               <label for="ttSelect">Tree Type</label>
             </div>
-            <div class="col s7">
+            <div class="col s6">
               <select id="ttSelect">
               </select>
             </div>
-            <div class="col s3">
-              <button onclick="showTreeGuide()" class="btn waves-effect waves-light">Wear Guide</button>
+            <div class="col s4">
+              <button onclick="showTreeGuide()" class="btn waves-effect waves-light green">
+                <i class="material-icons " style="vertical-align:middle;font-size:200%">accessibility</i>
+                Wear Guide</button>
             </div>
           </div>
 

@@ -215,136 +215,22 @@
 
   
 
-  <div id="manageModal" style="overflow-y:auto" class="modal">
-    <div class="modal-content black-text">
-      <h4 style="text-align:center"></h4>
-      <!-- tab -->
-      <div class="row" style="">
-        <div class="col s12">
-          <ul class="tabs" style="background-color: transparent;color:black;display:none">
-            <li class="tab col s6"><a id='deviceMapListB' style='text-decoration: none; color:black' class="active"
-                onclick="$('#ext').fadeOut(0); $('#deviceMapList').fadeIn(0)">Network Stats</a></li>
-            <li class="tab col s6"><a style='text-decoration: none; color:black'
-                onclick="$('#deviceMapList').fadeOut(0); $('#ext').fadeIn(0)">Add Ons</a></li>
-          </ul>
-        </div>
 
-
-
-
-        <div id="deviceMapList">
-          <table class="striped highlight centered">
-            <thead>
-              <tr>
-                <th>Bone</th>
-                <th>Status</th>
-                <th>Stats</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              <tr>
-                <td>Head</td>
-                <td id="headStatus">Not Connected</td>
-                <td id="headStats"></td>
-              </tr>
-              <tr>
-                <td>Spine</td>
-                <td id="spineStatus">Not Connected</td>
-                <td id="spineStats"></td>
-              </tr>
-              <tr>
-                <td>Hips</td>
-                <td id="hipsStatus">Not Connected</td>
-                <td id="hipsStats"></td>
-              </tr>
-              <tr>
-                <td>Left Upper Arm</td>
-                <td id="leftArmStatus">Not Connected</td>
-                <td id="leftArmStats"></td>
-              </tr>
-              <tr>
-                <td>Left Forearm</td>
-                <td id="leftForeArmStatus">Not Connected</td>
-                <td id="leftForeArmStats"></td>
-              </tr>
-              <tr>
-                <td>Right Upper Arm</td>
-                <td id="rightArmStatus">Not Connected</td>
-                <td id="rightArmStats"></td>
-              </tr>
-              <tr>
-                <td>Right Forearm</td>
-                <td id="rightForeArmStatus">Not Connected</td>
-                <td id="rightForeArmStats"></td>
-              </tr>
-              <tr>
-                <td>Left Upper Leg</td>
-                <td id="leftUpLegStatus">Not Connected</td>
-                <td id="leftUpLegStats"></td>
-              </tr>
-              <tr>
-                <td>Left Lower Leg</td>
-                <td id="leftLegStatus">Not Connected</td>
-                <td id="leftLegStats"></td>
-              </tr>
-              <tr>
-                <td>Right Upper Leg</td>
-                <td id="rightUpLegStatus">Not Connected</td>
-                <td id="rightUpLegStats"></td>
-              </tr>
-              <tr>
-                <td>Right Lower Leg</td>
-                <td id="rightLegStatus">Not Connected</td>
-                <td id="rightLegStats"></td>
-              </tr>
-              <tr>
-                <td>Left Hand</td>
-                <td id="leftHandStatus">Not Connected</td>
-                <td id="leftHandStats"></td>
-              </tr>
-              <tr>
-                <td>Right Hand</td>
-                <td id="rightHandStatus">Not Connected</td>
-                <td id="rightHandStats"></td>
-              </tr>
-              <tr>
-                <td>Left Foot</td>
-                <td id="leftFootStatus">Not Connected</td>
-                <td id="leftFootStats"></td>
-              </tr>
-              <tr>
-                <td>Right Foot</td>
-                <td id="rightFootStatus">Not Connected</td>
-                <td id="rightFootStats"></td>
-              </tr>
-
-
-            </tbody>
-          </table>
-
-        </div>
-
-        <div id="ext">
-          <h4>Face</h4>
-          <canvas id="facecanvas" width="320" height="240" style="margin:auto;display:none"></canvas>
-          <video id="facevideo" width="320" height="240" style=""></video>
-          <canvas id="facecanvasResult" width="640" height="480" style="margin:auto"></canvas>
-
-
-          <h4>Right Hand</h4>
-          <canvas id="rhcanvas" width="320" height="240" style="margin:auto;display:none"></canvas>
-          <video id="rhvideo" width="320" height="240" style=""></video>
-          <canvas id="rhcanvasResult" width="640" height="480" style="margin:auto"></canvas>
-
-          <h4>Left Hand</h4>
-          <canvas id="lhcanvas" width="320" height="240" style="margin:auto;display:none"></canvas>
-          <video id="lhvideo" width="320" height="240" style=""></video>
-          <canvas id="lhcanvasResult" width="640" height="480" style="margin:auto"></canvas>
-        </div>
-
-
-      </div>
+<h1
+style="    text-align: center;
+position: fixed;
+bottom: 0;
+left: 0;
+width: 100vw;
+background-color: rgba(0, 0, 0, 0.9);
+color: white;
+z-index: 9999;
+font-size: 30px;
+padding: 30px;
+bottom: 0;
+margin-bottom: 0;">
+Mesquite Mocap -- Velvet Wear Guide
+</h1>
 
       <div id="splashScreen"
         style="width:100vw;height:100vh;position:fixed;top:0;left:0;background-color:rgba(0,0,0,0.9);z-index:1000;background-image: url(icons/icon.png); background-repeat: no-repeat;background-position: 50% 30%; background-size: 200px; transition: 1s;">
@@ -352,6 +238,7 @@
           Mesquite Mocap
         </div>
       </div>
+
 
 </body>
 
