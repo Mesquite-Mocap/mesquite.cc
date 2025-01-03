@@ -535,10 +535,12 @@ function init() {
             */
         
 
+            document.getElementById("splashScreen").style.transition = "opacity 2s";
+
             document.getElementById("splashScreen").style.opacity = "0";
             setTimeout(function () {
                 document.getElementById("splashScreen").style.display = "none";
-            }, 3000);
+            }, 2000);
         });
 
 }

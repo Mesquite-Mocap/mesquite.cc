@@ -900,3 +900,8 @@ setInterval(function () {
     }
   });
 }, 1000);
+
+function showTreeGuide(){
+  $("#overlay").fadeIn();
+  $("#overlay iframe").attr("src","./trees/" + treeType + "/wearguide")
+}

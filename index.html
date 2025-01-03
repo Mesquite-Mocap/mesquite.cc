@@ -13,7 +13,9 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/kalmanjs@1.1.0/lib/kalman.min.js"></script>
-  <script src="js/moment.min.js" integrity="sha512-hUhvpC5f8cgc04OZb55j0KNGh4eh7dLxd/dPSJ5VyzqDWxsayYbojWyl5Tkcgrmb/RVKCRJI1jNlRbVP4WWC4w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="js/moment.min.js"
+    integrity="sha512-hUhvpC5f8cgc04OZb55j0KNGh4eh7dLxd/dPSJ5VyzqDWxsayYbojWyl5Tkcgrmb/RVKCRJI1jNlRbVP4WWC4w=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
   <title> MESQUITE.cc </title>
   <style>
@@ -46,35 +48,53 @@
 <body>
   <script>
 
-// read trees.json
-var trees = {};
+    // read trees.json
+    var trees = {};
 
-var treeType = localStorage.getItem('treeType') || 'velvet';
+    var treeType = localStorage.getItem('treeType') || 'velvet';
 
-function readTextFile(file, callback, id) {
-  var rawFile = new XMLHttpRequest();
-  rawFile.overrideMimeType("application/json");
-  rawFile.open("GET", file, true);
-  rawFile.onreadystatechange = function() {
-    if (rawFile.readyState === 4 && rawFile.status == "200") {
-      callback(rawFile.responseText, id);
+    function readTextFile(file, callback, id) {
+      var rawFile = new XMLHttpRequest();
+      rawFile.overrideMimeType("application/json");
+      rawFile.open("GET", file, true);
+      rawFile.onreadystatechange = function () {
+        if (rawFile.readyState === 4 && rawFile.status == "200") {
+          callback(rawFile.responseText, id);
+        }
+      }
+      rawFile.send(null);
     }
-  }
-  rawFile.send(null);
-}
 
-readTextFile("trees/meta.json", function(text){
-  var allTrees = JSON.parse(text);
-  console.log(allTrees);
-  for (var i = 0; i < allTrees.length; i++) {
-    var id = allTrees[i].id;
-    readTextFile("trees/" + allTrees[i].id + "/meta.json", function(text, id){
-      trees[id] = JSON.parse(text);
-    }, id);
-  }
-});
+    readTextFile("trees/meta.json", function (text) {
+      var allTrees = JSON.parse(text);
+      console.log(allTrees);
+      for (var i = 0; i < allTrees.length; i++) {
+        var id = allTrees[i].id;
+        readTextFile("trees/" + allTrees[i].id + "/meta.json", function (text, id, i) {
+          trees[id] = JSON.parse(text);
+        }, id);
+        if (i == allTrees.length - 1) {
+          setTimeout(function () {
+            console.log(trees);
+            var ttSelect = document.getElementById('ttSelect');
+            for (var key in trees) {
+              var option = document.createElement("option");
+              option.text = trees[key].name;
+              option.value = key;
+              ttSelect.add(option);
+            }
+            ttSelect.value = treeType;
+            M.FormSelect.init(ttSelect);
+            ttSelect.onchange = function () {
+              treeType = ttSelect.value;
+              localStorage.setItem('treeType', treeType);
+            }
+          }, 1000);
+        }
+      }
+    });
 
-     var mac2Bones = {};
+    var mac2Bones = {};
     // face points
     var positions;
     var positionsR;
@@ -255,10 +275,10 @@ readTextFile("trees/meta.json", function(text){
   </button>
 
 
-<button id='boxcalibratein30' onclick='boxCalibrateIn30()' style='right:0;bottom:0; position: absolute'
-class="auxButton main btn waves-effect waves-light white black-text large">
-<i class="material-icons " style="vertical-align:middle;font-size:200%">looks_two</i> Box Calibrate
-</button>
+  <button id='boxcalibratein30' onclick='boxCalibrateIn30()' style='right:0;bottom:0; position: absolute'
+    class="auxButton main btn waves-effect waves-light white black-text large">
+    <i class="material-icons " style="vertical-align:middle;font-size:200%">looks_two</i> Box Calibrate
+  </button>
 
 
   <button id="recordButton" style="position:absolute; left:0; bottom:0px; z-index: 1;"
@@ -268,7 +288,8 @@ class="auxButton main btn waves-effect waves-light white black-text large">
   </button>
 
 
-  <button id="restartPods" style="display:none;position:absolute; left:50vw; margin-left: -90px; width: 180px; bottom:0px; z-index: 1;"
+  <button id="restartPods"
+    style="display:none;position:absolute; left:50vw; margin-left: -90px; width: 180px; bottom:0px; z-index: 1;"
     class="auxButton main btn waves-effect waves-light red white-text large" onclick="restartPods()">
     <i class="material-icons" style="vertical-align:middle;font-size:200%">sync</i>
     Restart Pods
@@ -281,11 +302,12 @@ class="auxButton main btn waves-effect waves-light white black-text large">
 
 
   <button onclick="manageModal.open()" id='settingsButton' style='position:fixed;right:0;top:0'
-    class="auxButton main btn waves-effect waves-light white black-text large">Branches <span id='podCount' class="chip">0</span>
+    class="auxButton main btn waves-effect waves-light white black-text large">Branches <span id='podCount'
+      class="chip">0</span>
     <i style='font-size:200%;vertical-align:middle' class="material-icons left">widgets</i>
   </button>
 
-  
+
 
   <div id="manageModal" style="overflow-y:auto" class="modal">
     <div class="modal-content black-text">
@@ -305,6 +327,22 @@ class="auxButton main btn waves-effect waves-light white black-text large">
 
 
         <div id="deviceMapList">
+          <div class="row">
+            <div class="col s2" style="text-align:right;vertical-align:middle;line-height:40px">
+              <label for="ttSelect">Tree Type</label>
+            </div>
+            <div class="col s7">
+              <select id="ttSelect">
+              </select>
+            </div>
+            <div class="col s3">
+              <button onclick="showTreeGuide()" class="btn waves-effect waves-light">Wear Guide</button>
+            </div>
+          </div>
+
+
+
+
           <table class="striped highlight centered">
             <thead>
               <tr>
@@ -417,13 +455,30 @@ class="auxButton main btn waves-effect waves-light white black-text large">
 
 
       </div>
+    </div>
+  </div>
 
-      <div id="splashScreen"
-        style="width:100vw;height:100vh;position:fixed;top:0;left:0;background-color:rgba(0,0,0,0.9);z-index:1000;background-image: url(icons/icon.png); background-repeat: no-repeat;background-position: 50% 30%; background-size: 200px; transition: 1s;">
-        <div class="title" style="top:60vh; text-align:center;font-size:200%; position: absolute; width: 100vw;">
-          Mesquite Mocap
-        </div>
-      </div>
+  <div id="overlay"
+    style="position:fixed;top:0;left:0;width:100vw;height:100vh;background-color:rgb(0,0,0,);z-index:99999999999999;display:none">
+
+    <iframe id="treeGuide" src="./trees/velvet/wearguide" style="width:100%;height:100%;border:none"></iframe>
+
+    <button class="btn-floating btn-large waves-effect waves-light black" onclick="$('#overlay').fadeOut(200)"
+      style="position:fixed;right:5px;top:5px;z-index:99999999999999"><i class="material-icons" style="    line-height: 0;
+         margin-left: -19px;
+         height: 40px;
+         font-size: 40px;">close</i></button>
+
+  </div>
+
+  <div id="splashScreen"
+    style="width:100vw;height:100vh;position:fixed;top:0;left:0;background-color:rgba(0,0,0,0.9);z-index:1000;background-image: url(icons/icon.png); background-repeat: no-repeat;background-position: 50% 30%; background-size: 200px; transition: 1s;">
+    <div class="title" style="top:60vh; text-align:center;font-size:200%; position: absolute; width: 100vw;">
+      Mesquite Mocap
+    </div>
+  </div>
+
+
 
 </body>
 
