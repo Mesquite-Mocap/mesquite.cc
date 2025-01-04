@@ -903,6 +903,8 @@ setInterval(function () {
 }, 1000);
 
 function showTreeGuide(){
+ // openGuide(); return;
+
   $("#overlay").fadeIn();
   $("#overlay iframe").attr("src","./trees/" + treeType + "/wearguide")
 }
