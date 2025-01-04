@@ -200,4 +200,5 @@ table.striped tr{
 body.settings-open #boxcalibratein30,
 body.settings-open #calibratein5{
 	right: 401px!important;
+	transition:0s;
 }
