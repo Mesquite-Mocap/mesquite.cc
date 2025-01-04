@@ -172,3 +172,15 @@ table.striped tr{
 	min-height: 72px!important;
 	height: 72px!important;
 }
+
+.toastheader{
+	margin-bottom: -12px;
+	padding-bottom: 10px;
+	text-align: center!important;
+	font-size: 1.5em!important;
+	font-weight: bold!important;
+}
+
+.toast{
+	box-shadow: 0px 10px 2px rgb(15, 0, 0)!important;
+}

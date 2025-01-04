@@ -540,7 +540,7 @@ function init() {
             document.getElementById("splashScreen").style.opacity = "0";
             setTimeout(function () {
                 document.getElementById("splashScreen").style.display = "none";
-            }, 2000);
+            }, 1200);
         });
 
 }

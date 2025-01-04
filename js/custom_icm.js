@@ -822,7 +822,8 @@ function skipBoxCalibrate(){
 
 function boxCalibrateIn30(){
   M.Toast.dismissAll();
-  M.toast({html: '<p> Please turn on all pods in the box before continuing....</p><button class="btn-flat toast-action green" style="margin-right:0px" onclick="M.Toast.dismissAll();boxCalibratein30Confirm()">Start</button><button class="btn-flat toast-action blue" style="margin-right:0px" onclick="M.Toast.dismissAll();quickBoxCalibrate()">Quick Calibrate</button><button class="btn-flat toast-action black" style="margin-right:0px" onclick="M.Toast.dismissAll();skipBoxCalibrate()">Skip</button><button class="btn-flat toast-action red" style="margin-right:0px" onclick="M.Toast.dismissAll()">Cancel</button>', classes: 'yellow black-text', displayLength: 10000});
+  M.toast({html: 'BEGIN BOX CALIBRATION<br>', classes: 'white black-text toastheader', displayLength: 10000});
+  M.toast({html: '<p> Please turn on all pods in the box before continuing....</p><button class="btn-flat toast-action green" style="margin:4px" onclick="M.Toast.dismissAll();boxCalibratein30Confirm()">Start</button><button class="btn-flat toast-action blue" style="margin:4px" onclick="M.Toast.dismissAll();quickBoxCalibrate()">Quick Calibrate</button><button class="btn-flat toast-action black" style="margin:4px" onclick="M.Toast.dismissAll();skipBoxCalibrate()">Skip</button><button class="btn-flat toast-action red" style="margin:4px" onclick="M.Toast.dismissAll()">Cancel</button>', classes: 'yellow black-text', displayLength: 10000});
 }
 
 function boxCalibratein30Confirm(){
