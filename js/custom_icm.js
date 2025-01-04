@@ -824,7 +824,7 @@ function skipBoxCalibrate(){
 function boxCalibrateIn30(){
   M.Toast.dismissAll();
   M.toast({html: 'BOX CALIBRATION', classes: 'white black-text toastheader', displayLength: 10000});
-  M.toast({html: ' Please turn on all pods in the box before continuing....<button class="btn-flat toast-action green" style="margin:4px" onclick="M.Toast.dismissAll();boxCalibratein30Confirm()">Start</button><button class="btn-flat toast-action blue" style="margin:4px" onclick="M.Toast.dismissAll();quickBoxCalibrate()">Quick Calibrate</button><button class="btn-flat toast-action black" style="margin:4px" onclick="M.Toast.dismissAll();skipBoxCalibrate()">Skip</button><button class="btn-flat toast-action red" style="margin:4px" onclick="M.Toast.dismissAll()">Cancel</button>', classes: 'yellow black-text', displayLength: 10000});
+  M.toast({html: ' Please turn on all pods in the box before continuing....<button class="btn-flat toast-action green" style="margin:4px" onclick="M.Toast.dismissAll();boxCalibratein30Confirm()">Start</button><button class="btn-flat toast-action blue" style="margin:4px" onclick="M.Toast.dismissAll();quickBoxCalibrate()">Quick</button><button class="btn-flat toast-action black" style="margin:4px" onclick="M.Toast.dismissAll();skipBoxCalibrate()">Skip</button><button class="btn-flat toast-action red" style="margin:4px" onclick="M.Toast.dismissAll()">Cancel</button>', classes: 'yellow black-text', displayLength: 10000});
 }
 
 function boxCalibratein30Confirm(){
@@ -901,6 +901,9 @@ setInterval(function () {
       $(this).html("<b class='red-text'>DISCONNECTED</b>");
     }
   });
+
+  var podCount = $("#deviceMapList td.connected").length;
+  $("#podCount").text(podCount);
 }, 1000);
 
 function showTreeGuide(){
