@@ -822,7 +822,7 @@ function skipBoxCalibrate(){
 
 function boxCalibrateIn30(){
   M.Toast.dismissAll();
-  M.toast({html: '<p>Please turn on all pods in the box before continuing....</p></br> <button class="btn-flat toast-action green" style="margin-right:0px" onclick="M.Toast.dismissAll();boxCalibratein30Confirm()">Start</button><button class="btn-flat toast-action blue" style="margin-right:0px" onclick="M.Toast.dismissAll();quickBoxCalibrate()">Quick Calibrate</button><button class="btn-flat toast-action red" style="margin-right:0px" onclick="M.Toast.dismissAll();skipBoxCalibrate()">Skip</button>', classes: 'yellow black-text', displayLength: 10000});
+  M.toast({html: '<p> Please turn on all pods in the box before continuing....</p><button class="btn-flat toast-action green" style="margin-right:0px" onclick="M.Toast.dismissAll();boxCalibratein30Confirm()">Start</button><button class="btn-flat toast-action blue" style="margin-right:0px" onclick="M.Toast.dismissAll();quickBoxCalibrate()">Quick Calibrate</button><button class="btn-flat toast-action black" style="margin-right:0px" onclick="M.Toast.dismissAll();skipBoxCalibrate()">Skip</button><button class="btn-flat toast-action red" style="margin-right:0px" onclick="M.Toast.dismissAll()">Cancel</button>', classes: 'yellow black-text', displayLength: 10000});
 }
 
 function boxCalibratein30Confirm(){
@@ -904,4 +904,9 @@ setInterval(function () {
 function showTreeGuide(){
   $("#overlay").fadeIn();
   $("#overlay iframe").attr("src","./trees/" + treeType + "/wearguide")
+}
+
+function openGuide(){
+  $("#overlay").fadeOut();
+  window.open("./trees/" + treeType + "/wearguide", "_blank", 'width=500,toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no')
 }

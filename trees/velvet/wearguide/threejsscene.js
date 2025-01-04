@@ -216,19 +216,29 @@ function onMouseClick(event) {
             document.getElementById("splashScreen").style.opacity = "0";
             setTimeout(function () {
                 document.getElementById("splashScreen").style.display = "none";
-            }, 3000);
+            }, 300);
         });
 
 }
 
 
+function debounce(func, time){
+    var time = time || 100; // 100 by default if no param
+    var timer;
+    return function(event){
+        if(timer) clearTimeout(timer);
+        timer = setTimeout(func, time, event);
+    };
+}
 
 
 // Eventlistener
-//window.addEventListener("resize", debounce( onWindowResize, 150 ));
-window.addEventListener("resize", onWindowResize);
+window.addEventListener("resize", debounce( onWindowResize, 150 ));
+//window.addEventListener("resize", onWindowResize);
 
 function onWindowResize() {
+
+    window.location.reload();
 
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
