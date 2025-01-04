@@ -920,8 +920,19 @@ function openGuide(){
 
 function settingsOpen(){
   manageModal.open();
+  $("body").addClass("settings-open");
+  camera.aspect = (window.innerWidth-400) / window.innerHeight;
+  camera.updateProjectionMatrix();
+
+
+  renderer.setSize(window.innerWidth-400, window.innerHeight);
 }
 
 function closeSettings(){
   manageModal.close();
+  $("body").removeClass("settings-open");
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+
+  renderer.setSize(window.innerWidth, window.innerHeight);
 }

@@ -196,3 +196,8 @@ table.striped tr{
 .modal-overlay{
 	display: none !important;
 }
+
+body.settings-open #boxcalibratein30,
+body.settings-open #calibratein5{
+	right: 401px!important;
+}

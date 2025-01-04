@@ -560,15 +560,11 @@ function debounce(func, time){
 window.addEventListener("resize", onWindowResize);
 
 function onWindowResize() {
-
-    camera.aspect = (window.innerWidth-400) / window.innerHeight;
+    var x = 0;
+    if($("body").hasClass("settings-open")) x = 400;
+    camera.aspect = (window.innerWidth-x) / window.innerHeight;
     camera.updateProjectionMatrix();
-
-
-    renderer.setSize(window.innerWidth-400, window.innerHeight);
-
-
-
+    renderer.setSize(window.innerWidth-x, window.innerHeight);
 }
 
 //
