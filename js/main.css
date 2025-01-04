@@ -93,12 +93,19 @@ a.btn.main i{
 
 #manageModal{
     min-height: 80vh;
-    max-height: 93vh;
+    max-height: 100vh;
+    min-height: 100vh;
     overflow-y: hidden;
-    margin-top: -3%;
-	user-select: none;
-	box-shadow: 0px 0px 10px;
-    border: 2px black solid;
+    margin-top: 0;
+    user-select: none;
+    box-shadow: 0px 0px 10px;
+    border-right: 2px black solid;
+    width: 400px;
+    float: right;
+    margin-right: 0 !important;
+	top: 0 !important;
+	padding: 0 !important;
+	overflow-x:visible!important;
 }
 
 .podName{
@@ -184,4 +191,8 @@ table.striped tr{
 
 .toast{
 	box-shadow: 0px 10px 5px rgb(15, 0, 0)!important;
+}
+
+.modal-overlay{
+	display: none !important;
 }

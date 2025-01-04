@@ -301,7 +301,7 @@
   </button>
 
 
-  <button onclick="manageModal.open()" id='settingsButton' style='position:fixed;right:0;top:0'
+  <button onclick="settingsOpen()" id='settingsButton' style='position:fixed;right:0;top:0'
     class="auxButton main btn waves-effect waves-light white black-text large">Branches <span id='podCount'
       class="chip">0</span>
     <i style='font-size:200%;vertical-align:middle' class="material-icons left">widgets</i>
@@ -310,7 +310,11 @@
 
 
   <div id="manageModal" style="overflow-y:auto" class="modal">
-    <div class="modal-content black-text" style="overflow-x: hidden;"
+    <div class="modal-content black-text" style="overflow-x: visible;padding:0">
+      <button class="btn waves-effect waves-light green" onclick="closeSettings()"
+        style="position:absolute;left:-10px;top:5px;z-index:99999999999999">
+        <i class="material-icons" style="vertical-align:middle;font-size:200%">exit_to_app</i>
+        </button>
       <h4 style="text-align:center"></h4>
       <!-- tab -->
       <div class="row" style="">

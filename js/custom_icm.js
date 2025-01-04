@@ -915,5 +915,13 @@ function showTreeGuide(){
 
 function openGuide(){
   $("#overlay").fadeOut();
-  window.open("./trees/" + treeType + "/wearguide", "_blank", 'width=500,toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no')
+  window.open("./trees/" + treeType + "/wearguide", "_blank", 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no')
+}
+
+function settingsOpen(){
+  manageModal.open();
+}
+
+function closeSettings(){
+  manageModal.close();
 }
