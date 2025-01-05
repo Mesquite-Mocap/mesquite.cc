@@ -156,12 +156,14 @@ tbody td, tbody td:nth-child(1){
 	font-weight: bold;
 	text-transform: uppercase;
 	color:#000000;
+	min-width: 100px;
 }
 
 tbody td, tbody td:nth-child(2){
 	font-size: 12px;
 	text-transform: none;
 	color: #787878;
+	min-width: 170px;
 }
 
 table.centered thead tr th{
