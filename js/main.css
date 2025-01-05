@@ -190,8 +190,8 @@ body.connected .auxButton{
 }
 
 table.striped tr{
-	min-height: 72px!important;
-	height: 72px!important;
+	min-height: 75px!important;
+	height: 75px!important;
 }
 
 .toastheader{

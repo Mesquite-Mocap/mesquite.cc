@@ -254,7 +254,7 @@ function handleWSMessage(obj) {
   }
 
   if (count > 0) {
-    countText = "<br> <span class='chip' style='font-size:12px'>" + count + " <small>frames</small></span>";
+    countText = "<br> <span class='chip' style='font-size:12px;padding:2px;line-height26px'>" + count + " <small>frames</small></span>";
   }
 
   /*
@@ -276,7 +276,7 @@ function handleWSMessage(obj) {
     battClass = "green-text";
   }
   
-  document.getElementById(lowerFirstLetter(bone) + "Status").innerHTML = "<b style='margin-right:5px;font-size:16px;text-shadow:0px 0px 1px' class='green white-text chip'>ON</b>"+ millText + countText + "<span class='chip' style='font-size:12px;'>"  + "<i style='transform:rotate(90deg);vertical-align:middle;text-shadow:0px 0px 1px black;margin-left:0' class='material-icons " + battClass + "'>battery_full</i> " +
+  document.getElementById(lowerFirstLetter(bone) + "Status").innerHTML = "<b style='margin-right:5px;font-size:16px;text-shadow:0px 0px 1px' class='green white-text chip'>ON</b>"+ millText + countText + "<span class='chip' style='font-size:12px;padding:2px;line-height:26px'>"  + "<i style='transform:rotate(90deg);vertical-align:middle;text-shadow:0px 0px 1px black;margin-left:0' class='material-icons " + battClass + "'>battery_full</i> " +
     newBatt + "%</span>";
   $("#" + lowerFirstLetter(bone) + "Status").addClass("connected");
 
