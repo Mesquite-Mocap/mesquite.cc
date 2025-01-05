@@ -307,14 +307,14 @@
     <i style='font-size:200%;vertical-align:middle' class="material-icons left">widgets</i>
   </button>
 
-
+  <button id='closeSettings' class="btn waves-effect waves-light black" onclick="closeSettings()"
+  style="position:absolute;right:380px;top:5px;z-index:99999999999999;padding-left:5px;    height: 60px; box-shadow: 0px 0px 10px 0px white;
+  border-top-right-radius: 10px; border-bottom-right-radius: 10px;">
+  <i class="material-icons" style="vertical-align:middle;font-size:200%;margin-left:10px">exit_to_app</i>
+  </button>
 
   <div id="manageModal" style="overflow-y:auto" class="modal">
-    <div class="modal-content black-text" style="overflow-x: visible;padding:0">
-      <button class="btn waves-effect waves-light green" onclick="closeSettings()"
-        style="position:absolute;left:-10px;top:5px;z-index:99999999999999">
-        <i class="material-icons" style="vertical-align:middle;font-size:200%">exit_to_app</i>
-        </button>
+    <div class="modal-content black-text" style="overflow-x: visible;padding:0;padding-bottom: 100px;">
       <h4 style="text-align:center"></h4>
       <!-- tab -->
       <div class="row" style="">
@@ -332,14 +332,14 @@
 
         <div id="deviceMapList">
           <div class="row">
-            <div class="col s2">
+            <div class="col s1">
             </div>
-            <div class="col s10">
+            <div class="col s11">
               <label for="ttSelect">Tree Type</label>
               <select id="ttSelect">
               </select>
             </div>
-            <button onclick="showTreeGuide()" class="btn waves-effect waves-light green"
+            <button onclick="showTreeGuide()" class="btn waves-effect waves-light white black-text"
              style="border-radius: 30px;
              float: right;
              margin-top: -80px;

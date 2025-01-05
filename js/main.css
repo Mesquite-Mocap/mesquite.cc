@@ -149,7 +149,17 @@ table.striped.highlight tr td{
 
 tbody td, tbody th{
 	padding: 1px 5px !important;
-	font-size: 20px;
+}
+
+tbody td, tbody td:nth-child(1){
+	font-size: 16px;
+	font-weight: bold;
+	text-transform: uppercase;
+}
+
+tbody td, tbody td:nth-child(2){
+	font-size: 12px;
+	text-transform: none;
 }
 
 table.centered thead tr th{
@@ -158,7 +168,7 @@ table.centered thead tr th{
 
 
 tbody tr td:nth-child(3){
-	transform: scale(1.7);
+	transform: scale(1.2);
 	filter: saturate(1.5) brightness(1.5) contrast(1.5) hue-rotate(-70deg) contrast(1.5);
 }
 
@@ -201,4 +211,12 @@ body.settings-open #boxcalibratein30,
 body.settings-open #calibratein5{
 	right: 401px!important;
 	transition:0s;
+}
+
+#closeSettings{
+	display: none;
+}
+
+body.settings-open #closeSettings{
+	display: block;
 }
