@@ -99,13 +99,13 @@ a.btn.main i{
     margin-top: 0;
     user-select: none;
     box-shadow: 0px 0px 10px;
-    border-right: 2px black solid;
+    border-right: 2px rgb(188 229 227) solid;
     width: 400px;
     float: right;
     margin-right: 0 !important;
 	top: 0 !important;
 	padding: 0 !important;
-	overflow-x:visible!important;
+	overflow-x:hidden!important;
 }
 
 .podName{
@@ -155,11 +155,13 @@ tbody td, tbody td:nth-child(1){
 	font-size: 16px;
 	font-weight: bold;
 	text-transform: uppercase;
+	color:#000000;
 }
 
 tbody td, tbody td:nth-child(2){
 	font-size: 12px;
 	text-transform: none;
+	color: #787878;
 }
 
 table.centered thead tr th{
@@ -219,4 +221,8 @@ body.settings-open #calibratein5{
 
 body.settings-open #closeSettings{
 	display: block;
+}
+
+body table.striped>tbody>tr:nth-child(odd) {
+	background-color: #ededed;
 }
