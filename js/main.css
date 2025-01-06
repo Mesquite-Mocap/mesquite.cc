@@ -168,6 +168,7 @@ tbody td, tbody td:nth-child(2){
 
 table.centered thead tr th{
 	font-size: 24px!important;
+	text-transform: uppercase;
 }
 
 
