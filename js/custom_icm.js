@@ -461,6 +461,7 @@ function handleWSMessage(obj) {
     x.quaternion.copy(leftuplegCorrection);
     setLocal(bone, leftuplegCorrection.x, leftuplegCorrection.y, leftuplegCorrection.z, leftuplegCorrection.w);
     setGlobal(bone, leftlegQ.x, leftlegQ.y, leftlegQ.z, leftlegQ.w);
+
   }
 
   if (bone == "RightUpLeg") {

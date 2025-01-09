@@ -21,50 +21,50 @@
       },
       "LeftArm": {
         "axis": {
-          "order": "YZX",
-          "sign": "+--"
+          "order": "XZY",
+          "sign": "++-"
         }
       },
       "RightArm": {
         "axis": {
-          "order": "YZX",
-          "sign": "--+"
+          "order": "XZY",
+          "sign": "-++"
         }
       },
       "LeftLeg": {
         "axis": {
-          "order": "XYZ",
-          "sign": "+--"
+          "order": "YXZ",
+          "sign": "-++"
         }
       },
       "RightLeg": {
         "axis": {
-          "order": "XYZ",
-          "sign": "+--"
+          "order": "YXZ",
+          "sign": "-++"
         }
       },
       "LeftForeArm": {
         "axis": {
-          "order": "YZX",
-          "sign": "+--"
+          "order": "XZY",
+          "sign": "++-"
         }
       },
       "RightForeArm": {
         "axis": {
-          "order": "YZX",
-          "sign": "--+"
+          "order": "XZY",
+          "sign": "-++"
         }
       },
       "LeftUpLeg": {
         "axis": {
-          "order": "XYZ",
-          "sign": "+--"
+          "order": "YXZ",
+          "sign": "-++"
         }
       },
       "RightUpLeg": {
         "axis": {
-          "order": "XYZ",
-          "sign": "+--"
+          "order": "YXZ",
+          "sign": "-++"
         }
       },
       "LeftFoot": {
