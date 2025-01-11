@@ -4,11 +4,16 @@ const radToDeg = 180 / Math.PI;
 
 function quaternionToEulerDegrees(q) {
     const euler = new THREE.Euler().setFromQuaternion(q, "XYZ");
-    // const euler1 = new THREE.Euler().setFromQuaternion(q, "XYZ");
-    // console.log([euler1.x * radToDeg, euler1.y * radToDeg, euler1.z * radToDeg]);
-    // console.log([euler.x * radToDeg, euler.y * radToDeg, euler.z * radToDeg]);
+
     return [euler.x * radToDeg, euler.y * radToDeg, euler.z * radToDeg];
 }
+
+function quaternionToEulerDegreesRad(q) {
+    const euler = new THREE.Euler().setFromQuaternion(q, "XYZ");
+
+    return [euler.x, euler.y, euler.z];
+}
+
 
 function updateMotionData() {
     const jointInfo = [];
@@ -16,9 +21,7 @@ function updateMotionData() {
     if (rootJoint) {
         // console.log("Root joint found!", rootJoint);
         traverseHierarchy(rootJoint, jointInfo, 0);
-
         if (recording) {
-            
             recordedMotionData.push(jointInfo);
         }
     } else {

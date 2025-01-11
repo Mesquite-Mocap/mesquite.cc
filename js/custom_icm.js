@@ -303,7 +303,10 @@ function handleWSMessage(obj) {
     var transformedQ = rawQuaternion.clone().multiply(refQInverse).normalize();
     var hipQ = new THREE.Quaternion(-transformedQ.x, transformedQ.y, -transformedQ.z, transformedQ.w).normalize();
 
-    x.quaternion.copy(hipQ);
+    var zt = smoothEuler(hipQ, bone);
+    x.rotation.set(zt[0], zt[1], zt[2]);
+    //x.quaternion.copy(hipQ);
+
     setLocal(bone, hipQ.x, hipQ.y, hipQ.z, hipQ.w);
     setGlobal(bone, hipQ.x, hipQ.y, hipQ.z, hipQ.w);
   }
@@ -320,7 +323,10 @@ function handleWSMessage(obj) {
     var hipCorrection = new THREE.Quaternion().copy(hipQinverse).multiply(spineQ).normalize();
 
 
-    x.quaternion.copy(hipCorrection);
+    var zt = smoothEuler(hipCorrection, bone);
+    x.rotation.set(zt[0], zt[1], zt[2]);
+    //x.quaternion.copy(hipCorrection);
+
     setLocal(bone, hipCorrection.x, hipCorrection.y, hipCorrection.z, hipCorrection.w);
     setGlobal(bone, spineQ.x, spineQ.y, spineQ.z, spineQ.w);
   }
@@ -336,7 +342,10 @@ function handleWSMessage(obj) {
     var hipQinverse = new THREE.Quaternion().copy(hipQ).invert();
     var hipCorrection = new THREE.Quaternion().copy(hipQinverse).multiply(headQ).normalize();
 
-    x.quaternion.copy(headQ);
+    var zt = smoothEuler(hipCorrection, bone);
+    x.rotation.set(zt[0], zt[1], zt[2]);
+    // x.quaternion.copy(headQ);
+
     setLocal(bone, hipCorrection.x, hipCorrection.y, hipCorrection.z, hipCorrection.w);
     setGlobal(bone, spineQ.x, spineQ.y, spineQ.z, spineQ.w);
   }
@@ -353,7 +362,10 @@ function handleWSMessage(obj) {
     var spineQinverse = new THREE.Quaternion().copy(spineQ).invert();
     var spineCorrection = new THREE.Quaternion().copy(spineQinverse).multiply(leftarmQ).normalize();
 
-    x.quaternion.copy(spineCorrection);
+    var zt = smoothEuler(spineCorrection, bone);
+    x.rotation.set(zt[0], zt[1], zt[2]);
+    //x.quaternion.copy(spineCorrection);
+
     setLocal(bone, spineCorrection.x, spineCorrection.y, spineCorrection.z, spineCorrection.w);
     setGlobal(bone, leftarmQ.x, leftarmQ.y, leftarmQ.z, leftarmQ.w);
   }
@@ -367,7 +379,11 @@ function handleWSMessage(obj) {
     var spineQ = new THREE.Quaternion(obj.x, obj.y, obj.z, obj.w);
     var spineQinverse = new THREE.Quaternion().copy(spineQ).invert();
     var spineCorrection = new THREE.Quaternion().copy(spineQinverse).multiply(rightarmQ).normalize();
-    x.quaternion.copy(spineCorrection);
+
+    var zt = smoothEuler(spineCorrection, bone);
+    x.rotation.set(zt[0], zt[1], zt[2]);
+    //x.quaternion.copy(spineCorrection);
+    
     setLocal(bone, spineCorrection.x, spineCorrection.y, spineCorrection.z, spineCorrection.w);
     setGlobal(bone, rightarmQ.x, rightarmQ.y, rightarmQ.z, rightarmQ.w);
   }
@@ -383,7 +399,10 @@ function handleWSMessage(obj) {
     var leftarmQinverse = new THREE.Quaternion().copy(leftarmQ).invert();
     var leftarmCorrection = new THREE.Quaternion().copy(leftarmQinverse).multiply(leftforearmQ).normalize();
 
-    x.quaternion.copy(leftarmCorrection);
+    var zt = smoothEuler(leftarmCorrection, bone);
+    x.rotation.set(zt[0], zt[1], zt[2]);
+    //x.quaternion.copy(leftarmCorrection);
+
     setLocal(bone, leftarmCorrection.x, leftarmCorrection.y, leftarmCorrection.z, leftarmCorrection.w);
     setGlobal(bone, leftforearmQ.x, leftforearmQ.y, leftforearmQ.z, leftforearmQ.w);
   }
@@ -398,7 +417,10 @@ function handleWSMessage(obj) {
     var rightarmQinverse = new THREE.Quaternion().copy(rightarmQ).invert();
     var rightarmCorrection = new THREE.Quaternion().copy(rightarmQinverse).multiply(rightforearmQ).normalize();
 
-    x.quaternion.copy(rightarmCorrection);
+    var zt = smoothEuler(rightarmCorrection, bone);
+    x.rotation.set(zt[0], zt[1], zt[2]);
+    //x.quaternion.copy(rightarmCorrection);
+
     setLocal(bone, rightarmCorrection.x, rightarmCorrection.y, rightarmCorrection.z, rightarmCorrection.w);
     setGlobal(bone, rightforearmQ.x, rightforearmQ.y, rightforearmQ.z, rightforearmQ.w);
   }
@@ -413,7 +435,10 @@ function handleWSMessage(obj) {
     var rightforearmQinverse = new THREE.Quaternion().copy(rightforearmQ).invert();
     var rightforearmCorrection = new THREE.Quaternion().copy(rightforearmQinverse).multiply(righthandQ).normalize();
 
-    x.quaternion.copy(rightforearmCorrection);
+    var zt = smoothEuler(rightforearmCorrection, bone);
+    x.rotation.set(zt[0], zt[1], zt[2]);
+    //x.quaternion.copy(rightforearmCorrection);
+
     setLocal(bone, rightforearmCorrection.x, rightforearmCorrection.y, rightforearmCorrection.z, rightforearmCorrection.w);
     setGlobal(bone, righthandQ.x, righthandQ.y, righthandQ.z, righthandQ.w);
   }
@@ -428,7 +453,10 @@ function handleWSMessage(obj) {
     var leftforearmQinverse = new THREE.Quaternion().copy(leftforearmQ).invert();
     var leftforearmCorrection = new THREE.Quaternion().copy(leftforearmQinverse).multiply(lefthandQ).normalize();
 
-    x.quaternion.copy(leftforearmCorrection);
+    var zt = smoothEuler(leftforearmCorrection, bone);
+    x.rotation.set(zt[0], zt[1], zt[2]);
+    //x.quaternion.copy(leftforearmCorrection);
+
     setLocal(bone, leftforearmCorrection.x, leftforearmCorrection.y, leftforearmCorrection.z, leftforearmCorrection.w);
     setGlobal(bone, lefthandQ.x, lefthandQ.y, lefthandQ.z, lefthandQ.w);
   }
@@ -443,7 +471,10 @@ function handleWSMessage(obj) {
     var hipsQinverse = new THREE.Quaternion().copy(hipsQ).invert();
     var hipsCorrection = new THREE.Quaternion().copy(hipsQinverse).multiply(leftuplegQ).normalize();
 
-    x.quaternion.copy(hipsCorrection);
+    var zt = smoothEuler(hipsCorrection, bone);
+    x.rotation.set(zt[0], zt[1], zt[2]);
+    //x.quaternion.copy(hipsCorrection);
+
     setLocal(bone, hipsCorrection.x, hipsCorrection.y, hipsCorrection.z, hipsCorrection.w);
     setGlobal(bone, leftuplegQ.x, leftuplegQ.y, leftuplegQ.z, leftuplegQ.w);
   }
@@ -458,7 +489,10 @@ function handleWSMessage(obj) {
     var leftuplegQinverse = new THREE.Quaternion().copy(leftuplegQ).invert();
     var leftuplegCorrection = new THREE.Quaternion().copy(leftuplegQinverse).multiply(leftlegQ).normalize();
 
-    x.quaternion.copy(leftuplegCorrection);
+    var zt = smoothEuler(leftuplegCorrection, bone);
+    x.rotation.set(zt[0], zt[1], zt[2]);
+    //x.quaternion.copy(leftuplegCorrection);
+
     setLocal(bone, leftuplegCorrection.x, leftuplegCorrection.y, leftuplegCorrection.z, leftuplegCorrection.w);
     setGlobal(bone, leftlegQ.x, leftlegQ.y, leftlegQ.z, leftlegQ.w);
 
@@ -474,7 +508,10 @@ function handleWSMessage(obj) {
     var hipsQinverse = new THREE.Quaternion().copy(hipsQ).invert();
     var hipsCorrection = new THREE.Quaternion().copy(hipsQinverse).multiply(rightuplegQ).normalize();
 
-    x.quaternion.copy(hipsCorrection);
+    var zt = smoothEuler(hipsCorrection, bone);
+    x.rotation.set(zt[0], zt[1], zt[2]);
+    //x.quaternion.copy(hipsCorrection);
+
     setLocal(bone, hipsCorrection.x, hipsCorrection.y, hipsCorrection.z, hipsCorrection.w);
     setGlobal(bone, rightuplegQ.x, rightuplegQ.y, rightuplegQ.z, rightuplegQ.w);
   }
@@ -489,7 +526,10 @@ function handleWSMessage(obj) {
     var rightuplegQinverse = new THREE.Quaternion().copy(rightuplegQ).invert();
     var rightuplegCorrection = new THREE.Quaternion().copy(rightuplegQinverse).multiply(rightlegQ).normalize();
 
-    x.quaternion.copy(rightuplegCorrection);
+    var zt = smoothEuler(rightuplegCorrection, bone);
+    x.rotation.set(zt[0], zt[1], zt[2]);
+    //x.quaternion.copy(rightuplegCorrection);
+
     setLocal(bone, rightuplegCorrection.x, rightuplegCorrection.y, rightuplegCorrection.z, rightuplegCorrection.w);
     setGlobal(bone, rightlegQ.x, rightlegQ.y, rightlegQ.z, rightlegQ.w);
   }
@@ -670,24 +710,6 @@ function rotateQuaternion(originalQuaternion, rotationQuaternion) {
   rotatedQuaternion.multiplyQuaternions(rotationQuaternion, originalQuaternion);
   return rotatedQuaternion;
 }
-
-function mapPods() {
-  var html = "";
-  for (var i = 0; i < devices.length; i++) {
-    html +=
-      "<div class='row pod pod" +
-      i +
-      "'>" +
-      "<div class='podName col s6'>" +
-      devices[i].name +
-      "</div>" +
-      "<div class='podMac col s6'>" +
-      boneSelectMarkup +
-      "</div>" +
-      "</div>";
-  }
-
-  // console.log(html);
 
   document.getElementById("deviceMapList").innerHTML = html;
   if (devices.length == 0) {
@@ -936,4 +958,27 @@ function closeSettings(){
   camera.updateProjectionMatrix();
 
   renderer.setSize(window.innerWidth, window.innerHeight);
+}
+
+
+function smoothEuler(q, bone){
+  var ret =  quaternionToEulerDegreesRad(q);
+  return ret;
+
+  if(filtersx[bone] == undefined){
+    filtersx[bone] = new KalmanFilter();
+  }
+  ret[0] = filtersx[bone].filter(ret[0]);
+
+  if(filtersy[bone] == undefined){
+    filtersy[bone] = new KalmanFilter();
+  }
+  ret[1] = filtersx[bone].filter(ret[1]);
+
+  if(filtersz[bone] == undefined){
+    filtersz[bone] = new KalmanFilter();
+  }
+  ret[2] = filtersx[bone].filter(ret[2]);
+
+  return ret;
 }
