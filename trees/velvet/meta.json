@@ -10,7 +10,7 @@
       "Hips": {
         "axis": {
           "order": "XYZ",
-          "sign": "+++"
+          "sign": "-+-"
         }
       },
       "Head": {
