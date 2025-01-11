@@ -711,34 +711,7 @@ function rotateQuaternion(originalQuaternion, rotationQuaternion) {
   return rotatedQuaternion;
 }
 
-  document.getElementById("deviceMapList").innerHTML = html;
-  if (devices.length == 0) {
-    document.getElementById("noDevice").style.display = "block";
-    document.getElementById("devicePresent").style.display = "none";
-  } else {
-    document.getElementById("noDevice").style.display = "none";
-    document.getElementById("devicePresent").style.display = "block";
-  }
 
-  // init select
-
-  var elems = document.querySelectorAll("select");
-  var instances = M.FormSelect.init(elems, {});
-
-  //open modal
-  manageModal.open();
-}
-
-// class BoneData {
-//     constructor(boneName) {
-//         this.id = boneName;
-//         this.calibration = new THREE.Quaternion(0, 0, 0, 1);
-//         this.last = new THREE.Quaternion(0, 0, 0, 1);
-//         this.global = new THREE.Quaternion(0, 0, 0, 1);
-//         this.local = new THREE.Quaternion(0, 0, 0, 1);
-//         this.sensorPosition = new THREE.Vector4(0, 0, 0, 1);
-//     }
-// }
 
 function boneSelectChanged(select) {
   var boneName = select.value;
