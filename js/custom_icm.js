@@ -302,9 +302,7 @@ function handleWSMessage(obj) {
 
   if (bone == "Hips") {
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
-    //    var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion);
     var transformedQ = rawQuaternion.clone().multiply(refQInverse).normalize();
-    //var hipQ = new THREE.Quaternion(-transformedQ.x, transformedQ.y, -transformedQ.z, transformedQ.w).normalize();
 
     var hipQ = getTransformedQuaternion(transformedQ, bone);
     var zt = smoothEuler(hipQ, bone);
