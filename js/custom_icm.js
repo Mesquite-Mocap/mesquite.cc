@@ -1,4 +1,7 @@
 var rigPrefix = "mm";
+window.sY = 0;
+window.sX = 0;
+window.sZ = 0;
 
 var calibrated = false;
 initialPosition = { x: 0, y: 0, z: 0 };
@@ -324,7 +327,7 @@ function handleWSMessage(obj) {
 
 
     var zt = smoothEuler(hipCorrection, bone);
-    x.rotation.set(zt[0], zt[1], zt[2]);
+    x.rotation.set(zt[0]+window.sX, zt[1]+window.sY, zt[2]+window.sZ);
     //x.quaternion.copy(hipCorrection);
 
     setLocal(bone, hipCorrection.x, hipCorrection.y, hipCorrection.z, hipCorrection.w);
