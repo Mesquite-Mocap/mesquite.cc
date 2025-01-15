@@ -5,7 +5,15 @@ var filtersz = {};
 const radToDeg = 180 / Math.PI;
 
 function quaternionToEulerDegrees(q, bone) {
-    const euler = new THREE.Euler().setFromQuaternion(q, "XYZ");
+    var euler = new THREE.Euler().setFromQuaternion(q, "XYZ");
+
+    euler = smoothOrientation(euler, bone);
+
+    return [euler.x * radToDeg, euler.y * radToDeg, euler.z * radToDeg];
+}
+
+
+function smoothOrientation(euler, bone) {
     if(filtersx[bone] == undefined){
         filtersx[bone] = new KalmanFilter({R: 0.01, Q: 0.01});
     }
@@ -21,9 +29,8 @@ function quaternionToEulerDegrees(q, bone) {
     }
     euler.z = filtersz[bone].filter(euler.z);
 
-    return [euler.x * radToDeg, euler.y * radToDeg, euler.z * radToDeg];
+    return euler;
 }
-
 
 
 function updateMotionData() {
