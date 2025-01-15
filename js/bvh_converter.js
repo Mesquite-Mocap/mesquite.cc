@@ -1,18 +1,29 @@
-// var numFrames = 200; // Replace numFrames with the number of frames in your animation
-// var frameTime = 1/30; 
+var filtersx = {};
+var filtersy = {};
+var filtersz = {};
+
 const radToDeg = 180 / Math.PI;
 
-function quaternionToEulerDegrees(q) {
+function quaternionToEulerDegrees(q, bone) {
     const euler = new THREE.Euler().setFromQuaternion(q, "XYZ");
+    if(filtersx[bone] == undefined){
+        filtersx[bone] = new KalmanFilter({R: 0.01, Q: 0.01});
+    }
+    euler.x = filtersx[bone].filter(euler.x);
+
+    if(filtersy[bone] == undefined){
+        filtersy[bone] = new KalmanFilter({R: 0.01, Q: 0.01});
+    }
+    euler.y = filtersy[bone].filter(euler.y);
+
+    if(filtersz[bone] == undefined){
+        filtersz[bone] = new KalmanFilter({R: 0.01, Q: 0.01});
+    }
+    euler.z = filtersz[bone].filter(euler.z);
 
     return [euler.x * radToDeg, euler.y * radToDeg, euler.z * radToDeg];
 }
 
-function quaternionToEulerDegreesRad(q) {
-    const euler = new THREE.Euler().setFromQuaternion(q, "XYZ");
-
-    return [euler.x, euler.y, euler.z];
-}
 
 
 function updateMotionData() {
@@ -71,7 +82,7 @@ function traverseHierarchy(joint, jointInfo, level = 0) {
         if (name === "Hips") {
             position[1] -= 0;
         }
-        const rotation = quaternionToEulerDegrees(joint.quaternion);
+        const rotation = quaternionToEulerDegrees(joint.quaternion, name);
 
         jointInfo.push({
             name: name,
