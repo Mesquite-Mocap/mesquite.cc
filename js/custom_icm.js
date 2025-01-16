@@ -300,6 +300,7 @@ function handleWSMessage(obj) {
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
     var transformedQ = rawQuaternion.clone().multiply(refQInverse).normalize();
 
+
     var hipQ = getTransformedQuaternion(transformedQ, bone);
     //var zt = smoothEuler(hipQ, bone);
     //x.rotation.set(zt[0], zt[1], zt[2]);
@@ -331,7 +332,8 @@ function handleWSMessage(obj) {
 
   if (bone == "Head") {
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
-    var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion, bc);
+    var transformedQ = new THREE.Quaternion().multiplyQuaternions(rawQuaternion, refQInverse, bc);
+//    var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion, bc);
 
     var headQ = getTransformedQuaternion(transformedQ, bone);
 
@@ -351,7 +353,8 @@ function handleWSMessage(obj) {
   if (bone == "LeftArm") {
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
 
-    var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion, bc);
+    var transformedQ = new THREE.Quaternion().multiplyQuaternions(rawQuaternion, refQInverse, bc);
+//    var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion, bc);
 
     var leftarmQ = getTransformedQuaternion(transformedQ, bone);
 
@@ -370,7 +373,8 @@ function handleWSMessage(obj) {
 
   if (bone == "RightArm") {
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
-    var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion, bc);
+    var transformedQ = new THREE.Quaternion().multiplyQuaternions(rawQuaternion, refQInverse, bc);
+//    var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion, bc);
 
     var rightarmQ = getTransformedQuaternion(transformedQ, bone);
     var obj = mac2Bones["Spine"].global;
@@ -389,7 +393,9 @@ function handleWSMessage(obj) {
   if (bone == "LeftForeArm") {
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
 
-    var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion, bc);
+    var transformedQ = new THREE.Quaternion().multiplyQuaternions(rawQuaternion, refQInverse, bc);
+//    var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion, bc);
+
     var leftforearmQ = getTransformedQuaternion(transformedQ, bone);
 
     var obj = mac2Bones["LeftArm"].global;
@@ -407,7 +413,8 @@ function handleWSMessage(obj) {
 
   if (bone == "RightForeArm") {
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
-    var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion, bc);
+    var transformedQ = new THREE.Quaternion().multiplyQuaternions(rawQuaternion, refQInverse, bc);
+//    var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion, bc);
     var rightforearmQ = getTransformedQuaternion(transformedQ, bone);
 
     var obj = mac2Bones["RightArm"].global;
@@ -425,7 +432,8 @@ function handleWSMessage(obj) {
 
   if (bone == "RighHand") {
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
-    var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion, bc);
+    var transformedQ = new THREE.Quaternion().multiplyQuaternions(rawQuaternion, refQInverse, bc);
+//    var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion, bc);
     var righthandQ = getTransformedQuaternion(transformedQ, bone);
 
     var obj = mac2Bones["RightForeArm"].global;
@@ -443,7 +451,8 @@ function handleWSMessage(obj) {
 
   if (bone == "LeftHand") {
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
-    var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion, bc);
+    var transformedQ = new THREE.Quaternion().multiplyQuaternions(rawQuaternion, refQInverse, bc);
+//    var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion, bc);
     var lefthandQ = getTransformedQuaternion(transformedQ, bone);
 
     var obj = mac2Bones["LeftForeArm"].global;
@@ -461,7 +470,8 @@ function handleWSMessage(obj) {
 
   if (bone == "LeftUpLeg") {
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
-    var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion, bc);
+    var transformedQ = new THREE.Quaternion().multiplyQuaternions(rawQuaternion, refQInverse, bc);
+//    var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion, bc);
     var leftuplegQ = getTransformedQuaternion(transformedQ, bone);
 
     var obj = mac2Bones["Hips"].global;
@@ -479,7 +489,8 @@ function handleWSMessage(obj) {
 
   if (bone == "LeftLeg") {
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
-    var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion, bc);
+    var transformedQ = new THREE.Quaternion().multiplyQuaternions(rawQuaternion, refQInverse, bc);
+//    var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion, bc);
     var leftlegQ = getTransformedQuaternion(transformedQ, bone);
      
     var obj = mac2Bones["LeftUpLeg"].global;
@@ -498,7 +509,8 @@ function handleWSMessage(obj) {
 
   if (bone == "RightUpLeg") {
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
-    var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion, bc);
+    var transformedQ = new THREE.Quaternion().multiplyQuaternions(rawQuaternion, refQInverse, bc);
+//    var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion, bc);
     var rightuplegQ = getTransformedQuaternion(transformedQ, bone);
 
     var obj = mac2Bones["Hips"].global;
@@ -516,7 +528,8 @@ function handleWSMessage(obj) {
 
   if (bone == "RightLeg") {
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
-    var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion, bc);
+    var transformedQ = new THREE.Quaternion().multiplyQuaternions(rawQuaternion, refQInverse, bc);
+//    var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion, bc);
     var rightlegQ = getTransformedQuaternion(transformedQ, bone);
 
     var obj = mac2Bones["RightUpLeg"].global;
