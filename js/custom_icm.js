@@ -181,14 +181,14 @@ function mapRange(value, low1, high1, low2, high2) {
   return low2 + (high2 - low2) * (value - low1) / (high1 - low1);
 }
 
-function getTransformedQuaternion(transformedQ, bone){
+function getTransformedQuaternion(transformedQ, bone) {
   var mapping = trees[treeType][bone];
   var axisOrder = mapping.axis.order.toLowerCase();
   var axisSign = mapping.axis.sign;
 
-  var x = transformedQ[axisOrder[0]] * parseInt(axisSign[0]+1);
-  var y = transformedQ[axisOrder[1]] * parseInt(axisSign[1]+1);
-  var z = transformedQ[axisOrder[2]] * parseInt(axisSign[2]+1);
+  var x = transformedQ[axisOrder[0]] * parseInt(axisSign[0] + 1);
+  var y = transformedQ[axisOrder[1]] * parseInt(axisSign[1] + 1);
+  var z = transformedQ[axisOrder[2]] * parseInt(axisSign[2] + 1);
 
 
   /*
@@ -245,11 +245,11 @@ function handleWSMessage(obj) {
 
   var millText = millis == -1 ? "" : "<br><span class='chip'>" + millis + "ms</span>";
 
-  if(millis > 0){
-   var t = moment(new Date().getTime() - millis);
-   let result = t.fromNow(true);
+  if (millis > 0) {
+    var t = moment(new Date().getTime() - millis);
+    let result = t.fromNow(true);
 
-  millText = "<span class=''>for " + result + "</span>";
+    millText = "<span class=''>for " + result + "</span>";
   }
 
   if (count > 0) {
@@ -274,8 +274,8 @@ function handleWSMessage(obj) {
   } else {
     battClass = "green-text";
   }
-  
-  document.getElementById(lowerFirstLetter(bone) + "Status").innerHTML = "<b style='margin-right:5px;font-size:16px;text-shadow:0px 0px 1px' class='green white-text chip'>ON</b>"+ millText + countText + "<span class='chip' style='font-size:12px;padding:2px;line-height:26px'>"  + "<i style='transform:rotate(90deg);vertical-align:middle;text-shadow:0px 0px 1px black;margin-left:0' class='material-icons " + battClass + "'>battery_full</i> " +
+
+  document.getElementById(lowerFirstLetter(bone) + "Status").innerHTML = "<b style='margin-right:5px;font-size:16px;text-shadow:0px 0px 1px' class='green white-text chip'>ON</b>" + millText + countText + "<span class='chip' style='font-size:12px;padding:2px;line-height:26px'>" + "<i style='transform:rotate(90deg);vertical-align:middle;text-shadow:0px 0px 1px black;margin-left:0' class='material-icons " + battClass + "'>battery_full</i> " +
     newBatt + "%</span>";
   $("#" + lowerFirstLetter(bone) + "Status").addClass("connected");
 
@@ -313,7 +313,7 @@ function handleWSMessage(obj) {
   if (bone == "Spine") {
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
     var transformedQ = new THREE.Quaternion().multiplyQuaternions(rawQuaternion, refQInverse, bc);
-    
+
     var spineQ = getTransformedQuaternion(transformedQ, bone);
 
     var obj = mac2Bones["Hips"].global;
@@ -333,7 +333,7 @@ function handleWSMessage(obj) {
   if (bone == "Head") {
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
     var transformedQ = new THREE.Quaternion().multiplyQuaternions(rawQuaternion, refQInverse, bc);
-//    var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion, bc);
+    //    var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion, bc);
 
     var headQ = getTransformedQuaternion(transformedQ, bone);
 
@@ -354,7 +354,7 @@ function handleWSMessage(obj) {
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
 
     var transformedQ = new THREE.Quaternion().multiplyQuaternions(rawQuaternion, refQInverse, bc);
-//    var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion, bc);
+    //    var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion, bc);
 
     var leftarmQ = getTransformedQuaternion(transformedQ, bone);
 
@@ -374,7 +374,7 @@ function handleWSMessage(obj) {
   if (bone == "RightArm") {
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
     var transformedQ = new THREE.Quaternion().multiplyQuaternions(rawQuaternion, refQInverse, bc);
-//    var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion, bc);
+    //    var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion, bc);
 
     var rightarmQ = getTransformedQuaternion(transformedQ, bone);
     var obj = mac2Bones["Spine"].global;
@@ -385,7 +385,7 @@ function handleWSMessage(obj) {
     //var zt = smoothEuler(spineCorrection, bone);
     //x.rotation.set(zt[0], zt[1], zt[2]);
     x.quaternion.copy(spineCorrection);
-    
+
     setLocal(bone, spineCorrection.x, spineCorrection.y, spineCorrection.z, spineCorrection.w);
     setGlobal(bone, rightarmQ.x, rightarmQ.y, rightarmQ.z, rightarmQ.w);
   }
@@ -394,7 +394,7 @@ function handleWSMessage(obj) {
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
 
     var transformedQ = new THREE.Quaternion().multiplyQuaternions(rawQuaternion, refQInverse, bc);
-//    var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion, bc);
+    //    var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion, bc);
 
     var leftforearmQ = getTransformedQuaternion(transformedQ, bone);
 
@@ -414,7 +414,7 @@ function handleWSMessage(obj) {
   if (bone == "RightForeArm") {
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
     var transformedQ = new THREE.Quaternion().multiplyQuaternions(rawQuaternion, refQInverse, bc);
-//    var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion, bc);
+    //    var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion, bc);
     var rightforearmQ = getTransformedQuaternion(transformedQ, bone);
 
     var obj = mac2Bones["RightArm"].global;
@@ -433,7 +433,7 @@ function handleWSMessage(obj) {
   if (bone == "RighHand") {
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
     var transformedQ = new THREE.Quaternion().multiplyQuaternions(rawQuaternion, refQInverse, bc);
-//    var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion, bc);
+    //    var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion, bc);
     var righthandQ = getTransformedQuaternion(transformedQ, bone);
 
     var obj = mac2Bones["RightForeArm"].global;
@@ -452,7 +452,7 @@ function handleWSMessage(obj) {
   if (bone == "LeftHand") {
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
     var transformedQ = new THREE.Quaternion().multiplyQuaternions(rawQuaternion, refQInverse, bc);
-//    var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion, bc);
+    //    var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion, bc);
     var lefthandQ = getTransformedQuaternion(transformedQ, bone);
 
     var obj = mac2Bones["LeftForeArm"].global;
@@ -471,7 +471,7 @@ function handleWSMessage(obj) {
   if (bone == "LeftUpLeg") {
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
     var transformedQ = new THREE.Quaternion().multiplyQuaternions(rawQuaternion, refQInverse, bc);
-//    var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion, bc);
+    //    var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion, bc);
     var leftuplegQ = getTransformedQuaternion(transformedQ, bone);
 
     var obj = mac2Bones["Hips"].global;
@@ -490,9 +490,9 @@ function handleWSMessage(obj) {
   if (bone == "LeftLeg") {
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
     var transformedQ = new THREE.Quaternion().multiplyQuaternions(rawQuaternion, refQInverse, bc);
-//    var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion, bc);
+    //    var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion, bc);
     var leftlegQ = getTransformedQuaternion(transformedQ, bone);
-     
+
     var obj = mac2Bones["LeftUpLeg"].global;
     var leftuplegQ = new THREE.Quaternion(obj.x, obj.y, obj.z, obj.w);
     var leftuplegQinverse = new THREE.Quaternion().copy(leftuplegQ).invert();
@@ -510,7 +510,7 @@ function handleWSMessage(obj) {
   if (bone == "RightUpLeg") {
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
     var transformedQ = new THREE.Quaternion().multiplyQuaternions(rawQuaternion, refQInverse, bc);
-//    var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion, bc);
+    //    var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion, bc);
     var rightuplegQ = getTransformedQuaternion(transformedQ, bone);
 
     var obj = mac2Bones["Hips"].global;
@@ -529,7 +529,7 @@ function handleWSMessage(obj) {
   if (bone == "RightLeg") {
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
     var transformedQ = new THREE.Quaternion().multiplyQuaternions(rawQuaternion, refQInverse, bc);
-//    var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion, bc);
+    //    var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion, bc);
     var rightlegQ = getTransformedQuaternion(transformedQ, bone);
 
     var obj = mac2Bones["RightUpLeg"].global;
@@ -544,7 +544,6 @@ function handleWSMessage(obj) {
     setLocal(bone, rightuplegCorrection.x, rightuplegCorrection.y, rightuplegCorrection.z, rightuplegCorrection.w);
     setGlobal(bone, rightlegQ.x, rightlegQ.y, rightlegQ.z, rightlegQ.w);
   }
-
 
 
 
@@ -774,124 +773,124 @@ var boneSelectMarkup =
   "</select>";
 
 
-function restartPods()
-{
+function restartPods() {
   M.Toast.dismissAll();
-  M.toast({html: 'Please wear the pods and get in a T-pose for 30 seconds.<br> <button class="btn-flat toast-action green" style="margin-right:20px" onclick="M.Toast.dismissAll();restartPodsConfirm()">Continue</button>', classes: 'yellow black-text', displayLength: 10000});
+  M.toast({ html: 'Please wear the pods and get in a T-pose for 30 seconds.<br> <button class="btn-flat toast-action green" style="margin-right:20px" onclick="M.Toast.dismissAll();restartPodsConfirm()">Continue</button>', classes: 'yellow black-text', displayLength: 10000 });
 }
-function restartPodsConfirm(){
-    $("#restartPods").prop('disabled', true);
-    window.sWrite("reboot");
-    M.toast({html: '<ul><li>Please get in a T-pose and  wait for <span class="secs" style="font-size:200%;font-weight:bold">30 seconds</span>.</li><li>When done the T-Pose* will be set.</li><li><sub>* You can click on "Set T-Pose" button to do this at anytime.</sub></li>', classes: 'yellow black-text', displayLength: 30*1000});
-    setTimeout(function(){
-     calibrate();
-     $("#restartPods").prop('disabled', false);
-    }, 30*1000);
+function restartPodsConfirm() {
+  $("#restartPods").prop('disabled', true);
+  window.sWrite("reboot");
+  M.toast({ html: '<ul><li>Please get in a T-pose and  wait for <span class="secs" style="font-size:200%;font-weight:bold">30 seconds</span>.</li><li>When done the T-Pose* will be set.</li><li><sub>* You can click on "Set T-Pose" button to do this at anytime.</sub></li>', classes: 'yellow black-text', displayLength: 30 * 1000 });
+  setTimeout(function () {
+    calibrate();
+    $("#restartPods").prop('disabled', false);
+  }, 30 * 1000);
 
-    var tSec = 30;
-    var p = setInterval(function(){
-      var secs = document.getElementsByClassName("secs")[0] || null;
-      if (secs){
-        tSec--;
-        if(tSec == 1){
-          secs.innerHTML = tSec + " second";
-        }
-        else{
-          secs.innerHTML = tSec + " seconds";
-        }
+  var tSec = 30;
+  var p = setInterval(function () {
+    var secs = document.getElementsByClassName("secs")[0] || null;
+    if (secs) {
+      tSec--;
+      if (tSec == 1) {
+        secs.innerHTML = tSec + " second";
       }
-      else{
-        clearInterval(p);
+      else {
+        secs.innerHTML = tSec + " seconds";
       }
-    }, 1000);
+    }
+    else {
+      clearInterval(p);
+    }
+  }, 1000);
 }
 
-function calibratein5()
-{
+function calibratein5() {
   M.Toast.dismissAll();
-  M.toast({html: 'T-Pose Calibration', classes: 'white black-text toastheader', displayLength: 10000});
-  M.toast({html: 'Please wear the pods and get in a T-pose for 5 seconds.<br> <button class="btn-flat toast-action green" style="margin-right:20px" onclick="M.Toast.dismissAll();calibratein5Confirm()">Start Timer</button>', classes: 'yellow black-text', displayLength: 10000});
+  M.toast({ html: 'T-Pose Calibration', classes: 'white black-text toastheader', displayLength: 10000 });
+  M.toast({ html: 'Please wear the pods and get in a T-pose for 5 seconds.<br> <button class="btn-flat toast-action green" style="margin-right:20px" onclick="M.Toast.dismissAll();calibratein5Confirm()">Start Timer</button>', classes: 'yellow black-text', displayLength: 10000 });
 }
 
-function quickBoxCalibrate(){
+function quickBoxCalibrate() {
   boxCalibrate();
   //M.Toast.dismissAll();
-  M.toast({html: 'Box Calibration values saved!', classes: 'blue black-text', displayLength: 5000});
-  M.toast({html: 'You can now wear the pods and proceed with T-Pose calibration.', classes: 'white black-text', displayLength: 5000});
+  M.toast({ html: 'Box Calibration values saved!', classes: 'blue black-text', displayLength: 5000 });
+  M.toast({ html: 'You can now wear the pods and proceed with T-Pose calibration.', classes: 'white black-text', displayLength: 5000 });
   $("#boxcalibratein30").remove();
 }
 
 
-function skipBoxCalibrate(){
-  M.toast({html: 'Box Calibration skipped!', classes: 'red white-text', displayLength: 5000});
-  M.toast({html: 'You can now wear the pods and proceed with T-Pose calibration.', classes: 'white black-text', displayLength: 5000});
+function skipBoxCalibrate() {
+  M.toast({ html: 'Box Calibration skipped!', classes: 'red white-text', displayLength: 5000 });
+  M.toast({ html: 'You can now wear the pods and proceed with T-Pose calibration.', classes: 'white black-text', displayLength: 5000 });
   $("#boxcalibratein30").remove();
 }
 
-function boxCalibrateIn30(){
+function boxCalibrateIn30() {
   M.Toast.dismissAll();
-  M.toast({html: 'BOX CALIBRATION', classes: 'white black-text toastheader', displayLength: 10000});
-  M.toast({html: ' Please turn on all pods in the box before continuing....<button class="btn-flat toast-action green" style="margin:4px" onclick="M.Toast.dismissAll();boxCalibratein30Confirm()">Start</button><button class="btn-flat toast-action blue" style="margin:4px" onclick="M.Toast.dismissAll();quickBoxCalibrate()">Quick</button><button class="btn-flat toast-action black" style="margin:4px" onclick="M.Toast.dismissAll();skipBoxCalibrate()">Skip</button><button class="btn-flat toast-action red" style="margin:4px" onclick="M.Toast.dismissAll()">Cancel</button>', classes: 'yellow black-text', displayLength: 10000});
+  M.toast({ html: 'BOX CALIBRATION', classes: 'white black-text toastheader', displayLength: 10000 });
+  M.toast({ html: ' Please turn on all pods in the box before continuing....<button class="btn-flat toast-action green" style="margin:4px" onclick="M.Toast.dismissAll();boxCalibratein30Confirm()">Start</button><button class="btn-flat toast-action blue" style="margin:4px" onclick="M.Toast.dismissAll();quickBoxCalibrate()">Quick</button><button class="btn-flat toast-action black" style="margin:4px" onclick="M.Toast.dismissAll();skipBoxCalibrate()">Skip</button><button class="btn-flat toast-action red" style="margin:4px" onclick="M.Toast.dismissAll()">Cancel</button>', classes: 'yellow black-text', displayLength: 10000 });
 }
 
-function boxCalibratein30Confirm(){
+function boxCalibratein30Confirm() {
   $("#boxcalibratein30").prop('disabled', true);
   window.sWrite("reboot");
   var tSec = 45;
 
-  M.toast({html: '<ul><li>Please make sure: \
+  M.toast({
+    html: '<ul><li>Please make sure: \
     <ol><li>all pods are turned <span class="chip green white-text" style="line-height:30px;margin-bottom:-10px;margin-top:-5px;font-size:20px;text-shadow:0px 0px 2px;font-weight:bold">ON</span> </li>\
     <li> in the box </li>\
     <li> is kept still on flat surface</li>\
     <li> is facing you</li></ol><br>\
-     for <span class="secs" style="font-size:200%;font-weight:bold">45 seconds</span></li>', classes: 'yellow black-text', displayLength: tSec*1000});
-  setTimeout(function(){
-   boxCalibrate();
-   M.Toast.dismissAll();
-   M.toast({html: 'Box Calibration done!', classes: 'green black-text', displayLength: 5000});
-   M.toast({html: 'You can now wear the pods and proceed with T-Pose calibration.', classes: 'white black-text', displayLength: 5000});
-   $("#boxcalibratein30").remove();
-  }, tSec*1000);
+     for <span class="secs" style="font-size:200%;font-weight:bold">45 seconds</span></li>', classes: 'yellow black-text', displayLength: tSec * 1000
+  });
+  setTimeout(function () {
+    boxCalibrate();
+    M.Toast.dismissAll();
+    M.toast({ html: 'Box Calibration done!', classes: 'green black-text', displayLength: 5000 });
+    M.toast({ html: 'You can now wear the pods and proceed with T-Pose calibration.', classes: 'white black-text', displayLength: 5000 });
+    $("#boxcalibratein30").remove();
+  }, tSec * 1000);
 
-  var p = setInterval(function(){
+  var p = setInterval(function () {
     var secs = document.getElementsByClassName("secs")[0] || null;
-    if (secs){
+    if (secs) {
       tSec--;
-      if(tSec == 1){
+      if (tSec == 1) {
         secs.innerHTML = tSec + " second";
       }
-      else{
+      else {
         secs.innerHTML = tSec + " seconds";
       }
     }
-    else{
+    else {
       clearInterval(p);
     }
   }, 1000);
 }
 
 
-function calibratein5Confirm(){
+function calibratein5Confirm() {
   $("#calibratein5").prop('disabled', true);
-  M.toast({html: '<ul><li>Please get in a T-pose and  wait for <span class="secs" style="font-size:200%;font-weight:bold">5 seconds</span>.</li><li>When done the T-Pose* will be set.</li><li><sub>* You can click on "Set T-Pose" button to do this at anytime.</sub></li>', classes: 'yellow black-text', displayLength: 5*1000});
-  setTimeout(function(){
-   calibrate();
-   $("#calibratein5").prop('disabled', false);
-  }, 5*1000);
+  M.toast({ html: '<ul><li>Please get in a T-pose and  wait for <span class="secs" style="font-size:200%;font-weight:bold">5 seconds</span>.</li><li>When done the T-Pose* will be set.</li><li><sub>* You can click on "Set T-Pose" button to do this at anytime.</sub></li>', classes: 'yellow black-text', displayLength: 5 * 1000 });
+  setTimeout(function () {
+    calibrate();
+    $("#calibratein5").prop('disabled', false);
+  }, 5 * 1000);
 
   var tSec = 5;
-  var p = setInterval(function(){
+  var p = setInterval(function () {
     var secs = document.getElementsByClassName("secs")[0] || null;
-    if (secs){
+    if (secs) {
       tSec--;
-      if(tSec == 1){
+      if (tSec == 1) {
         secs.innerHTML = tSec + " second";
       }
-      else{
+      else {
         secs.innerHTML = tSec + " seconds";
       }
     }
-    else{
+    else {
       clearInterval(p);
     }
   }, 1000);
@@ -913,29 +912,29 @@ setInterval(function () {
   $("#podCount").text(podCount);
 }, 1000);
 
-function showTreeGuide(){
- // openGuide(); return;
+function showTreeGuide() {
+  // openGuide(); return;
 
   $("#overlay").fadeIn();
-  $("#overlay iframe").attr("src","./trees/" + treeType + "/wearguide")
+  $("#overlay iframe").attr("src", "./trees/" + treeType + "/wearguide")
 }
 
-function openGuide(){
+function openGuide() {
   $("#overlay").fadeOut();
   window.open("./trees/" + treeType + "/wearguide", "_blank", 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no')
 }
 
-function settingsOpen(){
+function settingsOpen() {
   manageModal.open();
   $("body").addClass("settings-open");
-  camera.aspect = (window.innerWidth-400) / window.innerHeight;
+  camera.aspect = (window.innerWidth - 400) / window.innerHeight;
   camera.updateProjectionMatrix();
 
 
-  renderer.setSize(window.innerWidth-400, window.innerHeight);
+  renderer.setSize(window.innerWidth - 400, window.innerHeight);
 }
 
-function closeSettings(){
+function closeSettings() {
   manageModal.close();
   $("body").removeClass("settings-open");
   camera.aspect = window.innerWidth / window.innerHeight;
@@ -945,21 +944,21 @@ function closeSettings(){
 }
 
 
-function smoothEuler(q, bone){
-  var ret =  quaternionToEulerDegreesRad(q);
- // return ret;
+function smoothEuler(q, bone) {
+  var ret = quaternionToEulerDegreesRad(q);
+  // return ret;
 
-  if(filtersx[bone] == undefined){
+  if (filtersx[bone] == undefined) {
     filtersx[bone] = new KalmanFilter();
   }
   ret[0] = filtersx[bone].filter(ret[0]);
 
-  if(filtersy[bone] == undefined){
+  if (filtersy[bone] == undefined) {
     filtersy[bone] = new KalmanFilter();
   }
   ret[1] = filtersy[bone].filter(ret[1]);
 
-  if(filtersz[bone] == undefined){
+  if (filtersz[bone] == undefined) {
     filtersz[bone] = new KalmanFilter();
   }
   ret[2] = filtersz[bone].filter(ret[2]);
