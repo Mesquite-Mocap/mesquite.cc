@@ -545,8 +545,6 @@ function handleWSMessage(obj) {
     setGlobal(bone, rightlegQ.x, rightlegQ.y, rightlegQ.z, rightlegQ.w);
   }
 
-
-
   if (!mac2Bones[bone]) {
     mac2Bones[bone] = {};
     mac2Bones[bone].last = { x: 0, y: 0, z: 0, w: 1 };
