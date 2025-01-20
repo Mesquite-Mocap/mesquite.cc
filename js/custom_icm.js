@@ -591,6 +591,8 @@ function handleWSMessage(obj) {
     updateTrackingLine(hipsBone.position);
   }
 
+
+
   var podCount = $("#deviceMapList td.connected").length;
   $("#podCount").text(podCount);
 
