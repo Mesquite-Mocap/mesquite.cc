@@ -296,6 +296,7 @@ function handleWSMessage(obj) {
   }
 
   var bc = new THREE.Quaternion(mac2Bones[bone].bcalibration.x, mac2Bones[bone].bcalibration.y, mac2Bones[bone].bcalibration.z, mac2Bones[bone].bcalibration.w);
+  const slerpFactor = .5; // range: 0.0 to 1.0
 
   if (bone == "Hips") {
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
@@ -306,7 +307,6 @@ function handleWSMessage(obj) {
     //var zt = smoothEuler(hipQ, bone);
     //x.rotation.set(zt[0], zt[1], zt[2]);
 
-    const slerpFactor = 1; // range: 0.0 to 1.0
     x.quaternion.slerp(hipQ, slerpFactor);
 
     // x.quaternion.copy(hipQ);
@@ -328,7 +328,6 @@ function handleWSMessage(obj) {
 
     //x.quaternion.copy(hipCorrection);
 
-    const slerpFactor = 1; // range: 0.0 to 1.0
     x.quaternion.slerp(hipCorrection, slerpFactor);
 
     setLocal(bone, hipCorrection.x, hipCorrection.y, hipCorrection.z, hipCorrection.w);
