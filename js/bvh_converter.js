@@ -7,7 +7,7 @@ const radToDeg = 180 / Math.PI;
 function quaternionToEulerDegrees(q, bone) {
     var euler = new THREE.Euler().setFromQuaternion(q, "XYZ");
 
-    euler = smoothOrientation(euler, bone);
+   // euler = smoothOrientation(euler, bone);
 
     return [euler.x * radToDeg, euler.y * radToDeg, euler.z * radToDeg];
 }
