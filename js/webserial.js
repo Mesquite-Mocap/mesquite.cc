@@ -105,7 +105,8 @@ var rhVideoOn = false;
 var lhVideoOn = false;
 
 function logData(line) {
-  //console.log(line);
+  console.log(line);
+  line = line.trim().replace('"bone":"Hips"125', '"bone":"Hips"}');
   try {
     var x = JSON.parse(line);
     // console.log(x);

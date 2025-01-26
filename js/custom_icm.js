@@ -235,12 +235,13 @@ function handleWSMessage(obj) {
   mac2Bones[bone].last.z = parseFloat(obj.z);
   mac2Bones[bone].last.w = parseFloat(obj.w);
 
-  // console.log(obj);
+   console.log(obj);
 
   statsObjs[lowerFirstLetter(bone)].update();
 
-  var millis = obj.millis || -1;
-  var count = obj.count || -1;
+  var millis = parseInt(obj.millis || "-1");
+  var count = parseInt(obj.count || "-1");
+  console.log(millis, count);
   var countText = "";
 
   var millText = millis == -1 ? "" : "<br><span class='chip'>" + millis + "ms</span>";
@@ -260,7 +261,7 @@ function handleWSMessage(obj) {
   var newBatt = parseFloat(obj.batt) * 100 - 80;
   newBatt *= 9;
   */
-  var newBatt = parseFloat(obj.batt) * 100;
+  var newBatt = parseFloat(obj.batt || 0) * 100;
   newBatt = Math.min(100, Math.max(0, newBatt));
 
 
@@ -301,7 +302,7 @@ function handleWSMessage(obj) {
     var transformedQ = rawQuaternion.clone().multiply(refQInverse).normalize();
 
 
-    var hipQ = getTransformedQuaternion(transformedQ, bone);
+    var hipQ = getTransformedQuaternion(transformedQ, bone).normalize();
     //var zt = smoothEuler(hipQ, bone);
     //x.rotation.set(zt[0], zt[1], zt[2]);
     x.quaternion.copy(hipQ);
