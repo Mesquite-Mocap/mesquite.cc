@@ -235,7 +235,7 @@ function handleWSMessage(obj) {
   mac2Bones[bone].last.z = parseFloat(obj.z);
   mac2Bones[bone].last.w = parseFloat(obj.w);
 
-   console.log(obj);
+  console.log(obj);
 
   statsObjs[lowerFirstLetter(bone)].update();
 
@@ -305,7 +305,11 @@ function handleWSMessage(obj) {
     var hipQ = getTransformedQuaternion(transformedQ, bone).normalize();
     //var zt = smoothEuler(hipQ, bone);
     //x.rotation.set(zt[0], zt[1], zt[2]);
-    x.quaternion.copy(hipQ);
+
+    const slerpFactor = 1; // range: 0.0 to 1.0
+    x.quaternion.slerp(hipQ, slerpFactor);
+
+    // x.quaternion.copy(hipQ);
 
     setLocal(bone, hipQ.x, hipQ.y, hipQ.z, hipQ.w);
     setGlobal(bone, hipQ.x, hipQ.y, hipQ.z, hipQ.w);
@@ -322,10 +326,10 @@ function handleWSMessage(obj) {
     var hipQinverse = new THREE.Quaternion().copy(hipQ).invert();
     var hipCorrection = new THREE.Quaternion().copy(hipQinverse).multiply(spineQ).normalize();
 
+    //x.quaternion.copy(hipCorrection);
 
-    //var zt = smoothEuler(hipCorrection, bone);
-    //x.rotation.set(zt[0]+window.sX, zt[1]+window.sY, zt[2]+window.sZ);
-    x.quaternion.copy(hipCorrection);
+    const slerpFactor = 1; // range: 0.0 to 1.0
+    x.quaternion.slerp(hipCorrection, slerpFactor);
 
     setLocal(bone, hipCorrection.x, hipCorrection.y, hipCorrection.z, hipCorrection.w);
     setGlobal(bone, spineQ.x, spineQ.y, spineQ.z, spineQ.w);
