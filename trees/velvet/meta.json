@@ -75,20 +75,20 @@
       },
       "RightFoot": {
         "axis": {
-          "order": "XYZ",
+          "order": "YZX",
           "sign": "+++"
         }
       },
       "LeftHand": {
         "axis": {
           "order": "YZX",
-          "sign": "--+"
+          "sign": "+++"
         }
       },
       "RightHand": {
         "axis": {
           "order": "YZX",
-          "sign": "--+"
+          "sign": "+++"
         }
       }
   }
