@@ -349,7 +349,7 @@ function handleWSMessage(obj) {
     //(hipCorrection, bone);
     //x.rotation.set(zt[0], zt[1], zt[2]);
     //x.quaternion.copy(headQ);
-    x.quaternion.slerp(headQ, slerpFactor);
+    x.quaternion.slerp(hipCorrection, slerpFactor);
 
     setLocal(bone, hipCorrection.x, hipCorrection.y, hipCorrection.z, hipCorrection.w);
     setGlobal(bone, spineQ.x, spineQ.y, spineQ.z, spineQ.w);
