@@ -216,7 +216,7 @@ function getTransformedQuaternion(transformedQ, bone) {
   return q2;
   */
 
-  return new THREE.Quaternion(x, y, z, transformedQ.w);
+  return new THREE.Quaternion(x, y, z, transformedQ.w).normalize();
 }
 
 function handleWSMessage(obj) {
@@ -322,7 +322,7 @@ function handleWSMessage(obj) {
     var spineQ = getTransformedQuaternion(transformedQ, bone);
 
     var obj = mac2Bones["Hips"].global;
-    var hipQ = new THREE.Quaternion(obj.x, obj.y, obj.z, obj.w);
+    var hipQ = new THREE.Quaternion(obj.x, obj.y, obj.z, obj.w).normalize();
     var hipQinverse = new THREE.Quaternion().copy(hipQ).invert();
     var hipCorrection = new THREE.Quaternion().copy(hipQinverse).multiply(spineQ).normalize();
 
@@ -342,7 +342,7 @@ function handleWSMessage(obj) {
     var headQ = getTransformedQuaternion(transformedQ, bone);
 
     var obj = mac2Bones["Spine"].global;
-    var hipQ = new THREE.Quaternion(obj.x, obj.y, obj.z, obj.w);
+    var hipQ = new THREE.Quaternion(obj.x, obj.y, obj.z, obj.w).normalize();
     var hipQinverse = new THREE.Quaternion().copy(hipQ).invert();
     var hipCorrection = new THREE.Quaternion().copy(hipQinverse).multiply(headQ).normalize();
 
@@ -364,7 +364,7 @@ function handleWSMessage(obj) {
     var leftarmQ = getTransformedQuaternion(transformedQ, bone);
 
     var obj = mac2Bones["Spine"].global;
-    var spineQ = new THREE.Quaternion(obj.x, obj.y, obj.z, obj.w);
+    var spineQ = new THREE.Quaternion(obj.x, obj.y, obj.z, obj.w).normalize();
     var spineQinverse = new THREE.Quaternion().copy(spineQ).invert();
     var spineCorrection = new THREE.Quaternion().copy(spineQinverse).multiply(leftarmQ).normalize();
 
@@ -384,7 +384,7 @@ function handleWSMessage(obj) {
 
     var rightarmQ = getTransformedQuaternion(transformedQ, bone);
     var obj = mac2Bones["Spine"].global;
-    var spineQ = new THREE.Quaternion(obj.x, obj.y, obj.z, obj.w);
+    var spineQ = new THREE.Quaternion(obj.x, obj.y, obj.z, obj.w).normalize();
     var spineQinverse = new THREE.Quaternion().copy(spineQ).invert();
     var spineCorrection = new THREE.Quaternion().copy(spineQinverse).multiply(rightarmQ).normalize();
 
@@ -406,7 +406,7 @@ function handleWSMessage(obj) {
     var leftforearmQ = getTransformedQuaternion(transformedQ, bone);
 
     var obj = mac2Bones["LeftArm"].global;
-    var leftarmQ = new THREE.Quaternion(obj.x, obj.y, obj.z, obj.w);
+    var leftarmQ = new THREE.Quaternion(obj.x, obj.y, obj.z, obj.w).normalize();
     var leftarmQinverse = new THREE.Quaternion().copy(leftarmQ).invert();
     var leftarmCorrection = new THREE.Quaternion().copy(leftarmQinverse).multiply(leftforearmQ).normalize();
 
@@ -426,7 +426,7 @@ function handleWSMessage(obj) {
     var rightforearmQ = getTransformedQuaternion(transformedQ, bone);
 
     var obj = mac2Bones["RightArm"].global;
-    var rightarmQ = new THREE.Quaternion(obj.x, obj.y, obj.z, obj.w);
+    var rightarmQ = new THREE.Quaternion(obj.x, obj.y, obj.z, obj.w).normalize();
     var rightarmQinverse = new THREE.Quaternion().copy(rightarmQ).invert();
     var rightarmCorrection = new THREE.Quaternion().copy(rightarmQinverse).multiply(rightforearmQ).normalize();
 
@@ -446,7 +446,7 @@ function handleWSMessage(obj) {
     var righthandQ = getTransformedQuaternion(transformedQ, bone);
 
     var obj = mac2Bones["RightForeArm"].global;
-    var rightforearmQ = new THREE.Quaternion(obj.x, obj.y, obj.z, obj.w);
+    var rightforearmQ = new THREE.Quaternion(obj.x, obj.y, obj.z, obj.w).normalize();
     var rightforearmQinverse = new THREE.Quaternion().copy(rightforearmQ).invert();
     var rightforearmCorrection = new THREE.Quaternion().copy(rightforearmQinverse).multiply(righthandQ).normalize();
 
@@ -466,7 +466,7 @@ function handleWSMessage(obj) {
     var lefthandQ = getTransformedQuaternion(transformedQ, bone);
 
     var obj = mac2Bones["LeftForeArm"].global;
-    var leftforearmQ = new THREE.Quaternion(obj.x, obj.y, obj.z, obj.w);
+    var leftforearmQ = new THREE.Quaternion(obj.x, obj.y, obj.z, obj.w).normalize();
     var leftforearmQinverse = new THREE.Quaternion().copy(leftforearmQ).invert();
     var leftforearmCorrection = new THREE.Quaternion().copy(leftforearmQinverse).multiply(lefthandQ).normalize();
 
@@ -486,7 +486,7 @@ function handleWSMessage(obj) {
     var leftuplegQ = getTransformedQuaternion(transformedQ, bone);
 
     var obj = mac2Bones["Hips"].global;
-    var hipsQ = new THREE.Quaternion(obj.x, obj.y, obj.z, obj.w);
+    var hipsQ = new THREE.Quaternion(obj.x, obj.y, obj.z, obj.w).normalize();
     var hipsQinverse = new THREE.Quaternion().copy(hipsQ).invert();
     var hipsCorrection = new THREE.Quaternion().copy(hipsQinverse).multiply(leftuplegQ).normalize();
 
@@ -506,7 +506,7 @@ function handleWSMessage(obj) {
     var leftlegQ = getTransformedQuaternion(transformedQ, bone);
 
     var obj = mac2Bones["LeftUpLeg"].global;
-    var leftuplegQ = new THREE.Quaternion(obj.x, obj.y, obj.z, obj.w);
+    var leftuplegQ = new THREE.Quaternion(obj.x, obj.y, obj.z, obj.w).normalize();
     var leftuplegQinverse = new THREE.Quaternion().copy(leftuplegQ).invert();
     var leftuplegCorrection = new THREE.Quaternion().copy(leftuplegQinverse).multiply(leftlegQ).normalize();
 
@@ -527,7 +527,7 @@ function handleWSMessage(obj) {
     var rightuplegQ = getTransformedQuaternion(transformedQ, bone);
 
     var obj = mac2Bones["Hips"].global;
-    var hipsQ = new THREE.Quaternion(obj.x, obj.y, obj.z, obj.w);
+    var hipsQ = new THREE.Quaternion(obj.x, obj.y, obj.z, obj.w).normalize();
     var hipsQinverse = new THREE.Quaternion().copy(hipsQ).invert();
     var hipsCorrection = new THREE.Quaternion().copy(hipsQinverse).multiply(rightuplegQ).normalize();
 
@@ -547,7 +547,7 @@ function handleWSMessage(obj) {
     var rightlegQ = getTransformedQuaternion(transformedQ, bone);
 
     var obj = mac2Bones["RightUpLeg"].global;
-    var rightuplegQ = new THREE.Quaternion(obj.x, obj.y, obj.z, obj.w);
+    var rightuplegQ = new THREE.Quaternion(obj.x, obj.y, obj.z, obj.w).normalize();
     var rightuplegQinverse = new THREE.Quaternion().copy(rightuplegQ).invert();
     var rightuplegCorrection = new THREE.Quaternion().copy(rightuplegQinverse).multiply(rightlegQ).normalize();
 
