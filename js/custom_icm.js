@@ -401,7 +401,6 @@ function handleWSMessage(obj) {
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
 
     var transformedQ = new THREE.Quaternion().multiplyQuaternions(rawQuaternion, refQInverse, bc);
-    //    var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion, bc);
 
     var leftforearmQ = getTransformedQuaternion(transformedQ, bone);
 
@@ -410,9 +409,7 @@ function handleWSMessage(obj) {
     var leftarmQinverse = new THREE.Quaternion().copy(leftarmQ).invert();
     var leftarmCorrection = new THREE.Quaternion().copy(leftarmQinverse).multiply(leftforearmQ).normalize();
 
-    //var zt = smoothEuler(leftarmCorrection, bone);
-    //x.rotation.set(zt[0], zt[1], zt[2]);
-    //x.quaternion.copy(leftarmCorrection);
+
     x.quaternion.slerp(leftarmCorrection, slerpFactor);
 
     setLocal(bone, leftarmCorrection.x, leftarmCorrection.y, leftarmCorrection.z, leftarmCorrection.w);
@@ -428,7 +425,7 @@ function handleWSMessage(obj) {
     var obj = mac2Bones["LeftForeArm"].global;
     var leftarmQ = new THREE.Quaternion(obj.x, obj.y, obj.z, obj.w).normalize();
     var leftarmQinverse = new THREE.Quaternion().copy(leftarmQ).invert();
-    var lefthandCorrection = new THREE.Quaternion().copy(leftarmQinverse).multiply(leftarmQ).normalize();
+    var lefthandCorrection = new THREE.Quaternion().copy(leftarmQinverse).multiply(lefthandQ).normalize();
 
     x.quaternion.slerp(lefthandCorrection, slerpFactor);
 
