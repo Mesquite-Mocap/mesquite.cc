@@ -451,37 +451,6 @@ function handleWSMessage(obj) {
     setGlobal(bone, rightforearmQ.x, rightforearmQ.y, rightforearmQ.z, rightforearmQ.w);
   }
 
-  if (bone == "LeftFoot") {
-    var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
-    var transformedQ = new THREE.Quaternion().multiplyQuaternions(rawQuaternion, refQInverse, bc);
-    var leftfootQ = getTransformedQuaternion(transformedQ, bone);
-
-    var obj = mac2Bones["LeftLeg"].global;
-    var leftlegQ = new THREE.Quaternion(obj.x, obj.y, obj.z, obj.w).normalize();
-    var leftlegQinverse = new THREE.Quaternion().copy(leftlegQ).invert();
-    var leftlegCorrection = new THREE.Quaternion().copy(leftlegQinverse).multiply(leftfootQ).normalize();
-
-    x.quaternion.slerp(leftlegCorrection, slerpFactor);
-
-    setLocal(bone, leftlegCorrection.x, leftlegCorrection.y, leftlegCorrection.z, leftlegCorrection.w);
-    //setGlobal(bone, leftfootQ.x, leftfootQ.y, leftfootQ.z, leftfootQ.w);
-  }
-
-  if (bone == "RightFoot") {
-    var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
-    var transformedQ = new THREE.Quaternion().multiplyQuaternions(rawQuaternion, refQInverse, bc);
-    var rightfootQ = getTransformedQuaternion(transformedQ, bone);
-
-    var obj = mac2Bones["RightLeg"].global;
-    var rightlegQ = new THREE.Quaternion(obj.x, obj.y, obj.z, obj.w).normalize();
-    var rightlegQinverse = new THREE.Quaternion().copy(rightlegQ).invert();
-    var rightlegCorrection = new THREE.Quaternion().copy(rightlegQinverse).multiply(rightfootQ).normalize();
-
-    x.quaternion.slerp(rightlegCorrection, slerpFactor);
-
-    setLocal(bone, rightlegCorrection.x, rightlegCorrection.y, rightlegCorrection.z, rightlegCorrection.w);
-    //setGlobal(bone, rightfootQ.x, rightfootQ.y, rightfootQ.z, rightfootQ.w);
-  }
 
   if (bone == "RightHand") {
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
@@ -502,9 +471,14 @@ function handleWSMessage(obj) {
     //setGlobal(bone, righthandQ.x, righthandQ.y, righthandQ.z, righthandQ.w);
   }
 
+  
+
   if (bone == "LeftUpLeg") {
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
-    var transformedQ = new THREE.Quaternion().multiplyQuaternions(rawQuaternion, refQInverse, bc);
+    //var transformedQ = new THREE.Quaternion().multiplyQuaternions(rawQuaternion, refQInverse, bc);
+            var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion, bc);
+
+    
     var leftuplegQ = getTransformedQuaternion(transformedQ, bone);
 
     var obj = mac2Bones["Hips"].global;
@@ -536,8 +510,8 @@ function handleWSMessage(obj) {
 
   if (bone == "RightUpLeg") {
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
-    var transformedQ = new THREE.Quaternion().multiplyQuaternions(rawQuaternion, refQInverse, bc);
-    //    var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion, bc);
+    //var transformedQ = new THREE.Quaternion().multiplyQuaternions(rawQuaternion, refQInverse, bc);
+        var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion, bc);
     var rightuplegQ = getTransformedQuaternion(transformedQ, bone);
 
     var obj = mac2Bones["Hips"].global;
@@ -568,6 +542,40 @@ function handleWSMessage(obj) {
 
     setLocal(bone, rightuplegCorrection.x, rightuplegCorrection.y, rightuplegCorrection.z, rightuplegCorrection.w);
     setGlobal(bone, rightlegQ.x, rightlegQ.y, rightlegQ.z, rightlegQ.w);
+  }
+
+
+
+  if (bone == "LeftFoot") {
+    var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
+    var transformedQ = new THREE.Quaternion().multiplyQuaternions(rawQuaternion, refQInverse, bc);
+    var leftfootQ = getTransformedQuaternion(transformedQ, bone);
+
+    var obj = mac2Bones["LeftLeg"].global;
+    var leftlegQ = new THREE.Quaternion(obj.x, obj.y, obj.z, obj.w).normalize();
+    var leftlegQinverse = new THREE.Quaternion().copy(leftlegQ).invert();
+    var leftlegCorrection = new THREE.Quaternion().copy(leftlegQinverse).multiply(leftfootQ).normalize();
+
+    x.quaternion.slerp(leftlegCorrection, slerpFactor);
+
+    setLocal(bone, leftlegCorrection.x, leftlegCorrection.y, leftlegCorrection.z, leftlegCorrection.w);
+    //setGlobal(bone, leftfootQ.x, leftfootQ.y, leftfootQ.z, leftfootQ.w);
+  }
+
+  if (bone == "RightFoot") {
+    var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
+    var transformedQ = new THREE.Quaternion().multiplyQuaternions(rawQuaternion, refQInverse, bc);
+    var rightfootQ = getTransformedQuaternion(transformedQ, bone);
+
+    var obj = mac2Bones["RightLeg"].global;
+    var rightlegQ = new THREE.Quaternion(obj.x, obj.y, obj.z, obj.w).normalize();
+    var rightlegQinverse = new THREE.Quaternion().copy(rightlegQ).invert();
+    var rightlegCorrection = new THREE.Quaternion().copy(rightlegQinverse).multiply(rightfootQ).normalize();
+
+    x.quaternion.slerp(rightlegCorrection, slerpFactor);
+
+    setLocal(bone, rightlegCorrection.x, rightlegCorrection.y, rightlegCorrection.z, rightlegCorrection.w);
+    //setGlobal(bone, rightfootQ.x, rightfootQ.y, rightfootQ.z, rightfootQ.w);
   }
 
   if (!mac2Bones[bone]) {
