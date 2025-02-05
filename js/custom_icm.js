@@ -627,7 +627,7 @@ function handleWSMessage(obj) {
 
 
   var podCount = $("#deviceMapList td.connected").length;
-  $("#podCount").text(podCount);
+  $(".podCount").text(podCount);
 
 
 
@@ -942,7 +942,7 @@ setInterval(function () {
   });
 
   var podCount = $("#deviceMapList td.connected").length;
-  $("#podCount").text(podCount);
+  $(".podCount").text(podCount);
 }, 1000);
 
 function showTreeGuide() {

@@ -100,12 +100,13 @@ a.btn.main i{
     user-select: none;
     box-shadow: 0px 0px 10px;
     border-right: 2px rgb(188 229 227) solid;
-    width: 400px;
+    width: 420px;
     float: right;
     margin-right: 0 !important;
 	top: 0 !important;
 	padding: 0 !important;
 	overflow-x:hidden!important;
+	z-index: 100;
 }
 
 .podName{
@@ -229,3 +230,4 @@ body.settings-open #closeSettings{
 body table.striped>tbody>tr:nth-child(odd) {
 	background-color: #ededed;
 }
+

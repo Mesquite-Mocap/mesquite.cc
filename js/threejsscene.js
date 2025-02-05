@@ -561,7 +561,7 @@ window.addEventListener("resize", onWindowResize);
 
 function onWindowResize() {
     var x = 0;
-    if($("body").hasClass("settings-open")) x = 400;
+    if($("body").hasClass("settings-open")) x = 420;
     camera.aspect = (window.innerWidth-x) / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth-x, window.innerHeight);
