@@ -476,7 +476,7 @@ function handleWSMessage(obj) {
   if (bone == "LeftUpLeg") {
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
     //var transformedQ = new THREE.Quaternion().multiplyQuaternions(rawQuaternion, refQInverse, bc);
-            var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion, bc);
+    var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion, bc);
 
     
     var leftuplegQ = getTransformedQuaternion(transformedQ, bone);
@@ -494,7 +494,9 @@ function handleWSMessage(obj) {
 
   if (bone == "LeftLeg") {
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
-    var transformedQ = new THREE.Quaternion().multiplyQuaternions(rawQuaternion, refQInverse, bc);
+//    var transformedQ = new THREE.Quaternion().multiplyQuaternions(rawQuaternion, refQInverse, bc);
+    var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion, bc);
+
     var leftlegQ = getTransformedQuaternion(transformedQ, bone);
 
     var obj = mac2Bones["LeftUpLeg"].global;
@@ -519,9 +521,7 @@ function handleWSMessage(obj) {
     var hipsQinverse = new THREE.Quaternion().copy(hipsQ).invert();
     var hipsCorrection = new THREE.Quaternion().copy(hipsQinverse).multiply(rightuplegQ).normalize();
 
-    //var zt = smoothEuler(hipsCorrection, bone);
-    //x.rotation.set(zt[0], zt[1], zt[2]);
-    //x.quaternion.copy(hipsCorrection);
+
     x.quaternion.slerp(hipsCorrection, slerpFactor);
 
     setLocal(bone, hipsCorrection.x, hipsCorrection.y, hipsCorrection.z, hipsCorrection.w);
@@ -530,7 +530,9 @@ function handleWSMessage(obj) {
 
   if (bone == "RightLeg") {
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
-    var transformedQ = new THREE.Quaternion().multiplyQuaternions(rawQuaternion, refQInverse, bc);
+    //var transformedQ = new THREE.Quaternion().multiplyQuaternions(rawQuaternion, refQInverse, bc);
+    var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion, bc);
+
     var rightlegQ = getTransformedQuaternion(transformedQ, bone);
 
     var obj = mac2Bones["RightUpLeg"].global;
