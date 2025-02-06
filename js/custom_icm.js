@@ -251,6 +251,7 @@ function handleWSMessage(obj) {
     let result = t.fromNow(true);
 
     millText = "<span class=''>for " + result + "</span>";
+    millText = millText.replace("for a few seconds", "just now");
   }
 
   if (count > 0) {
@@ -937,7 +938,7 @@ setInterval(function () {
     var last = parseInt($(this).attr("data-last"));
     var now = new Date().getTime();
 
-    if (Math.abs(now - last) > 3000) {
+    if (Math.abs(now - last) > 1200) {
       $(this).removeClass("connected");
       $(this).html("<b class='red-text'>DISCONNECTED</b>");
     }

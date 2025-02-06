@@ -194,6 +194,8 @@ body.connected .auxButton{
 table.striped tr{
 	min-height: 75px!important;
 	height: 75px!important;
+	max-height: 75px!important;
+	overflow: hidden!important;
 }
 
 .toastheader{
@@ -231,3 +233,16 @@ body table.striped>tbody>tr:nth-child(odd) {
 	background-color: #ededed;
 }
 
+.elipsis{
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+#spodcount{
+	transform: scale(.7);
+	position: absolute;
+	font-weight: bold;
+	margin-left: -12px;
+	margin-top:-13px;
+}
