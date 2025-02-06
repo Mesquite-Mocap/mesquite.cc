@@ -45,14 +45,14 @@
       },
       "LeftUpLeg": {
         "axis": {
-          "order": "YXZ",
-          "sign": "-++"
+          "order": "YZX",
+          "sign": "+++"
         }
       },
       "RightUpLeg": {
         "axis": {
-          "order": "YXZ",
-          "sign": "-++"
+          "order": "YZX",
+          "sign": "+++"
         }
       },
       "LeftLeg": {
