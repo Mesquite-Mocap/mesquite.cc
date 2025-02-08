@@ -170,7 +170,7 @@ function getBoxCalibration() {
   var downloadAnchorNode = document.createElement("a");
 
   downloadAnchorNode.setAttribute("href", dataStr);
-  downloadAnchorNode.setAttribute("download", "calibration-" + moment().format("YYYY-MM-DD-HH-mm-ss") + ".json");
+  downloadAnchorNode.setAttribute("download", "box-calibration-" + moment().format("YYYY-MM-DD-HH-mm-ss") + ".json");
   document.body.appendChild(downloadAnchorNode); // required for firefox
   downloadAnchorNode.click(); // auto-download
   document.body.removeChild(downloadAnchorNode); // clean up
