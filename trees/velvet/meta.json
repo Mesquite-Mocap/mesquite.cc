@@ -13,6 +13,12 @@
           "sign": "-+-"
         }
       },
+      "HipsAlt": {
+        "axis": {
+          "order": "YZX",
+          "sign": "+++"
+        }
+      },
       "Head": {
         "axis": {
           "order": "YZX",

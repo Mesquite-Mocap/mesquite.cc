@@ -33,6 +33,7 @@ function initGlobalLocalLast() {
   setGlobal("Hips", bone.quaternion.x, bone.quaternion.y, bone.quaternion.z, bone.quaternion.w);
   setLocal("Hips", bone.quaternion.x, bone.quaternion.y, bone.quaternion.z, bone.quaternion.w);
   initInitialPosition("Hips", bone.quaternion.x, bone.quaternion.y, bone.quaternion.z, bone.quaternion.w);
+  
   mac2Bones["HipsAlt"] = { calibration: { x: 0, y: 0, z: 0, w: 1 }, last: { x: 0, y: 0, z: 0, w: 1 }, global: { x: 0, y: 0, z: 0, w: 1 }, local: { x: 0, y: 0, z: 0, w: 1 }, bcalibration: { x: 0, y: 0, z: 0, w: 1 } };
   setGlobal("HipsAlt", bone.quaternion.x, bone.quaternion.y, bone.quaternion.z, bone.quaternion.w);
   setLocal("HipsAlt", bone.quaternion.x, bone.quaternion.y, bone.quaternion.z, bone.quaternion.w);
@@ -169,7 +170,7 @@ function getBoxCalibration() {
   var downloadAnchorNode = document.createElement("a");
 
   downloadAnchorNode.setAttribute("href", dataStr);
-  downloadAnchorNode.setAttribute("download", "calibration.json");
+  downloadAnchorNode.setAttribute("download", "calibration-" + moment().format("YYYY-MM-DD-HH-mm-ss") + ".json");
   document.body.appendChild(downloadAnchorNode); // required for firefox
   downloadAnchorNode.click(); // auto-download
   document.body.removeChild(downloadAnchorNode); // clean up
@@ -205,7 +206,7 @@ function mapRange(value, low1, high1, low2, high2) {
 }
 
 function getTransformedQuaternion(transformedQ, bone) {
-  var mapping = trees[treeType][bone.replace("Alt", "")];
+  var mapping = trees[treeType][bone];
   var axisOrder = mapping.axis.order.toLowerCase();
   var axisSign = mapping.axis.sign;
 
