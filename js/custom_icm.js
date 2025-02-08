@@ -157,6 +157,8 @@ function boxCalibrate() {
     mac2Bones[keys[i]].bcalibration.z = mac2Bones[keys[i]].last.z;
     mac2Bones[keys[i]].bcalibration.w = mac2Bones[keys[i]].last.w;
   }
+  $("#boxCDiv").fadeIn();
+  getBoxCalibration();
 }
 
 function getBoxCalibration() {
@@ -249,7 +251,7 @@ function handleWSMessage(obj) {
   }
   var bone = obj.bone;
   var x = model.getObjectByName(rigPrefix + bone.replace("Alt", ""));
-  console.log(bone, x);
+  // console.log(bone, x);
   if (!bone || !x) {
     return;
   }
@@ -259,7 +261,7 @@ function handleWSMessage(obj) {
   mac2Bones[bone].last.z = parseFloat(obj.z);
   mac2Bones[bone].last.w = parseFloat(obj.w);
 
-  console.log(obj);
+  // console.log(obj);
 
   statsObjs[lowerFirstLetter(bone)].update();
 
@@ -883,6 +885,7 @@ function quickBoxCalibrate() {
   M.toast({ html: 'Box Calibration values saved!', classes: 'blue black-text', displayLength: 5000 });
   M.toast({ html: 'You can now wear the pods and proceed with T-Pose calibration.', classes: 'white black-text', displayLength: 5000 });
   $("#boxcalibratein30").remove();
+  $("#boxCDiv").fadeIn();
 }
 
 
@@ -890,6 +893,7 @@ function skipBoxCalibrate() {
   M.toast({ html: 'Box Calibration skipped!', classes: 'red white-text', displayLength: 5000 });
   M.toast({ html: 'You can now wear the pods and proceed with T-Pose calibration.', classes: 'white black-text', displayLength: 5000 });
   $("#boxcalibratein30").remove();
+  $("#boxCDiv").fadeIn();
 }
 
 function boxCalibrateIn30() {
@@ -1031,4 +1035,25 @@ function smoothEuler(q, bone) {
   ret[2] = filtersz[bone].filter(ret[2]);
 
   return ret;
+}
+
+function uploadBoxCalibration() {
+  var file = document.getElementById("boxCalibrationFile").files[0];
+  var reader = new FileReader();
+  reader.onload = function (e) {
+    var contents = e.target.result;
+    console.log(contents);
+    var data = JSON.parse(contents);
+    boxCalibration = data;
+    for (var key in boxCalibration) {
+      if (boxCalibration.hasOwnProperty(key)) {
+        var obj = boxCalibration[key];
+        var bone = key;
+        var q = new THREE.Quaternion(obj.x, obj.y, obj.z, obj.w).normalize();
+        mac2Bones[bone].bcalibration = { x: q.x, y: q.y, z: q.z, w: q.w };
+      }
+    }
+    M.toast({ html: 'Box Calibration values uploaded!', classes: 'blue black-text', displayLength: 5000 });
+  };
+  reader.readAsText(file);
 }
