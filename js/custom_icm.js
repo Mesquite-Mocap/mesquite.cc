@@ -1042,9 +1042,8 @@ function uploadBoxCalibration() {
   var reader = new FileReader();
   reader.onload = function (e) {
     var contents = e.target.result;
-    console.log(contents);
-    var data = JSON.parse(contents);
-    boxCalibration = data;
+    //console.log(contents);
+    var boxCalibration = JSON.parse(contents);
     for (var key in boxCalibration) {
       if (boxCalibration.hasOwnProperty(key)) {
         var obj = boxCalibration[key];
