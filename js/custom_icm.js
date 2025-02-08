@@ -2,6 +2,7 @@ var rigPrefix = "mm";
 window.sY = 0;
 window.sX = 0;
 window.sZ = 0;
+hipsAltLast = 0;
 
 var calibrated = false;
 initialPosition = { x: 0, y: 0, z: 0 };
@@ -32,6 +33,11 @@ function initGlobalLocalLast() {
   setGlobal("Hips", bone.quaternion.x, bone.quaternion.y, bone.quaternion.z, bone.quaternion.w);
   setLocal("Hips", bone.quaternion.x, bone.quaternion.y, bone.quaternion.z, bone.quaternion.w);
   initInitialPosition("Hips", bone.quaternion.x, bone.quaternion.y, bone.quaternion.z, bone.quaternion.w);
+  mac2Bones["HipsAlt"] = { calibration: { x: 0, y: 0, z: 0, w: 1 }, last: { x: 0, y: 0, z: 0, w: 1 }, global: { x: 0, y: 0, z: 0, w: 1 }, local: { x: 0, y: 0, z: 0, w: 1 }, bcalibration: { x: 0, y: 0, z: 0, w: 1 } };
+  setGlobal("HipsAlt", bone.quaternion.x, bone.quaternion.y, bone.quaternion.z, bone.quaternion.w);
+  setLocal("HipsAlt", bone.quaternion.x, bone.quaternion.y, bone.quaternion.z, bone.quaternion.w);
+  initInitialPosition("HipsAlt", bone.quaternion.x, bone.quaternion.y, bone.quaternion.z, bone.quaternion.w);
+  
 
   bone = model.getObjectByName(rigPrefix + "Spine");
   mac2Bones["Spine"] = { calibration: { x: 0, y: 0, z: 0, w: 1 }, last: { x: 0, y: 0, z: 0, w: 1 }, global: { x: 0, y: 0, z: 0, w: 1 }, local: { x: 0, y: 0, z: 0, w: 1 }, bcalibration: { x: 0, y: 0, z: 0, w: 1 } };
@@ -152,6 +158,23 @@ function boxCalibrate() {
   }
 }
 
+function getBoxCalibration() {
+  var ret = {};
+  var keys = Object.keys(mac2Bones);
+  for (var i = 0; i < keys.length; i++) {
+    ret[keys[i]] = mac2Bones[keys[i]].bcalibration;
+  }
+  // download the file as json
+  var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(ret));
+  var downloadAnchorNode = document.createElement("a");
+
+  downloadAnchorNode.setAttribute("href", dataStr);
+  downloadAnchorNode.setAttribute("download", "calibration.json");
+  document.body.appendChild(downloadAnchorNode); // required for firefox
+  downloadAnchorNode.click(); // auto-download
+  document.body.removeChild(downloadAnchorNode); // clean up
+}
+
 
 function lowerFirstLetter(string) {
   return string.charAt(0).toLowerCase() + string.slice(1);
@@ -182,7 +205,7 @@ function mapRange(value, low1, high1, low2, high2) {
 }
 
 function getTransformedQuaternion(transformedQ, bone) {
-  var mapping = trees[treeType][bone];
+  var mapping = trees[treeType][bone.replace("Alt", "")];
   var axisOrder = mapping.axis.order.toLowerCase();
   var axisSign = mapping.axis.sign;
 
@@ -224,7 +247,7 @@ function handleWSMessage(obj) {
     initGlobalLocalLast();
   }
   var bone = obj.bone;
-  var x = model.getObjectByName(rigPrefix + bone);
+  var x = model.getObjectByName(rigPrefix + bone.replace("Alt", ""));
   console.log(bone, x);
   if (!bone || !x) {
     return;
@@ -299,21 +322,28 @@ function handleWSMessage(obj) {
   var bc = new THREE.Quaternion(mac2Bones[bone].bcalibration.x, mac2Bones[bone].bcalibration.y, mac2Bones[bone].bcalibration.z, mac2Bones[bone].bcalibration.w);
   const slerpFactor = .5; // range: 0.0 to 1.0
 
-  if (bone == "Hips") {
+  if (bone == "Hips" && hipsAltLast + 1000 < new Date().getTime()) {
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
     var transformedQ = rawQuaternion.clone().multiply(refQInverse).normalize();
 
-
     var hipQ = getTransformedQuaternion(transformedQ, bone).normalize();
-    //var zt = smoothEuler(hipQ, bone);
-    //x.rotation.set(zt[0], zt[1], zt[2]);
 
     x.quaternion.slerp(hipQ, slerpFactor);
 
-    // x.quaternion.copy(hipQ);
+    setLocal(bone, hipQ.x, hipQ.y, hipQ.z, hipQ.w);
+    setGlobal(bone, hipQ.x, hipQ.y, hipQ.z, hipQ.w);
+  }
+
+  if (bone == "HipsAlt") {
+    var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
+    var transformedQ = rawQuaternion.clone().multiply(refQInverse).normalize();
+
+    var hipQ = getTransformedQuaternion(transformedQ, bone).normalize();
+    x.quaternion.slerp(hipQ, slerpFactor);
 
     setLocal(bone, hipQ.x, hipQ.y, hipQ.z, hipQ.w);
     setGlobal(bone, hipQ.x, hipQ.y, hipQ.z, hipQ.w);
+    hipsAltLast = new Date().getTime();
   }
 
   if (bone == "Spine") {
@@ -472,14 +502,14 @@ function handleWSMessage(obj) {
     //setGlobal(bone, righthandQ.x, righthandQ.y, righthandQ.z, righthandQ.w);
   }
 
-  
+
 
   if (bone == "LeftUpLeg") {
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
     var transformedQ = new THREE.Quaternion().multiplyQuaternions(rawQuaternion, refQInverse, bc);
     //var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion, bc);
 
-    
+
     var leftuplegQ = getTransformedQuaternion(transformedQ, bone);
 
     var obj = mac2Bones["Hips"].global;
