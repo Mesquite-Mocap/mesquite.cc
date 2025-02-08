@@ -339,7 +339,9 @@ function handleWSMessage(obj) {
 
   if (bone == "HipsAlt") {
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
-    var transformedQ = rawQuaternion.clone().multiply(refQInverse).normalize();
+    var transformedQ = new THREE.Quaternion().multiplyQuaternions(rawQuaternion, refQInverse, bc);
+
+    // var transformedQ = rawQuaternion.clone().multiply(refQInverse).normalize();
 
     var hipQ = getTransformedQuaternion(transformedQ, bone).normalize();
     x.quaternion.slerp(hipQ, slerpFactor);
