@@ -158,7 +158,7 @@ function boxCalibrate() {
     mac2Bones[keys[i]].bcalibration.w = mac2Bones[keys[i]].last.w;
   }
   $("#boxCDiv").fadeIn();
-  getBoxCalibration();
+ // getBoxCalibration();
 }
 
 function getBoxCalibration() {
