@@ -346,8 +346,8 @@ function handleWSMessage(obj) {
     var hipQ = getTransformedQuaternion(transformedQ, bone).normalize();
     x.quaternion.slerp(hipQ, slerpFactor);
 
-    setLocal(bone, hipQ.x, hipQ.y, hipQ.z, hipQ.w);
-    setGlobal(bone, hipQ.x, hipQ.y, hipQ.z, hipQ.w);
+    setLocal("Hips", hipQ.x, hipQ.y, hipQ.z, hipQ.w);
+    setGlobal("Hips", hipQ.x, hipQ.y, hipQ.z, hipQ.w);
     hipsAltLast = new Date().getTime();
   }
 
