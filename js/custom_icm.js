@@ -6,7 +6,7 @@ hipsAltLast = 0;
 
 var calibrated = false;
 initialPosition = { x: 0, y: 0, z: 0 };
-var positionSensitivity = 64;
+var positionSensitivity = 100;
 
 var kfx = new KalmanFilter();
 var kfy = new KalmanFilter();
