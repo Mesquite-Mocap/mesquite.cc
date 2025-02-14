@@ -8,9 +8,10 @@ var calibrated = false;
 initialPosition = { x: 0, y: 0, z: 0 };
 var positionSensitivity = 100;
 
-var kfx = new KalmanFilter();
-var kfy = new KalmanFilter();
-var kfz = new KalmanFilter();
+// smooth position
+var kfx = new KalmanFilter({ R: 0.01, Q: 3 });
+var kfy = new KalmanFilter({ R: 0.01, Q: 3 });
+var kfz = new KalmanFilter({ R: 0.01, Q: 3 });
 
 function adjustQuaternionForThickness(quaternion, thickness) {
   // Implement the logic to adjust the quaternion based on thickness
