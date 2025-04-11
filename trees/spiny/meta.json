@@ -94,7 +94,7 @@
       "RightHand": {
         "axis": {
           "order": "YZX",
-          "sign": "+++"
+          "sign": "+--"
         }
       }
   }
