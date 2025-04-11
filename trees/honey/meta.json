@@ -6,7 +6,7 @@
           "order": "YZX",
           "sign": "+++"
         }
-      },
+      }, 
       "Hips": {
         "axis": {
           "order": "XYZ",
