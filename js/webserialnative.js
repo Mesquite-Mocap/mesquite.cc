@@ -139,3 +139,9 @@ function toggleUIConnected(connected) {
     }
     butConnect.innerHTML = lbl;
   }
+
+
+  navigator.serial.addEventListener("disconnect", (e) => {
+    console.log("A serial port has been disconnected: ", e);
+    window.location.reload();
+  });
