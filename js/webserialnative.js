@@ -87,6 +87,7 @@ async function connectToPort(port)
 
 async function disconnectFromPort()
 {
+    window.location.reload();
   const port = await getSelectedPort();
   await port.close();
   console.log("Disconnected from port");
@@ -95,8 +96,9 @@ async function disconnectFromPort()
 
 function toggleConnect()
 {
-  if (port) {
-    disconnectFromPort();
+  if ($("body").hasClass("connected")) {
+    window.location.reload();
+    //disconnectFromPort();
   } else {
     connectToPort();
   }
