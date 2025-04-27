@@ -887,7 +887,7 @@ function calibratein5() {
 function quickBoxCalibrate() {
   boxCalibrate();
   //M.Toast.dismissAll();
-  M.toast({ html: 'Box Calibration values saved!', classes: 'blue black-text', displayLength: 5000 });
+  M.toast({ html: 'Box Calibration values saved!', classes: 'blue black-text toastheader', displayLength: 5000 });
   M.toast({ html: 'You can now wear the pods and proceed with T-Pose calibration.', classes: 'white black-text', displayLength: 5000 });
   $("#boxcalibratein30").remove();
   $("#boxCDiv").fadeIn();
@@ -895,7 +895,7 @@ function quickBoxCalibrate() {
 
 
 function skipBoxCalibrate() {
-  M.toast({ html: 'Box Calibration skipped!', classes: 'red white-text', displayLength: 5000 });
+  M.toast({ html: 'Box Calibration skipped!', classes: 'red white-text toastheader', displayLength: 5000 });
   M.toast({ html: 'You can now wear the pods and proceed with T-Pose calibration.', classes: 'white black-text', displayLength: 5000 });
   $("#boxcalibratein30").remove();
   $("#boxCDiv").fadeIn();
@@ -923,7 +923,7 @@ function boxCalibratein30Confirm() {
   setTimeout(function () {
     boxCalibrate();
     M.Toast.dismissAll();
-    M.toast({ html: 'Box Calibration done!', classes: 'green black-text', displayLength: 5000 });
+    M.toast({ html: 'Box Calibration done!', classes: 'green black-text toastheader', displayLength: 5000 });
     M.toast({ html: 'You can now wear the pods and proceed with T-Pose calibration.', classes: 'white black-text', displayLength: 5000 });
     $("#boxcalibratein30").remove();
   }, tSec * 1000);
