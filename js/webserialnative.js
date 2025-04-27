@@ -1,3 +1,4 @@
+let port = null;
 
 const butConnect = document.getElementById('linkPods');
 
@@ -10,19 +11,11 @@ document.addEventListener('DOMContentLoaded', () => {
   
   });
 
-let port = null;
-
-async function getSelectedPort()
-{
-  port = await navigator.serial.requestPort();
-  return port;
-}
 
 async function connectToPort(port)
 {
-   port = port ||  await getSelectedPort();
-
-
+   port = port || await navigator.serial.requestPort();
+   window.port = port;
   if(!port){
     console.log("No port selected");
     return;
@@ -48,6 +41,7 @@ async function connectToPort(port)
   }
 
   while (port && port.readable) {
+
     const reader = port.readable.getReader();
     let line = "";
     try {
@@ -85,20 +79,10 @@ async function connectToPort(port)
   
 }
 
-async function disconnectFromPort()
-{
-    window.location.reload();
-  const port = await getSelectedPort();
-  await port.close();
-  console.log("Disconnected from port");
-  $(".usbstatus").removeClass("green").addClass("red");
-}
-
 function toggleConnect()
 {
   if ($("body").hasClass("connected")) {
     window.location.reload();
-    //disconnectFromPort();
   } else {
     connectToPort();
   }
@@ -106,7 +90,7 @@ function toggleConnect()
 
 function writeToPort(data)
 {
-    console.log(port);
+    var port = window.port;
   if (!port || !port.writable) {
     console.error("Port is not writable");
     return;
@@ -117,9 +101,14 @@ function writeToPort(data)
   writer.releaseLock();
 }
 
+window.sWrite = function (data) {
+    writeToPort(data);
+}
+
 navigator.serial.addEventListener("connect", (e) => {
     console.log("A serial port has been connected to the system: ", e);
-    const port = e.target;    
+    port = e.target;    
+
     // check if port matches the one in localStorage
 
     console.log(port.getInfo().usbProductId);
