@@ -117,7 +117,6 @@ navigator.serial.addEventListener("connect", (e) => {
     }
 });
 
-
 function toggleUIConnected(connected) {
     let lbl = 'Link Pods <i class="material-icons left">settings_ethernet</i>';
     if (connected) {
