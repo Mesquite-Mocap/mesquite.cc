@@ -5,21 +5,21 @@
   <body>
     <a-scene>
       <a-box position="-1 0.5 -3" rotation="0 45 0" color="#4CC3D9"></a-box>
-      <a-sphere position="0 1.25 -5" radius="1.25" color="#EF2D5E"></a-sphere>
-      <a-cylinder
-        position="1 0.75 -3"
-        radius="0.5"
-        height="1.5"
-        color="#FFC65D"
-      ></a-cylinder>
-      <a-plane
-        position="0 0 -4"
-        rotation="-90 0 0"
-        width="4"
-        height="4"
-        color="#7BC8A4"
-      ></a-plane>
       <a-sky color="#ECECEC"></a-sky>
+      <a-entity id="camera" camera position="0 1.6 0" look-controls></a-entity>
+      <a-entity id="info" position="0 2 -4" text="value: Loading...; color: black;"></a-entity>
     </a-scene>
+    <script>
+      const camera = document.querySelector('#camera');
+      const info = document.querySelector('#info');
+
+      function updateCameraInfo() {
+        const position = camera.object3D.position;
+        const rotation = camera.object3D.rotation;
+        info.setAttribute('text', `value: Position: ${position.x.toFixed(2)}, ${position.y.toFixed(2)}, ${position.z.toFixed(2)}\nRotation: ${THREE.Math.radToDeg(rotation.x).toFixed(2)}, ${THREE.Math.radToDeg(rotation.y).toFixed(2)}, ${THREE.Math.radToDeg(rotation.z).toFixed(2)}; color: black;`);
+      }
+
+      setInterval(updateCameraInfo, 1000/30); 
+    </script>
   </body>
 </html>
