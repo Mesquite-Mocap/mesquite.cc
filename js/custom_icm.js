@@ -247,6 +247,7 @@ function getTransformedQuaternion(transformedQ, bone) {
 }
 
 function handleWSMessage(obj) {
+  //console.log(obj);
   if (flag) {
     initGlobalLocalLast();
   }
