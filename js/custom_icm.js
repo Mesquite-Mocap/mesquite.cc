@@ -331,13 +331,14 @@ function handleWSMessage(obj) {
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
     var transformedQ = new THREE.Quaternion().multiplyQuaternions(rawQuaternion, refQInverse, bc);
 
-//    var transformedQ = rawQuaternion.clone().multiply(refQInverse).normalize();
+    var alt = new THREE.Quaternion().multiplyQuaternions(rawQuaternion, refQInverse, bc);
+    alt = getTransformedQuaternion(alt, bone).normalize();
 
     var hipQ = getTransformedQuaternion(transformedQ, bone).normalize();
 
     x.quaternion.slerp(hipQ, slerpFactor);
 
-    setLocal(bone, hipQ.x, hipQ.y, hipQ.z, hipQ.w);
+    setLocal("Hips", alt.x, alt.y, alt.z, alt.w);
     setGlobal(bone, hipQ.x, hipQ.y, hipQ.z, hipQ.w);
   }
 
