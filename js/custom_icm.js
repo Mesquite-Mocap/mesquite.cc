@@ -325,7 +325,7 @@ function handleWSMessage(obj) {
   }
 
   var bc = new THREE.Quaternion(mac2Bones[bone].bcalibration.x, mac2Bones[bone].bcalibration.y, mac2Bones[bone].bcalibration.z, mac2Bones[bone].bcalibration.w);
-  const slerpFactor = .1; // range: 0.0 to 1.0
+  const slerpFactor = .40; // range: 0.0 to 1.0
 
   if (bone == "Hips" && hipsAltLast + 1000 < new Date().getTime()) {
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
@@ -571,7 +571,7 @@ function handleWSMessage(obj) {
     var leftuplegQinverse = new THREE.Quaternion().copy(leftuplegQ).invert();
     var leftuplegCorrection = new THREE.Quaternion().copy(leftuplegQinverse).multiply(leftlegQ).normalize();
 
-    x.quaternion.slerp(leftuplegCorrection, slerpFactor);
+    x.quaternion.slerp(leftuplegCorrection, slerpFactor-.05);
 
     setLocal(bone, leftuplegCorrection.x, leftuplegCorrection.y, leftuplegCorrection.z, leftuplegCorrection.w);
     setGlobal(bone, leftlegQ.x, leftlegQ.y, leftlegQ.z, leftlegQ.w);
@@ -589,7 +589,7 @@ function handleWSMessage(obj) {
     var rightuplegQinverse = new THREE.Quaternion().copy(rightuplegQ).invert();
     var rightuplegCorrection = new THREE.Quaternion().copy(rightuplegQinverse).multiply(rightlegQ).normalize();
 
-    x.quaternion.slerp(rightuplegCorrection, slerpFactor);
+    x.quaternion.slerp(rightuplegCorrection, slerpFactor-.05);
 
     setLocal(bone, rightuplegCorrection.x, rightuplegCorrection.y, rightuplegCorrection.z, rightuplegCorrection.w);
     setGlobal(bone, rightlegQ.x, rightlegQ.y, rightlegQ.z, rightlegQ.w);
@@ -607,7 +607,7 @@ function handleWSMessage(obj) {
     var leftlegQinverse = new THREE.Quaternion().copy(leftlegQ).invert();
     var leftlegCorrection = new THREE.Quaternion().copy(leftlegQinverse).multiply(leftfootQ).normalize();
 
-    x.quaternion.slerp(leftlegCorrection, slerpFactor);
+    x.quaternion.slerp(leftlegCorrection, slerpFactor-.05);
 
     setLocal(bone, leftlegCorrection.x, leftlegCorrection.y, leftlegCorrection.z, leftlegCorrection.w);
     //setGlobal(bone, leftfootQ.x, leftfootQ.y, leftfootQ.z, leftfootQ.w);
@@ -623,7 +623,7 @@ function handleWSMessage(obj) {
     var rightlegQinverse = new THREE.Quaternion().copy(rightlegQ).invert();
     var rightlegCorrection = new THREE.Quaternion().copy(rightlegQinverse).multiply(rightfootQ).normalize();
 
-    x.quaternion.slerp(rightlegCorrection, slerpFactor);
+    x.quaternion.slerp(rightlegCorrection, slerpFactor-.05);
 
     setLocal(bone, rightlegCorrection.x, rightlegCorrection.y, rightlegCorrection.z, rightlegCorrection.w);
     //setGlobal(bone, rightfootQ.x, rightfootQ.y, rightfootQ.z, rightfootQ.w);
