@@ -276,7 +276,10 @@ import { GLTFLoader } from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.
 import { KTX2Loader } from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc/build/KTX2Loader.js";
 import { MeshoptDecoder } from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc@latest/build/meshopt_decoder.module.js";
 import { BVHLoader } from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc@latest/build-static/BVHLoader.js";
+import { CCDIKSolver } from 'https://cdn.jsdelivr.net/npm/three@0.152.2/examples/jsm/animation/CCDIKSolver.js';
+
 import { ViewportGizmo } from 'https://cdn.jsdelivr.net/npm/three-viewport-gizmo@0.1.5/+esm'
+//import { SkinnedMesh } from "three/src/Three.js";
 
 class InfiniteGridHelper extends THREE.GridHelper {
     constructor(size1, size2, color1, color2) {
@@ -347,7 +350,7 @@ function init() {
 
     scene = new THREE.Scene();
     // scene.background = new THREE.Color(0xa0a0a0);
-   // scene.background = new THREE.Color(0x111111);
+    // scene.background = new THREE.Color(0x111111);
     // add transparent background
     scene.background = null;
 
@@ -442,13 +445,16 @@ function init() {
 
         mixer = new THREE.AnimationMixer(object);
         // console.log(mixer);
-        
+
         model.traverse(function (child) {
             // console.log(child);
+            if (child.isSkinnedMesh) {
+                skinnedMesh = child;
+            }
             if (child.name === "mmHead") {
                 child.traverse(function (child1) {
                     child1.scale.set(.9, .85, .67);
-                   // if(child1.material.map) child1.material.map.anisotropy = 1;
+                    // if(child1.material.map) child1.material.map.anisotropy = 1;
 
                 });
 
@@ -460,7 +466,7 @@ function init() {
             }
             //console.log(child.name);
         });
-        
+
 
         scene.add(model);
 
@@ -481,7 +487,7 @@ function init() {
 
     container.appendChild(renderer.domElement);
 
-  
+
     // default face 
 
     const ktx2Loader = new KTX2Loader()
@@ -519,21 +525,21 @@ function init() {
 
             controls.update();
 
-/*
-            viewportGizmo = new ViewportGizmo(camera, renderer, {
-                placement: 'top-center'
-            });
-            viewportGizmo.target = controls.target;
-    
-            // listeners
-            viewportGizmo.addEventListener("start", () => (controls.enabled = false));
-            viewportGizmo.addEventListener("end", () => (controls.enabled = true));
-        
-            controls.addEventListener("change", () => {
-                viewportGizmo.update();
-            });
-            */
-        
+            /*
+                        viewportGizmo = new ViewportGizmo(camera, renderer, {
+                            placement: 'top-center'
+                        });
+                        viewportGizmo.target = controls.target;
+                
+                        // listeners
+                        viewportGizmo.addEventListener("start", () => (controls.enabled = false));
+                        viewportGizmo.addEventListener("end", () => (controls.enabled = true));
+                    
+                        controls.addEventListener("change", () => {
+                            viewportGizmo.update();
+                        });
+                        */
+
 
             document.getElementById("splashScreen").style.transition = "opacity 2s";
 
@@ -546,11 +552,11 @@ function init() {
 }
 
 
-function debounce(func, time){
+function debounce(func, time) {
     var time = time || 100; // 100 by default if no param
     var timer;
-    return function(event){
-        if(timer) clearTimeout(timer);
+    return function (event) {
+        if (timer) clearTimeout(timer);
         timer = setTimeout(func, time, event);
     };
 }
@@ -561,10 +567,10 @@ window.addEventListener("resize", onWindowResize);
 
 function onWindowResize() {
     var x = 0;
-    if($("body").hasClass("settings-open")) x = 420;
-    camera.aspect = (window.innerWidth-x) / window.innerHeight;
+    if ($("body").hasClass("settings-open")) x = 420;
+    camera.aspect = (window.innerWidth - x) / window.innerHeight;
     camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth-x, window.innerHeight);
+    renderer.setSize(window.innerWidth - x, window.innerHeight);
 }
 
 //
@@ -640,7 +646,7 @@ function animate() {
 
     renderer.render(scene, camera);
 
-    if(viewportGizmo)
+    if (viewportGizmo)
         viewportGizmo.render();
 
     // stats.update();
