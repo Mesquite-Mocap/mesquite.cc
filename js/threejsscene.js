@@ -276,8 +276,7 @@ import { GLTFLoader } from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.
 import { KTX2Loader } from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc/build/KTX2Loader.js";
 import { MeshoptDecoder } from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc@latest/build/meshopt_decoder.module.js";
 import { BVHLoader } from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc@latest/build-static/BVHLoader.js";
-import { CCDIKSolver } from 'https://cdn.jsdelivr.net/npm/three@0.152.2/examples/jsm/animation/CCDIKSolver.js';
-
+import { CCDIKSolver } from 'https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc@latest/build-static/CCDIKSolver.js';
 import { ViewportGizmo } from 'https://cdn.jsdelivr.net/npm/three-viewport-gizmo@0.1.5/+esm'
 //import { SkinnedMesh } from "three/src/Three.js";
 
@@ -450,6 +449,16 @@ function init() {
             // console.log(child);
             if (child.isSkinnedMesh) {
                 skinnedMesh = child;
+                let iks = [];
+                ikSolver = new CCDIKSolver(skinnedMesh, {
+                    name: "CCDIK",
+                    iterations: 10,
+                    minAngle: 0.01,
+                    maxAngle: 1.5,
+                    minDistance: 0.01,
+                    maxDistance: 1.5
+                });
+
             }
             if (child.name === "mmHead") {
                 child.traverse(function (child1) {
@@ -643,6 +652,9 @@ function animate() {
 
     //grid.update(camera);
 
+    if(ikSolver) {
+        ikSolver.update();
+    }
 
     renderer.render(scene, camera);
 
