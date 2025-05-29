@@ -669,6 +669,7 @@ function handleWSMessage(obj) {
     // console.log(sensorPosition);
 
     const hipsBone = model.getObjectByName(rigPrefix + "Hips");
+    
     /*
     hipsBone.position.set(
       kfx.filter(sensorPosition.x),
@@ -676,11 +677,14 @@ function handleWSMessage(obj) {
       -kfz.filter(sensorPosition.z)
     );
     */
+    
+   
     hipsBone.position.set(
       sensorPosition.x,
       sensorPosition.y,
       sensorPosition.z
     );
+    
     updateTrackingLine(hipsBone.position);
   }
 
