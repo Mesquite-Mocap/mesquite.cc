@@ -682,7 +682,7 @@ function handleWSMessage(obj) {
     hipsBone.position.set(
       sensorPosition.x,
       sensorPosition.y,
-      sensorPosition.z
+      -sensorPosition.z
     );
     
     updateTrackingLine(hipsBone.position);
