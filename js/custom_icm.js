@@ -373,6 +373,7 @@ function handleWSMessage(obj) {
     var hipsQ = new THREE.Quaternion(obj.x, obj.y, obj.z, obj.w).normalize();
     var hipsQinverse = new THREE.Quaternion().copy(hipsQ).invert();
     var hipsCorrection = new THREE.Quaternion().copy(hipsQinverse).multiply(leftuplegQ).normalize();
+    
 
     x.quaternion.slerp(hipsCorrection, slerpDict[bone] || slerpFactor);
 
