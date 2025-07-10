@@ -291,7 +291,7 @@ function handleWSMessage(obj) {
   newBatt *= 9;
   */
   var newBatt = parseFloat(obj.batt || 0) * 100;
-  newBatt = Math.min(100, Math.max(0, newBatt));
+  newBatt = Math.min(100, Math.max(0, newBatt)).toFixed(0);
 
 
   var battClass = "";
@@ -325,7 +325,7 @@ function handleWSMessage(obj) {
   }
 
   var bc = new THREE.Quaternion(mac2Bones[bone].bcalibration.x, mac2Bones[bone].bcalibration.y, mac2Bones[bone].bcalibration.z, mac2Bones[bone].bcalibration.w);
-  const slerpFactor = .40; // range: 0.0 to 1.0
+  const slerpFactor = .24; // range: 0.0 to 1.0
 
 
 
@@ -439,7 +439,7 @@ function handleWSMessage(obj) {
     x.quaternion.slerp(hipCorrection, slerpDict[bone] || slerpFactor);
 
     setLocal(bone, hipCorrection.x, hipCorrection.y, hipCorrection.z, hipCorrection.w);
-    setGlobal(bone, spineQ.x, spineQ.y, spineQ.z, spineQ.w);
+    setGlobal(bone, headQ.x, headQ.y, headQ.z, headQ.w);
   }
 
   if (bone == "LeftArm") {
