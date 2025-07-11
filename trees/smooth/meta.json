@@ -1,0 +1,100 @@
+{
+      "id": "velvet",
+      "name": "Smooth Mesquite: tft screen version",
+      "Spine": {
+        "axis": {
+          "order": "XZY",
+          "sign": "++-"
+        }
+      },
+      "Hips": {
+        "axis": {
+          "order": "XYZ",
+          "sign": "-+-"
+        }
+      },
+      "HipsAlt": {
+        "axis": {
+          "order": "YZX",
+          "sign": "+++"
+        }
+      },
+      "Head": {
+        "axis": {
+          "order": "YZX",
+          "sign": "+++"
+        }
+      },
+      "LeftArm": {
+        "axis": {
+          "order": "YZX",
+          "sign": "+++"
+        }
+      },
+      "RightArm": {
+        "axis": {
+          "order": "YZX",
+          "sign": "+++"
+        }
+      },
+      "LeftForeArm": {
+        "axis": {
+          "order": "YZX",
+          "sign": "+++"
+        }
+      },
+      "RightForeArm": {
+        "axis": {
+          "order": "YZX",
+          "sign": "+++"
+        }
+      },
+      "LeftUpLeg": {
+        "axis": {
+          "order": "YZX",
+          "sign": "+++"
+        }
+      },
+      "RightUpLeg": {
+        "axis": {
+          "order": "YZX",
+          "sign": "+++"
+        }
+      },
+      "LeftLeg": {
+        "axis": {
+          "order": "YZX",
+          "sign": "+++"
+        }
+      },
+      "RightLeg": {
+        "axis": {
+          "order": "YZX",
+          "sign": "+++"
+        }
+      },
+      "LeftFoot": {
+        "axis": {
+          "order": "YZX",
+          "sign": "+++"
+        }
+      },
+      "RightFoot": {
+        "axis": {
+          "order": "YZX",
+          "sign": "+++"
+        }
+      },
+      "LeftHand": {
+        "axis": {
+          "order": "YZX",
+          "sign": "+++"
+        }
+      },
+      "RightHand": {
+        "axis": {
+          "order": "YZX",
+          "sign": "+++"
+        }
+      }
+  }

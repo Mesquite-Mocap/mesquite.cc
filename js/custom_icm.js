@@ -550,7 +550,7 @@ function handleWSMessage(obj) {
     var rightforearmQinverse = new THREE.Quaternion().copy(rightforearmQ).invert();
     var righthandCorrection = new THREE.Quaternion().copy(rightforearmQinverse).multiply(righthandQ).normalize();
 
-    console.log(righthandCorrection);
+   // console.log(righthandCorrection);
 
     x.quaternion.slerp(righthandCorrection, slerpDict[bone] || slerpFactor);
 
