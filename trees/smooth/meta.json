@@ -87,8 +87,8 @@
       },
       "LeftHand": {
         "axis": {
-          "order": "YZX",
-          "sign": "+++"
+          "order": "XZY",
+          "sign": "-++"
         }
       },
       "RightHand": {
