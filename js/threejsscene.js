@@ -329,7 +329,11 @@ for (let i = 0; i < keys.length; i++) {
 function init() {
     // init modal
     var elems = document.querySelectorAll('.modal');
-    var instances = M.Modal.init(elems, {});
+    var instances = M.Modal.init(elems, {onCloseStart: function () {
+        if (manageModal) {
+            closeSettings();
+        }
+    }});
     manageModal = instances[0];
 
 
