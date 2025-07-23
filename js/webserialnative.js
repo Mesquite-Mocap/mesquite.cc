@@ -121,7 +121,9 @@ function toggleUIConnected(connected) {
     if (connected) {
       lbl = 'Start Over <i class="material-icons right large">refresh</i>';
       $(butConnect).addClass('red white-text').removeClass('white black-text');
-      M.toast({ html: 'Connected to Dongle', classes: 'green text-enter' });
+      M.Toast.dismissAll();
+      M.toast({ html: 'Connected to Dongle', classes: 'green toastheader' });
+      M.toast({ html: 'Continue with BOX CALIBRATION. Check your pod stats in BRANCHES.', classes: '' });
     }
     else {
       window.location.reload();

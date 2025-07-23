@@ -416,20 +416,22 @@ function init() {
 
 
     const circleMaterial = new THREE.MeshBasicMaterial({ color: 0xffeb3b, transparent: true, opacity: 0.9, side: THREE.DoubleSide });
-    const circle = new THREE.Mesh(circleGeometry, circleMaterial);
+    circle = new THREE.Mesh(circleGeometry, circleMaterial);
     circle.rotation.x = - Math.PI / 2;
     circle.position.y = .5;
     circle.position.z = 5;
+    circle.scale.set(.0001, .0001, .0001);
 
     scene.add(circle);
 
     // white circle border
     const circleGeometry2 = new THREE.CircleGeometry(10, 32);
     const circleMaterial2 = new THREE.MeshBasicMaterial({ color: 0x343434, side: THREE.DoubleSide });
-    const circle2 = new THREE.Mesh(circleGeometry2, circleMaterial2);
+    circle2 = new THREE.Mesh(circleGeometry2, circleMaterial2);
     circle2.rotation.x = - Math.PI / 2;
     circle2.position.y = .4;
     circle2.position.z = 5;
+    circle2.scale.set(.0001, .0001, .0001);
     scene.add(circle2);
 
     var glbLoader = new GLTFLoader();
@@ -442,9 +444,8 @@ function init() {
         model.children[0].children[1].material.metalness = 1;
         model.children[0].children[1].material.roughness = 0.5;
 
-        if (zoomLevel) {
-            object.scale.multiplyScalar(zoomLevel);
-        }
+        model.scale.set(.00001, .00001, .00001);
+
 
         mixer = new THREE.AnimationMixer(object);
         // console.log(mixer);
@@ -520,9 +521,8 @@ function init() {
             scene.add(facemesh);
 
 
-            facemesh.scale.set(10, 9.5, 7.7);
-            //facemesh.scale.set(120, 120, 92);
 
+            facemesh.scale.set(.0001, .0001, .0001);
 
             facemesh.rotation.set(0, 0, 0);
 
@@ -554,6 +554,8 @@ function init() {
                         */
 
 
+            M.toast({ html: "Welcome to MESQUITE.cc !", displayLength: 500000, classes: "green toastheader" });
+            M.toast({ html: "Connect and LINK DONGLE to continue.", displayLength: 500000, classes: "" });
             document.getElementById("splashScreen").style.transition = "opacity 2s";
 
             document.getElementById("splashScreen").style.opacity = "0";

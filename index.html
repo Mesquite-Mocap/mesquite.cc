@@ -19,9 +19,11 @@
   <style>
     #toast-container {
       position: fixed;
-      top: 50vh;
+      top: 0%;
       left: 50vw;
-      transform: translate(-50%, -50%);
+      transform: translate(-50%, 0%);
+      min-width: 50%;
+      max-width: 700px;
     }
     @font-face {
       font-family: 'Material Icons';
@@ -215,6 +217,7 @@ var slerpDict = {
       zoomLevel = parseFloat(zoomLevel);
     }
     var model;
+    var circle, circle2;
     var animation;
     var animationDuration;
     let camera_bvh, controls_bvh, scene_bvh, renderer_bvh;
