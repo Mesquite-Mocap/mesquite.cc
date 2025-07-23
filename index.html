@@ -14,9 +14,16 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/kalmanjs@1.1.0/lib/kalman.min.js"></script>
   <script src="js/moment.min.js "></script>
+    <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+  />
 
   <title> MESQUITE.cc </title>
   <style>
+    .toast.green{
+      text-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
+    }
     #toast-container {
       position: fixed;
       top: 0%;
@@ -46,6 +53,13 @@
       direction: ltr;
       -moz-font-feature-settings: 'liga';
       -moz-osx-font-smoothing: grayscale;
+    }
+    
+    .animate__repeat-5 {
+      animation-iteration-count: 5;
+    }   
+    .animate__repeat-10 {
+      animation-iteration-count: 10;
     }
   </style>
 </head>
@@ -327,7 +341,7 @@ var slerpDict = {
   </button>
 
 
-  <button id='linkPods' class="main btn waves-effect waves-light white black-text">Link Dongle
+  <button id='linkPods' class="main btn waves-effect waves-light white black-text animate__animated animate__pulse animate__delay-2s animate__repeat-10">Link Dongle
     <i style='font-size:200%;vertical-align:middle' class="material-icons left">looks_one</i>
   </button>
 
