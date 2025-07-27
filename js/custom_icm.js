@@ -882,7 +882,7 @@ var boneSelectMarkup =
 
 function restartPods() {
   M.Toast.dismissAll();
-  M.toast({ html: 'Please wear the pods and get in a T-pose for 30 seconds.<br> <button class="btn-flat toast-action green" style="margin-right:20px" onclick="M.Toast.dismissAll();restartPodsConfirm()">Continue</button>', classes: 'yellow black-text', displayLength: 10000 });
+  M.toast({ html: 'Please wear the pods and get in a T-pose for 30 seconds.<br> <button class="btn-flat toast-action green" style="margin-right:20px" onclick="M.Toast.dismissAll();restartPodsConfirm()">Continue</button>', classes: 'yellow black-text toastheader', displayLength: 10000 });
 }
 function restartPodsConfirm() {
   $("#restartPods").prop('disabled', true);
@@ -914,7 +914,9 @@ function restartPodsConfirm() {
 function calibratein5() {
   M.Toast.dismissAll();
   M.toast({ html: 'T-Pose Calibration', classes: 'white black-text toastheader', displayLength: 10000 });
-  M.toast({ html: 'Please wear the pods and get in a T-pose for 5 seconds.<br> <button class="btn-flat toast-action green" style="margin-right:20px" onclick="M.Toast.dismissAll();calibratein5Confirm()">Start</button>', classes: 'yellow black-text', displayLength: 10000 });
+  M.toast({ html: 'Please wear the pods and get in a T-pose for 5 seconds.<br> <button class="btn-flat toast-action green black-text" style="margin-right:20px" onclick="M.Toast.dismissAll();calibratein5Confirm()">Start</button>', classes: 'yellow black-text toastheader', displayLength: 10000 });
+    M.toast({ html: "<img style='height:60vh;margin:auto' src='icons/t-pose.png'>", displayLength: 10000, classes: "" });
+
 }
 
 function quickBoxCalibrate() {
@@ -986,7 +988,7 @@ function boxCalibratein30Confirm() {
 
 function calibratein5Confirm() {
   $("#calibratein5").prop('disabled', true);
-  M.toast({ html: '<ul><li>Please get in a T-pose and  wait for <span class="secs" style="font-size:200%;font-weight:bold">5 seconds</span>.</li><li>When done the T-Pose* will be set.</li><li><sub>* You can click on "Set T-Pose" button to do this at anytime.</sub></li>', classes: 'yellow black-text', displayLength: 5 * 1000 });
+  M.toast({ html: '<ul><li>Please get in a T-pose and  wait for <span class="secs" style="font-size:200%;font-weight:bold">5 seconds</span>.</li><li>When done the T-Pose* will be set.</li><img style="height:60vh;display:block;margin:auto" src="icons/t-pose.png"><li><sub>* You can click on "Set T-Pose" button to do this at anytime.</sub></li>', classes: 'yellow black-text', displayLength: 5 * 1000 });
   setTimeout(function () {
     calibrate();
     $("#calibratein5").prop('disabled', false);
