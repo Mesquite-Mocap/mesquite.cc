@@ -3,24 +3,24 @@ let port = null;
 const butConnect = document.getElementById('linkPods');
 
 document.addEventListener('DOMContentLoaded', () => {
-    butConnect.addEventListener('click', toggleConnect);
-  
-    if (!('serial' in navigator)) {
-      alert("Web Serial not supported. Please use Chrome 78+");
-    }
-  
-  });
+  butConnect.addEventListener('click', toggleConnect);
+
+  if (!('serial' in navigator)) {
+    M.toast({ html: "Web serial is not supported<a class='btn green black-text' target='_blank' href='https://caniuse.com/web-serial'>Learn more </a>", displayLength: 500000, classes: "red black-text" });
+
+  }
+
+});
 
 
-async function connectToPort(port)
-{
-   port = port || await navigator.serial.requestPort();
-   window.port = port;
-  if(!port){
+async function connectToPort(port) {
+  port = port || await navigator.serial.requestPort();
+  window.port = port;
+  if (!port) {
     console.log("No port selected");
     return;
   }
-  
+
 
   var options = { baudRate: 115200 };
 
@@ -56,15 +56,15 @@ async function connectToPort(port)
         if (line.includes("\n")) {
           var txt = line.split("\n")[0];
           txt = txt.trim().replace('"bone":"Hips"125', '"bone":"Hips"}');
-         // console.log(txt);
-          try{
+          // console.log(txt);
+          try {
             var l = JSON.parse(txt);
             handleWSMessage(l);
-          }catch(e){
+          } catch (e) {
             console.error(e);
           }
           line = line.slice(line.indexOf("\n") + 1);
-          
+
         }
       }
     } catch (e) {
@@ -75,11 +75,10 @@ async function connectToPort(port)
     }
   }
 
-  
+
 }
 
-function toggleConnect()
-{
+function toggleConnect() {
   if ($("body").hasClass("connected")) {
     window.location.reload();
   } else {
@@ -87,9 +86,8 @@ function toggleConnect()
   }
 }
 
-function writeToPort(data)
-{
-    var port = window.port;
+function writeToPort(data) {
+  var port = window.port;
   if (!port || !port.writable) {
     console.error("Port is not writable");
     return;
@@ -101,38 +99,39 @@ function writeToPort(data)
 }
 
 window.sWrite = function (data) {
-    writeToPort(data);
+  writeToPort(data);
 }
 
 navigator.serial.addEventListener("connect", (e) => {
-    console.log("A serial port has been connected to the system: ", e);
-    port = e.target;    
+  console.log("A serial port has been connected to the system: ", e);
+  port = e.target;
 
-    // check if port matches the one in localStorage
+  // check if port matches the one in localStorage
 
-    console.log(port.getInfo().usbProductId);
-    if (port.getInfo().usbProductId == localStorage.getItem("port")) {
-        connectToPort(port);
-    }
+  console.log(port.getInfo().usbProductId);
+  if (port.getInfo().usbProductId == localStorage.getItem("port")) {
+    connectToPort(port);
+  }
 });
 
 function toggleUIConnected(connected) {
-    let lbl = 'Link Pods <i class="material-icons left">settings_ethernet</i>';
-    if (connected) {
-      lbl = 'Start Over <i class="material-icons right large">refresh</i>';
-      $(butConnect).addClass('red white-text').removeClass('white black-text');
-      M.Toast.dismissAll();
-      M.toast({ html: 'Connected to Dongle', classes: 'green toastheader' });
-      M.toast({ html: 'Continue with BOX CALIBRATION. Check your pod stats in BRANCHES.', classes: '' });
-    }
-    else {
-      window.location.reload();
-    }
-    butConnect.innerHTML = lbl;
+  let lbl = 'Link Pods <i class="material-icons left">settings_ethernet</i>';
+  if (connected) {
+    lbl = 'Start Over <i class="material-icons right large">refresh</i>';
+    $(butConnect).addClass('red white-text').removeClass('white black-text');
+    M.Toast.dismissAll();
+    M.toast({ html: 'Connected to Dongle', classes: 'green toastheader', displayLength: 500000 });
+    M.toast({ html: "<p style='margin-right:20px;margin-top:0;margin-bottom:auto'>Continue with BOX CALIBRATION. Check your pod stats using the PODS button (top-right of the screen).</p><img style='width:80%' src='icons/bc.gif'>", displayLength: 500000, classes: "" });
+    $("#linkPods").removeClass("animate__pulse animate__infinite");
   }
-
-
-  navigator.serial.addEventListener("disconnect", (e) => {
-    console.log("A serial port has been disconnected: ", e);
+  else {
     window.location.reload();
-  });
+  }
+  butConnect.innerHTML = lbl;
+}
+
+
+navigator.serial.addEventListener("disconnect", (e) => {
+  console.log("A serial port has been disconnected: ", e);
+  window.location.reload();
+});

@@ -312,8 +312,8 @@ var slerpDict = {
 
 
 
-  <button id='calibratein5' onclick='calibratein5()' style='right:0;bottom:0; position: absolute'
-    class="auxButton main btn waves-effect waves-light white black-text large">
+  <button id='calibratein5' onclick='calibratein5()' style='right:0;bottom:0; position: absolute; display:none;'
+    class="animate__animated animate__jello animate__delay-1s animate__infinite auxButton main btn waves-effect waves-light white black-text large">
     <i class="material-icons looks_3" style="vertical-align:middle;font-size:200%">looks_3</i>
     Set
     <i class="material-icons " style="vertical-align:middle;font-size:200%">accessibility</i> Pose
@@ -321,13 +321,13 @@ var slerpDict = {
 
 
   <button id='boxcalibratein30' onclick='boxCalibrateIn30()' style='right:0;bottom:0; position: absolute'
-    class="auxButton main btn waves-effect waves-light white black-text large">
+    class="auxButton main btn waves-effect waves-light white black-text large animate__animated animate__headShake animate__delay-2s animate__infinite">
     <i class="material-icons " style="vertical-align:middle;font-size:200%">looks_two</i> Box Calibrate
   </button>
 
 
-  <button id="recordButton" style="position:absolute; left:0; bottom:0px; z-index: 1;"
-    class="auxButton main btn waves-effect waves-light green black-text large" onclick="toggleRecording()">
+  <button id="recordButton" style="position:absolute; left:0; bottom:0px; z-index: 1;display:none; animation-iteration-count: 10;"
+    class="animate__animated animate__pulse animate__delay-1s auxButton main btn waves-effect waves-light green black-text large" onclick="toggleRecording()">
     <i class="material-icons" style="vertical-align:middle;font-size:200%">fiber_manual_record</i>
     Record BVH
   </button>
@@ -341,13 +341,13 @@ var slerpDict = {
   </button>
 
 
-  <button id='linkPods' class="main btn waves-effect waves-light white black-text animate__animated animate__pulse animate__delay-2s animate__repeat-10">Link Dongle
+  <button id='linkPods' class="main btn waves-effect waves-light white black-text animate__animated animate__pulse animate__delay-1s animate__infinite">Link Dongle
     <i style='font-size:200%;vertical-align:middle' class="material-icons left">looks_one</i>
   </button>
 
 
   <button onclick="settingsOpen()" id='settingsButton' style='position:fixed;right:0;top:0'
-    class="auxButton main btn waves-effect waves-light white black-text large">Branches <span id='podCount'
+    class="auxButton main btn waves-effect waves-light white black-text large animate__animated animate__tada animate__delay-1s animate__infinite">Pods  <span id='podCount'
       class="chip podCount">0</span>
     <i style='font-size:200%;vertical-align:middle' class="material-icons left">widgets</i>
   </button>

@@ -146,6 +146,8 @@ function calibrate() {
   M.toast({ html: "T-Pose Set!", displayLength: 5000, classes: "green toastheader" });
   M.toast({ html: "Good luck with your capture! Don't forget to record it.", displayLength: 5000, classes: "" });
 
+  $("#calibratein5").removeClass("animate__infinite");
+  $("#recordButton").fadeIn();
   facemesh.scale.set(10, 9.5, 7.7);
   model.scale.set(1, 1, 1);
   circle.scale.set(1, 1, 1);
@@ -164,6 +166,8 @@ function boxCalibrate() {
     mac2Bones[keys[i]].bcalibration.w = mac2Bones[keys[i]].last.w;
   }
   $("#boxCDiv").fadeIn();
+  $("#calibratein5").fadeIn();
+  $("#settingsButton").removeClass("animate__infinite");
  // getBoxCalibration();
 }
 
@@ -928,12 +932,17 @@ function skipBoxCalibrate() {
   M.toast({ html: 'You can now wear the pods and proceed with T-Pose calibration.', classes: 'white black-text', displayLength: 5000 });
   $("#boxcalibratein30").remove();
   $("#boxCDiv").fadeIn();
+    $("#calibratein5").fadeIn();
+      $("#settingsButton").removeClass("animate__infinite");
+
 }
 
 function boxCalibrateIn30() {
   M.Toast.dismissAll();
   M.toast({ html: 'BOX CALIBRATION', classes: 'white black-text toastheader', displayLength: 10000 });
   M.toast({ html: ' Please keep all pods turned on and on the calibration plate...<button class="btn-flat toast-action green" style="margin:4px" onclick="M.Toast.dismissAll();boxCalibratein30Confirm()">Start</button><button class="btn-flat toast-action blue" style="margin:4px" onclick="M.Toast.dismissAll();quickBoxCalibrate()">Quick</button><button class="btn-flat toast-action black" style="margin:4px" onclick="M.Toast.dismissAll();skipBoxCalibrate()">Skip</button><button class="btn-flat toast-action red" style="margin:4px" onclick="M.Toast.dismissAll()">Cancel</button>', classes: 'yellow black-text', displayLength: 10000 });
+    $("#boxCalibrateIn30").removeClass("animate__infinite");
+
 }
 
 function boxCalibratein30Confirm() {
@@ -1037,6 +1046,7 @@ function settingsOpen() {
 
 
   renderer.setSize(window.innerWidth - 400, window.innerHeight);
+  $("#settingsButton").removeClass("animate__infinite");
 }
 
 function closeSettings() {

@@ -555,7 +555,7 @@ function init() {
 
 
             M.toast({ html: "Welcome to MESQUITE.cc !", displayLength: 500000, classes: "green toastheader" });
-            M.toast({ html: "<p style='margin-right:20px'>Plug in and LINK DONGLE to continue.</p><img style='height:300px' src='icons/dongle.gif'>", displayLength: 500000, classes: "" });
+            M.toast({ html: "<p style='margin-right:20px;margin-top:0;margin-bottom:auto'>Plug in and LINK DONGLE to continue.</p><img style='height:80vh' src='icons/dongle.gif'>", displayLength: 500000, classes: "" });
             document.getElementById("splashScreen").style.transition = "opacity 2s";
 
             document.getElementById("splashScreen").style.opacity = "0";
