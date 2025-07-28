@@ -24,7 +24,19 @@
     .toast.green{
       text-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
     }
+    .toast{
+      overflow-y: hidden;
+    }
     #toast-container {
+      position: fixed;
+      top: 50vh;
+      left: 50vw;
+      transform: translate(-50%, -50%);
+      min-width: 50%;
+      max-width: 700px;
+    }
+
+    #toast-container.up {
       position: fixed;
       top: 0%;
       left: 50vw;
