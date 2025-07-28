@@ -143,8 +143,7 @@ function calibrate() {
   line_tracker = [];
 
   M.Toast.dismissAll();
-  M.toast({ html: "T-Pose Set!", displayLength: 5000, classes: "green toastheader" });
-  M.toast({ html: "Good luck with your capture! Don't forget to record it.", displayLength: 5000, classes: "" });
+
 
   $("#calibratein5").removeClass("animate__infinite");
   $("#toast-container").addClass("up");
@@ -155,6 +154,8 @@ function calibrate() {
   circle2.scale.set(1, 1, 1);
 
   $(".looks_3").remove();
+    M.toast({ html: "T-Pose Set!", displayLength: 5000, classes: "green toastheader" });
+  M.toast({ html: "Good luck with your capture! Don't forget to record it.", displayLength: 5000, classes: "" });
 }
 
 
