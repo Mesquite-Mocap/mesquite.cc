@@ -915,7 +915,7 @@ function restartPodsConfirm() {
 function calibratein5() {
   M.Toast.dismissAll();
   M.toast({ html: 'T-Pose Calibration', classes: 'white black-text toastheader', displayLength: 1000000 });
-  M.toast({ html: 'Please wear the pods and get in a T-pose for 5 seconds.<br> <button class="btn-flat toast-action blue white-text" style="" onclick="M.Toast.dismissAll();calibratein5Confirm()">Start Timer</button><button class="btn-flat toast-action red white-text" style="margin-right:0" onclick="M.Toast.dismissAll();">Cancel</button>', classes: 'yellow black-text toastheader', displayLength: 1000000 });
+  M.toast({ html: 'Please wear the pods and get in a T-pose for 5 seconds.<br> <button class="btn-flat toast-action blue white-text" style="width:400px" onclick="M.Toast.dismissAll();calibratein5Confirm()">Start Timer</button><button class="btn-flat toast-action red white-text" style="margin-right:0" onclick="M.Toast.dismissAll();">Cancel</button>', classes: 'yellow black-text toastheader', displayLength: 1000000 });
     M.toast({ html: "<img style='width:100%;margin:auto' src='icons/t-pose.png'>", displayLength: 1000000, classes: "" });
 
 }
