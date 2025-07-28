@@ -883,7 +883,7 @@ var boneSelectMarkup =
 
 function restartPods() {
   M.Toast.dismissAll();
-  M.toast({ html: 'Please wear the pods and get in a T-pose for 30 seconds.<br> <button class="btn-flat toast-action green" style="margin-right:20px" onclick="M.Toast.dismissAll();restartPodsConfirm()">Continue</button>', classes: 'yellow black-text toastheader', displayLength: 10000 });
+  M.toast({ html: 'Please wear the pods and get in a T-pose for 30 seconds.<br> <button class="btn-flat toast-action green" style="margin-right:20px" onclick="M.Toast.dismissAll();restartPodsConfirm()">Continue</button>', classes: 'yellow black-text toastheader', displayLength: 1000000 });
 }
 function restartPodsConfirm() {
   $("#restartPods").prop('disabled', true);
@@ -915,8 +915,8 @@ function restartPodsConfirm() {
 function calibratein5() {
   M.Toast.dismissAll();
   M.toast({ html: 'T-Pose Calibration', classes: 'white black-text toastheader', displayLength: 10000 });
-  M.toast({ html: 'Please wear the pods and get in a T-pose for 5 seconds.<br> <button class="btn-flat toast-action green black-text" style="margin-right:20px" onclick="M.Toast.dismissAll();calibratein5Confirm()">Start</button>', classes: 'yellow black-text toastheader', displayLength: 10000 });
-    M.toast({ html: "<img style='width:100%;margin:auto' src='icons/t-pose.png'>", displayLength: 10000, classes: "" });
+  M.toast({ html: 'Please wear the pods and get in a T-pose for 5 seconds.<br> <button class="btn-flat toast-action blue white-text" style="" onclick="M.Toast.dismissAll();calibratein5Confirm()">Start</button><button class="btn-flat toast-action red white-text" style="margin-right:0" onclick="M.Toast.dismissAll();">Cancel</button>', classes: 'yellow black-text toastheader', displayLength: 1000000 });
+    M.toast({ html: "<img style='width:100%;margin:auto' src='icons/t-pose.png'>", displayLength: 1000000, classes: "" });
 
 }
 
@@ -924,7 +924,7 @@ function quickBoxCalibrate() {
   boxCalibrate();
   //M.Toast.dismissAll();
   M.toast({ html: 'Box Calibration values saved!', classes: 'blue black-text toastheader', displayLength: 5000 });
-  M.toast({ html: 'You can now wear the pods and proceed with T-Pose calibration.', classes: 'white black-text', displayLength: 5000 });
+  M.toast({ html: 'You can now wear the pods and proceed with T-Pose calibration.<img style="width:80%;display:block;margin:auto" src="icons/t-pose.png">', classes: 'white black-text', displayLength: 5000 });
   $("#boxcalibratein30").remove();
   $("#boxCDiv").fadeIn();
 }
@@ -932,7 +932,7 @@ function quickBoxCalibrate() {
 
 function skipBoxCalibrate() {
   M.toast({ html: 'Box Calibration skipped!', classes: 'red white-text toastheader', displayLength: 5000 });
-  M.toast({ html: 'You can now wear the pods and proceed with T-Pose calibration.', classes: 'white black-text', displayLength: 5000 });
+  M.toast({ html: 'You can now wear the pods and proceed with T-Pose calibration.<img style="width:80%;display:block;margin:auto" src="icons/t-pose.png">', classes: 'white black-text', displayLength: 5000 });
   $("#boxcalibratein30").remove();
   $("#boxCDiv").fadeIn();
     $("#calibratein5").fadeIn();
@@ -965,7 +965,7 @@ function boxCalibratein30Confirm() {
     boxCalibrate();
     M.Toast.dismissAll();
     M.toast({ html: 'Box Calibration done!', classes: 'green black-text toastheader', displayLength: 5000 });
-    M.toast({ html: 'You can now wear the pods and proceed with T-Pose calibration.', classes: 'white black-text', displayLength: 5000 });
+    M.toast({ html: 'You can now wear the pods and proceed with T-Pose calibration.<img style="width:80%;display:block;margin:auto" src="icons/t-pose.png">', classes: 'white black-text', displayLength: 5000 });
     $("#boxcalibratein30").remove();
   }, tSec * 1000);
 
