@@ -938,14 +938,14 @@ function skipBoxCalibrate() {
   $("#boxCDiv").fadeIn();
     $("#calibratein5").fadeIn();
       $("#settingsButton").removeClass("animate__infinite");
-      getBoxCalibration();
+     // getBoxCalibration();
 
 }
 
 function boxCalibrateIn30() {
   M.Toast.dismissAll();
   M.toast({ html: 'BOX CALIBRATION', classes: 'white black-text toastheader', displayLength: 1000000 });
-  M.toast({ html: ' Please keep all pods turned on and on the calibration plate...<button class="btn-flat toast-action green" style="margin:4px" onclick="M.Toast.dismissAll();boxCalibratein30Confirm()">Start</button><button class="btn-flat toast-action blue" style="margin:4px" onclick="M.Toast.dismissAll();quickBoxCalibrate()">Quick</button><button class="btn-flat toast-action black" style="margin:4px" onclick="M.Toast.dismissAll();skipBoxCalibrate()">Skip</button><button class="btn-flat toast-action red" style="margin:4px" onclick="M.Toast.dismissAll()">Cancel</button>', classes: 'yellow black-text', displayLength: 1000000 });
+  M.toast({ html: ' Please keep all pods turned on and on the calibration plate...<button class="btn-flat toast-action green white-text" style="margin:4px" onclick="M.Toast.dismissAll();boxCalibratein30Confirm()">Start</button><button class="btn-flat toast-action blue white-text" style="margin:4px" onclick="M.Toast.dismissAll();quickBoxCalibrate()">Quick</button><button class="btn-flat toast-action red white-text" style="margin:4px" onclick="M.Toast.dismissAll();skipBoxCalibrate()">Skip</button>', classes: 'yellow black-text', displayLength: 1000000 });
     $("#boxcalibratein30").removeClass("animate__infinite");
 
 }
