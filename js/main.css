@@ -106,7 +106,7 @@ a.btn.main i{
 	top: 0 !important;
 	padding: 0 !important;
 	overflow-x:hidden!important;
-	z-index: 100;
+	z-index: 1000000!important;
 }
 
 .podName{

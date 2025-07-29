@@ -699,8 +699,9 @@ function handleWSMessage(obj) {
       sensorPosition.y,
       -sensorPosition.z
     );
-    
-    updateTrackingLine(hipsBone.position);
+    if(!$("body").hasClass("up")) {
+      updateTrackingLine(hipsBone.position);
+    }
   }
 
 
