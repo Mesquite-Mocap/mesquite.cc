@@ -142,11 +142,9 @@ function calibrate() {
   calibrated = true;
   line_tracker = [];
 
-  M.Toast.dismissAll();
 
 
   $("#calibratein5").removeClass("animate__infinite");
-  $("#toast-container").addClass("up");
   $("#recordButton").fadeIn();
   facemesh.scale.set(10, 9.5, 7.7);
   model.scale.set(1, 1, 1);
@@ -154,8 +152,13 @@ function calibrate() {
   circle2.scale.set(1, 1, 1);
 
   $(".looks_3").remove();
+  $("body").addClass("up");
+
+  setTimeout(function () {
+      M.Toast.dismissAll();
     M.toast({ html: "T-Pose Set!", displayLength: 5000, classes: "green toastheader" });
   M.toast({ html: "Good luck with your capture! Don't forget to record it.", displayLength: 5000, classes: "" });
+  }, 500);
 }
 
 
