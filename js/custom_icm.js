@@ -975,8 +975,8 @@ function boxCalibratein30Confirm() {
   setTimeout(function () {
     boxCalibrate();
     M.Toast.dismissAll();
-    M.toast({ html: 'Box Calibration done!', classes: 'green black-text toastheader', displayLength: 5000 });
-    M.toast({ html: 'You can now wear the pods and proceed with T-Pose calibration.<img style="width:80%;display:block;margin:auto" src="icons/t-pose.png">', classes: 'white black-text', displayLength: 5000 });
+    M.toast({ html: 'Box Calibration done!', classes: 'green black-text toastheader', displayLength: 5000000 });
+    M.toast({ html: 'You can now wear the pods and proceed with T-Pose calibration.<img style="width:80%;display:block;margin:auto" src="icons/t-pose.png">', classes: 'white black-text', displayLength: 5000000 });
     $("#boxcalibratein30").remove();
     getBoxCalibration();
   }, tSec * 1000);
