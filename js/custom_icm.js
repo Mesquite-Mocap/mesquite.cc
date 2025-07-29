@@ -956,8 +956,8 @@ function skipBoxCalibrate() {
 
 function boxCalibrateIn30() {
   M.Toast.dismissAll();
-  M.toast({ html: 'BOX CALIBRATION OPTIONS', classes: 'white black-text toastheader', displayLength: 1000000 });
-  M.toast({ html: ' Please keep all pods turned on and on the calibration plate...<button class="btn-flat toast-action green white-text" style="margin:4px" onclick="M.Toast.dismissAll();boxCalibratein30Confirm()">Start</button><button class="btn-flat toast-action blue white-text" style="margin:4px" onclick="M.Toast.dismissAll();quickBoxCalibrate()">Quick</button><button class="btn-flat toast-action red white-text" style="margin:4px" onclick="M.Toast.dismissAll();skipBoxCalibrate()">Skip</button>', classes: ' blue-grey lighten-4 black-text', displayLength: 1000000 });
+  M.toast({ html: 'BOX CALIBRATION OPTIONS', classes: 'blue black-text toastheader', displayLength: 1000000 });
+  M.toast({ html: '<p>Please keep all pods turned on and on the calibration plate<sup>*</sup>... </p><button class="btn-flat toast-action green white-text" style="margin:4px" onclick="M.Toast.dismissAll();boxCalibratein30Confirm()">Start</button><button class="btn-flat toast-action blue white-text" style="margin:4px" onclick="M.Toast.dismissAll();quickBoxCalibrate()">Quick</button><button class="btn-flat toast-action red white-text" style="margin:4px" onclick="M.Toast.dismissAll();skipBoxCalibrate()">Skip</button><br><small style="position:absolute;bottom:10px;line-height:14px;"><sup>*</sup>Please refer to documentation for your particular Mesquite Tree (mocap suit) for more detailed instructions.</small>', classes: ' blue-grey lighten-4 black-text paddingb', displayLength: 1000000 });
 
   M.toast({ html: '<iframe style="width:100%;height:70vh;border:none;display:block;margin:auto" src="./trees/bc/wearguide"></iframe>', displayLength: 1000000, classes: "toastiframe" });
     $("#boxcalibratein30").removeClass("animate__infinite");

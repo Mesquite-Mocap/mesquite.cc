@@ -121,7 +121,7 @@ function toggleUIConnected(connected) {
     $(butConnect).addClass('red white-text').removeClass('white black-text');
     M.Toast.dismissAll();
     M.toast({ html: 'Connected to Dongle', classes: 'green toastheader', displayLength: 500000 });
-    M.toast({ html: "<p style='margin-right:20px;margin-top:0;margin-bottom:auto'>Continue with BOX CALIBRATION. Check your pod stats using the PODS button (top-right of the screen).</p><img style='width:80%' src='icons/bc.gif'>", displayLength: 500000, classes: "" });
+    M.toast({ html: "<p style='margin-right:20px;margin-top:0;margin-bottom:auto'>Continue with BOX CALIBRATION. Check your pod stats using the PODS button (top-right of the screen).</p><img style='width:80%' src='icons/bc.gif'>", displayLength: 500000, classes: "blue-grey lighten-4 black-text" });
     $("#linkPods").removeClass("animate__pulse animate__infinite");
   }
   else {
