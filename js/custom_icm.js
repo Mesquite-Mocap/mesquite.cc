@@ -888,7 +888,7 @@ var boneSelectMarkup =
 
 function restartPods() {
   M.Toast.dismissAll();
-  M.toast({ html: 'Please wear the pods and get in a T-pose for 30 seconds.<br> <button class="btn-flat toast-action green" style="margin-right:20px" onclick="M.Toast.dismissAll();restartPodsConfirm()">Continue</button>', classes: 'yellow black-text toastheader', displayLength: 1000000 });
+  M.toast({ html: 'Please wear the pods and get in a T-pose for 30 seconds.<br> <button class="btn-flat toast-action green" style="margin-right:20px" onclick="M.Toast.dismissAll();restartPodsConfirm()">Continue</button>', classes: ' blue-grey lighten-4 black-text toastheader', displayLength: 1000000 });
 }
 function restartPodsConfirm() {
   $("#restartPods").prop('disabled', true);
@@ -921,14 +921,14 @@ function calibratein5() {
   M.Toast.dismissAll();
   M.toast({ html: 'T-Pose Calibration', classes: 'green black-text toastheader', displayLength: 1000000 });
       if($("body").hasClass("up")) {
-  M.toast({ html: 'Please wear the pods and get in a T-pose for 5 seconds.<br> <button class="btn-flat toast-action blue white-text" style="width:340px" onclick="M.Toast.dismissAll();calibratein5Confirm()">Start Timer</button><button class="btn-flat toast-action red white-text" style="margin-right:0" onclick="M.Toast.dismissAll();">Cancel</button>', classes: 'yellow black-text toastheader', displayLength: 1000000 });
+  M.toast({ html: 'Please wear the pods and get in a T-pose for 5 seconds.<br> <button class="btn-flat toast-action blue white-text" style="width:340px" onclick="M.Toast.dismissAll();calibratein5Confirm()">Start Timer</button><button class="btn-flat toast-action red white-text" style="margin-right:0" onclick="M.Toast.dismissAll();">Cancel</button>', classes: ' blue-grey lighten-4 black-text toastheader', displayLength: 1000000 });
       }
       else {
-          M.toast({ html: 'Please wear the pods and get in a T-pose for 5 seconds.<br> <button class="btn-flat toast-action blue white-text" style="width:340px;margin-right:0" onclick="M.Toast.dismissAll();calibratein5Confirm()">Start Timer</button>', classes: 'yellow black-text toastheader', displayLength: 1000000 });
+          M.toast({ html: 'Please wear the pods and get in a T-pose for 5 seconds.<br> <button class="btn-flat toast-action blue white-text" style="width:340px;margin-right:0" onclick="M.Toast.dismissAll();calibratein5Confirm()">Start Timer</button>', classes: ' blue-grey lighten-4 black-text toastheader', displayLength: 1000000 });
       }
 
 
-    M.toast({ html: "<img style='width:70%;margin:auto' src='icons/t-pose.png'>", displayLength: 1000000, classes: "" });
+    M.toast({ html: "<img style='width:70%;margin:auto' src='icons/t-pose.png'>", displayLength: 1000000, classes: "white" });
 
 }
 
@@ -957,7 +957,7 @@ function skipBoxCalibrate() {
 function boxCalibrateIn30() {
   M.Toast.dismissAll();
   M.toast({ html: 'BOX CALIBRATION OPTIONS', classes: 'white black-text toastheader', displayLength: 1000000 });
-  M.toast({ html: ' Please keep all pods turned on and on the calibration plate...<button class="btn-flat toast-action green white-text" style="margin:4px" onclick="M.Toast.dismissAll();boxCalibratein30Confirm()">Start</button><button class="btn-flat toast-action blue white-text" style="margin:4px" onclick="M.Toast.dismissAll();quickBoxCalibrate()">Quick</button><button class="btn-flat toast-action red white-text" style="margin:4px" onclick="M.Toast.dismissAll();skipBoxCalibrate()">Skip</button>', classes: 'yellow black-text', displayLength: 1000000 });
+  M.toast({ html: ' Please keep all pods turned on and on the calibration plate...<button class="btn-flat toast-action green white-text" style="margin:4px" onclick="M.Toast.dismissAll();boxCalibratein30Confirm()">Start</button><button class="btn-flat toast-action blue white-text" style="margin:4px" onclick="M.Toast.dismissAll();quickBoxCalibrate()">Quick</button><button class="btn-flat toast-action red white-text" style="margin:4px" onclick="M.Toast.dismissAll();skipBoxCalibrate()">Skip</button>', classes: ' blue-grey lighten-4 black-text', displayLength: 1000000 });
 
   M.toast({ html: '<iframe style="width:100%;height:70vh;border:none;display:block;margin:auto" src="./trees/bc/wearguide"></iframe>', displayLength: 1000000, classes: "toastiframe" });
     $("#boxcalibratein30").removeClass("animate__infinite");
@@ -977,7 +977,7 @@ function boxCalibratein30Confirm() {
     <li> in the box </li>\
     <li> is kept still on flat surface</li>\
     <li> is facing you</li></ol><br>\
-     for <span class="secs" style="font-size:200%;font-weight:bold">45 seconds</span></li>', classes: 'white black-text', displayLength: tSec * 1000
+     for <span class="secs" style="font-size:200%;font-weight:bold">45 seconds</span>.</li>', classes: ' blue-grey lighten-4 black-text', displayLength: tSec * 1000
   });
 
     M.toast({ html: '<iframe style="width:100%;height:60vh;border:none;display:block;margin:auto" src="./trees/bc/wearguide"></iframe>', displayLength: tSec * 1000, classes: "toastiframe" });
