@@ -920,7 +920,7 @@ function calibratein5() {
   M.Toast.dismissAll();
   M.toast({ html: 'T-Pose Calibration', classes: 'white black-text toastheader', displayLength: 1000000 });
   M.toast({ html: 'Please wear the pods and get in a T-pose for 5 seconds.<br> <button class="btn-flat toast-action blue white-text" style="width:340px" onclick="M.Toast.dismissAll();calibratein5Confirm()">Start Timer</button><button class="btn-flat toast-action red white-text" style="margin-right:0" onclick="M.Toast.dismissAll();">Cancel</button>', classes: 'yellow black-text toastheader', displayLength: 1000000 });
-    M.toast({ html: "<img style='width:100%;margin:auto' src='icons/t-pose.png'>", displayLength: 1000000, classes: "" });
+    M.toast({ html: "<img style='width:70%;margin:auto' src='icons/t-pose.png'>", displayLength: 1000000, classes: "" });
 
 }
 
@@ -1002,7 +1002,7 @@ function boxCalibratein30Confirm() {
 function calibratein5Confirm() {
   $("#calibratein5").prop('disabled', true);
     M.toast({ html: 'T-Pose Calibration', classes: 'green black-text toastheader', displayLength: 5 * 1000 });
-  M.toast({ html: '<ul><li>Please get in a T-pose and  wait for <span class="secs" style="font-size:200%;font-weight:bold">5 seconds</span>.</li><li>When done the T-Pose* will be set.</li><img style="width:100%;display:block;margin:auto" src="icons/t-pose.png"><li><sub>* You can click on "Set T-Pose" button to do this at anytime.</sub></li>', classes: 'yellow black-text', displayLength: 5 * 1000 });
+  M.toast({ html: '<ul><li>Please get in a T-pose and  wait for <span class="secs" style="font-size:200%;font-weight:bold">5 seconds</span>.</li><li>When done the T-Pose* will be set.</li><img style="width:70%;display:block;margin:auto" src="icons/t-pose.png"><li><sub>* You can click on "Set T-Pose" button to do this at anytime.</sub></li>', classes: 'white black-text', displayLength: 5 * 1000 });
   setTimeout(function () {
     calibrate();
     $("#calibratein5").prop('disabled', false);
