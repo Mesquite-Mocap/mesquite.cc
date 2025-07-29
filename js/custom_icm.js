@@ -950,6 +950,8 @@ function boxCalibrateIn30() {
   M.Toast.dismissAll();
   M.toast({ html: 'BOX CALIBRATION', classes: 'white black-text toastheader', displayLength: 1000000 });
   M.toast({ html: ' Please keep all pods turned on and on the calibration plate...<button class="btn-flat toast-action green white-text" style="margin:4px" onclick="M.Toast.dismissAll();boxCalibratein30Confirm()">Start</button><button class="btn-flat toast-action blue white-text" style="margin:4px" onclick="M.Toast.dismissAll();quickBoxCalibrate()">Quick</button><button class="btn-flat toast-action red white-text" style="margin:4px" onclick="M.Toast.dismissAll();skipBoxCalibrate()">Skip</button>', classes: 'yellow black-text', displayLength: 1000000 });
+
+  M.toast({ html: '<iframe style="width:100%;height:70vh;border:none;display:block;margin:auto" src="./trees/bc/wearguide"></iframe>', displayLength: 1000000, classes: "toastiframe" });
     $("#boxcalibratein30").removeClass("animate__infinite");
 
 }
@@ -967,6 +969,9 @@ function boxCalibratein30Confirm() {
     <li> is facing you</li></ol><br>\
      for <span class="secs" style="font-size:200%;font-weight:bold">45 seconds</span></li>', classes: 'yellow black-text', displayLength: tSec * 1000
   });
+
+    M.toast({ html: '<iframe style="width:100%;height:70vh;border:none;display:block;margin:auto" src="./trees/bc/wearguide"></iframe>', displayLength: tSec * 1000, classes: "toastiframe" });
+
   setTimeout(function () {
     boxCalibrate();
     M.Toast.dismissAll();

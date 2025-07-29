@@ -34,7 +34,7 @@ function init() {
         1,
         15000
     );
-    camera.position.set(0, 380, 500);
+    camera.position.set(0, 390, 500);
 
 
     scene = new THREE.Scene();
@@ -379,7 +379,6 @@ function loadAllPods() {
         });
     }
 
-    M.toast({ html: "Hold down shift key and drag to pan the camera when zoomed" });
 
     setTimeout(function () {
         // head
