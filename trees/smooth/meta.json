@@ -51,8 +51,8 @@
       },
       "LeftUpLeg": {
         "axis": {
-          "order": "YZX",
-          "sign": "+++"
+          "order": "XZY",
+          "sign": "-++"
         }
       },
       "RightUpLeg": {
@@ -63,8 +63,8 @@
       },
       "LeftLeg": {
         "axis": {
-          "order": "YZX",
-          "sign": "+++"
+          "order": "XZY",
+          "sign": "-++"
         }
       },
       "RightLeg": {
@@ -75,8 +75,8 @@
       },
       "LeftFoot": {
         "axis": {
-          "order": "YZX",
-          "sign": "+++"
+          "order": "XZY",
+          "sign": "-++"
         }
       },
       "RightFoot": {
