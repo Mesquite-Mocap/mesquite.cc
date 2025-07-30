@@ -4,7 +4,7 @@
       "Spine": {
         "axis": {
           "order": "XZY",
-          "sign": "++-"
+          "sign": "-++"
         }
       },
       "Hips": {
@@ -15,14 +15,14 @@
       },
       "HipsAlt": {
         "axis": {
-          "order": "YZX",
-          "sign": "+++"
+          "order": "XZY",
+          "sign": "-++"
         }
       },
       "Head": {
         "axis": {
-          "order": "YZX",
-          "sign": "+++"
+          "order": "XZY",
+          "sign": "-++"
         }
       },
       "LeftArm": {
