@@ -38,7 +38,9 @@ function init() {
 
 
     scene = new THREE.Scene();
-     scene.background = new THREE.Color(0xffffff);
+
+    // transparent background
+    scene.background = new THREE.Color(0xcfd8dc);
 
 
      const hemiLight = new THREE.HemisphereLight(0xffffff, 0xffffff);
@@ -108,7 +110,8 @@ function init() {
         scene.add(trackingLine);
     });
 
-    renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setClearColor( 0x000000, 0 ); // the default
     renderer.setPixelRatio(window.devicePixelRatio);
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.shadowMap.enabled = true;
