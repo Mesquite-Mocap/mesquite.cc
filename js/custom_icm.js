@@ -928,7 +928,7 @@ function calibratein5() {
       }
 
 
-    M.toast({ html: "<img style='width:70%;margin:auto' src='icons/t-pose.png'>", displayLength: 1000000, classes: "white" });
+    M.toast({ html: "<img style='width:70%;margin:auto' src='icons/t-pose.png'>", displayLength: 1000000, classes: "blue-grey lighten-4" });
 
 }
 
@@ -936,7 +936,7 @@ function quickBoxCalibrate() {
   boxCalibrate();
   //M.Toast.dismissAll();
   M.toast({ html: 'Box Calibration values saved!', classes: 'blue black-text toastheader', displayLength: 50000000 });
-  M.toast({ html: 'You can now wear the pods and proceed with T-Pose calibration.<img style="width:80%;display:block;margin:auto" src="icons/t-pose.png">', classes: 'white black-text', displayLength: 5000000 });
+  M.toast({ html: 'You can now wear the pods and proceed with T-Pose calibration.<img style="width:80%;display:block;margin:auto" src="icons/t-pose.png">', classes: 'blue-grey lighten-4 black-text', displayLength: 5000000 });
   $("#boxcalibratein30").remove();
   $("#boxCDiv").fadeIn();
   getBoxCalibration();
@@ -945,7 +945,7 @@ function quickBoxCalibrate() {
 
 function skipBoxCalibrate() {
   M.toast({ html: 'Box Calibration skipped!', classes: 'red white-text toastheader', displayLength: 5000000 });
-  M.toast({ html: 'You can now wear the pods and proceed with T-Pose calibration.<img style="width:80%;display:block;margin:auto" src="icons/t-pose.png">', classes: 'white black-text', displayLength: 5000000 });
+  M.toast({ html: 'You can now wear the pods and proceed with T-Pose calibration.<img style="width:80%;display:block;margin:auto" src="icons/t-pose.png">', classes: 'blue-grey lighten-4 black-text', displayLength: 5000000 });
   $("#boxcalibratein30").remove();
   $("#boxCDiv").fadeIn();
     $("#calibratein5").fadeIn();
@@ -957,9 +957,9 @@ function skipBoxCalibrate() {
 function boxCalibrateIn30() {
   M.Toast.dismissAll();
   M.toast({ html: 'BOX CALIBRATION OPTIONS', classes: 'blue black-text toastheader', displayLength: 1000000 });
-  M.toast({ html: '<p>Please keep all pods turned on and on the calibration plate<sup>*</sup>... </p><button class="btn-flat toast-action green white-text" style="margin:4px" onclick="M.Toast.dismissAll();boxCalibratein30Confirm()">Start</button><button class="btn-flat toast-action blue white-text" style="margin:4px" onclick="M.Toast.dismissAll();quickBoxCalibrate()">Quick</button><button class="btn-flat toast-action red white-text" style="margin:4px" onclick="M.Toast.dismissAll();skipBoxCalibrate()">Skip</button><br><small style="position:absolute;bottom:10px;line-height:14px;"><sup>*</sup>Please refer to documentation for your particular Mesquite Tree (mocap suit) for more detailed instructions.</small>', classes: ' blue-grey lighten-4 black-text paddingb', displayLength: 1000000 });
+  M.toast({ html: '<p>Please keep all pods turned on and on the calibration plate<sup>*</sup>... </p><button class="btn-flat toast-action green white-text" style="margin:4px" onclick="M.Toast.dismissAll();boxCalibratein30Confirm()">Start</button><button class="btn-flat toast-action blue white-text" style="margin:4px" onclick="M.Toast.dismissAll();quickBoxCalibrate()">Quick</button><button class="btn-flat toast-action red white-text" style="margin:4px" onclick="M.Toast.dismissAll();skipBoxCalibrate()">Skip</button><br><small style="position:absolute;bottom:10px;line-height:14px;"><sup>*</sup>Please refer to documentation for your particular Mesquite Tree (mocap suit) for more detailed instructions.</small>', classes: 'blue-grey lighten-4 black-text paddingb', displayLength: 1000000 });
 
-  M.toast({ html: '<iframe style="width:100%;height:70vh;border:none;display:block;margin:auto" src="./trees/bc/wearguide"></iframe>', displayLength: 1000000, classes: "toastiframe" });
+  M.toast({ html: '<iframe style="width:100%;height:70vh;border:none;display:block;margin:auto" src="./trees/bc/wearguide"></iframe>', displayLength: 1000000, classes: "toastiframe blue-grey lighten-4" });
     $("#boxcalibratein30").removeClass("animate__infinite");
 
 }
@@ -980,13 +980,13 @@ function boxCalibratein30Confirm() {
      for <span class="secs" style="font-size:200%;font-weight:bold">45 seconds</span>.</li>', classes: ' blue-grey lighten-4 black-text', displayLength: tSec * 1000
   });
 
-    M.toast({ html: '<iframe style="width:100%;height:60vh;border:none;display:block;margin:auto" src="./trees/bc/wearguide"></iframe>', displayLength: tSec * 1000, classes: "toastiframe" });
+    M.toast({ html: '<iframe style="width:100%;height:60vh;border:none;display:block;margin:auto" src="./trees/bc/wearguide"></iframe>', displayLength: tSec * 1000, classes: "toastiframe blue-grey lighten-4" });
 
   setTimeout(function () {
     boxCalibrate();
     M.Toast.dismissAll();
     M.toast({ html: 'Box Calibration done!', classes: 'green black-text toastheader', displayLength: 5000000 });
-    M.toast({ html: 'You can now wear the pods and proceed with T-Pose calibration.<img style="width:80%;display:block;margin:auto" src="icons/t-pose.png">', classes: 'white black-text', displayLength: 5000000 });
+    M.toast({ html: 'You can now wear the pods and proceed with T-Pose calibration.<img style="width:80%;display:block;margin:auto" src="icons/t-pose.png">', classes: 'white black-text blue-grey lighten-4', displayLength: 5000000 });
     $("#boxcalibratein30").remove();
     getBoxCalibration();
   }, tSec * 1000);
@@ -1012,7 +1012,7 @@ function boxCalibratein30Confirm() {
 function calibratein5Confirm() {
   $("#calibratein5").prop('disabled', true);
     M.toast({ html: 'T-Pose Calibration in Progress...', classes: 'red black-text toastheader', displayLength: 5 * 1000 });
-  M.toast({ html: '<ul><li>Please get in a T-pose and  wait for <span class="secs" style="font-size:200%;font-weight:bold">5 seconds</span>.</li><li>When done the T-Pose* will be set.</li><img style="width:70%;display:block;margin:auto" src="icons/t-pose.png"><li><sub>* You can click on "Set T-Pose" button to do this at anytime.</sub></li>', classes: 'white black-text', displayLength: 5 * 1000 });
+  M.toast({ html: '<ul><li>Please get in a T-pose and  wait for <span class="secs" style="font-size:200%;font-weight:bold">5 seconds</span>.</li><li>When done the T-Pose* will be set.</li><img style="width:70%;display:block;margin:auto" src="icons/t-pose.png"><li><sub>* You can click on "Set T-Pose" button to do this at anytime.</sub></li>', classes: 'white black-text blue-grey lighten-4', displayLength: 5 * 1000 });
   setTimeout(function () {
     calibrate();
     $("#calibratein5").prop('disabled', false);
