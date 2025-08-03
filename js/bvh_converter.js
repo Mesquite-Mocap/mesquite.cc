@@ -82,8 +82,6 @@ function traverseHierarchy(joint, jointInfo, level = 0) {
     const jointExists = jointInfo.some((existingJoint) => existingJoint.name === name);
 
     if (jointNames.includes(name) && !jointExists) {
-        
-        
         var position = joint.position;
         position  = position.toArray();
         if (name === "Hips") {
@@ -125,7 +123,8 @@ function generateBVH(jointInfo, motionData) {
 
         if (joint.name === "Hips") {
             bvhContent += `${indentation}  CHANNELS 6 Xposition Yposition Zposition Xrotation Yrotation Zrotation\n`;
-        } else {
+        } 
+        else {
             bvhContent += `${indentation}  CHANNELS 3 Xrotation Yrotation Zrotation\n`;
         }
 
