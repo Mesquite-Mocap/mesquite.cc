@@ -12,7 +12,6 @@ function quaternionToEulerDegrees(q, bone) {
     return [euler.x * radToDeg, euler.y * radToDeg, euler.z * radToDeg];
 }
 
-
 function smoothOrientation(euler, bone) {
     if(filtersx[bone] == undefined){
         filtersx[bone] = new KalmanFilter({R: 0.01, Q: 0.01});
