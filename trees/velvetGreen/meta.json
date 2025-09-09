@@ -3,7 +3,7 @@
       "name": "VelvetGreen",
       "Spine": {
         "axis": {
-          "order": "YZX",
+          "order": "XZY",
           "sign": "+++"
         }
       },
@@ -15,86 +15,86 @@
       },
       "HipsAlt": {
         "axis": {
-          "order": "YZX",
-          "sign": "+++"
+          "order": "XZY",
+          "sign": "-++"
         }
       },
       "Head": {
         "axis": {
-          "order": "YZX",
-          "sign": "+++"
+          "order": "XZY",
+          "sign": "-++"
         }
       },
       "LeftArm": {
         "axis": {
-          "order": "YZX",
-          "sign": "+++"
+          "order": "XZY",
+          "sign": "-++"
         }
       },
       "RightArm": {
         "axis": {
-          "order": "YZX",
-          "sign": "+++"
+          "order": "XZY",
+          "sign": "++-"
         }
       },
       "LeftForeArm": {
         "axis": {
-          "order": "YZX",
-          "sign": "+++"
+          "order": "XZY",
+          "sign": "-++"
         }
       },
       "RightForeArm": {
         "axis": {
-          "order": "YZX",
-          "sign": "+++"
+          "order": "XZY",
+          "sign": "-+-"
         }
       },
       "LeftUpLeg": {
         "axis": {
           "order": "YZX",
-          "sign": "+++"
+          "sign": "-+-"
         }
       },
       "RightUpLeg": {
         "axis": {
           "order": "YZX",
-          "sign": "+++"
+          "sign": "-+-"
         }
       },
       "LeftLeg": {
         "axis": {
-          "order": "YZX",
-          "sign": "+++"
+          "order": "XZY",
+          "sign": "++-"
         }
       },
       "RightLeg": {
         "axis": {
           "order": "YZX",
-          "sign": "+++"
+          "sign": "-+-"
         }
       },
       "LeftFoot": {
         "axis": {
           "order": "YZX",
-          "sign": "+++"
+          "sign": "-++"
         }
       },
       "RightFoot": {
         "axis": {
           "order": "YZX",
-          "sign": "+++"
+          "sign": "-+-"
         }
       },
       "LeftHand": {
         "axis": {
           "order": "YZX",
-          "sign": "+++"
+          "sign": "-+-"
         }
       },
       "RightHand": {
         "axis": {
-          "order": "YZX",
-          "sign": "+++"
+          "order": "XZY",
+          "sign": "++-"
         }
       }
   }
