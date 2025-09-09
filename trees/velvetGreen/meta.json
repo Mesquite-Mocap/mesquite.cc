@@ -3,8 +3,8 @@
       "name": "VelvetGreen",
       "Spine": {
         "axis": {
-          "order": "XZY",
-          "sign": "+++"
+          "order": "YZX",
+          "sign": "-+-"
         }
       },
       "Hips": {
@@ -15,14 +15,14 @@
       },
       "HipsAlt": {
         "axis": {
-          "order": "XZY",
+          "order": "YZX",
           "sign": "-++"
         }
       },
       "Head": {
         "axis": {
-          "order": "XZY",
-          "sign": "-++"
+          "order": "YZX",
+          "sign": "-+-"
         }
       },
       "LeftArm": {
@@ -34,7 +34,7 @@
       "RightArm": {
         "axis": {
           "order": "XZY",
-          "sign": "++-"
+          "sign": "-+-"
         }
       },
       "LeftForeArm": {
@@ -63,8 +63,8 @@
       },
       "LeftLeg": {
         "axis": {
-          "order": "XZY",
-          "sign": "++-"
+          "order": "YZX",
+          "sign": "-+-"
         }
       },
       "RightLeg": {
@@ -76,7 +76,7 @@
       "LeftFoot": {
         "axis": {
           "order": "YZX",
-          "sign": "-++"
+          "sign": "-+-"
         }
       },
       "RightFoot": {
@@ -87,14 +87,14 @@
       },
       "LeftHand": {
         "axis": {
-          "order": "YZX",
-          "sign": "-+-"
+          "order": "XZY",
+          "sign": "-++"
         }
       },
       "RightHand": {
         "axis": {
           "order": "XZY",
-          "sign": "++-"
+          "sign": "-+-"
         }
       }
   }
