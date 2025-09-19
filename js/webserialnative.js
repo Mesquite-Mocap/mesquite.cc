@@ -56,7 +56,7 @@ async function connectToPort(port) {
         if (line.includes("\n")) {
           var txt = line.split("\n")[0];
           txt = txt.trim().replace('"bone":"Hips"125', '"bone":"Hips"}');
-          // console.log(txt);
+           console.log(txt);
           try {
             var l = JSON.parse(txt);
             handleWSMessage(l);
