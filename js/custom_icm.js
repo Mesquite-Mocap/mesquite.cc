@@ -305,7 +305,7 @@ function handleWSMessage(obj) {
   newBatt *= 9;
   */
   var newBatt = parseFloat(obj.batt)*100;
-  console.log(newBatt, obj.batt);
+  //console.log(newBatt, obj.batt);
   newBatt = Math.min(100, Math.max(0, newBatt)).toFixed(0);
 
 
