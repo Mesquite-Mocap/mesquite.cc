@@ -686,20 +686,18 @@ function handleWSMessage(obj) {
 
     const hipsBone = model.getObjectByName(rigPrefix + "Hips");
     
-    /*
-    hipsBone.position.set(
-      kfx.filter(sensorPosition.x),
-      kfy.filter(sensorPosition.y),
-      -kfz.filter(sensorPosition.z)
-    );
-    */
-    
-   
+    /*   
     hipsBone.position.set(
       sensorPosition.x,
       sensorPosition.y,
       -sensorPosition.z
     );
+    */
+
+    hipsBone.position.lerp(new THREE.Vector3(sensorPosition.x,
+      sensorPosition.y,
+      -sensorPosition.z), 0.1);
+
     if(!$("body").hasClass("up")) {
       updateTrackingLine(hipsBone.position);
     }
