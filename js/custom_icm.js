@@ -8,6 +8,9 @@ var calibrated = false;
 initialPosition = { x: 0, y: 0, z: 0 };
 var positionSensitivity = 100;
 
+// Sensor mounting offset calibration - compensates for askew sensor placement
+var mountingOffsets = {}; // stores per-bone mounting quaternion offsets
+
 // smooth position
 var kfx = new KalmanFilter({ R: 0.01, Q: 3 });
 var kfy = new KalmanFilter({ R: 0.01, Q: 3 });
@@ -23,6 +26,16 @@ function adjustQuaternionForThickness(quaternion, thickness) {
     quaternion.z * scale,
     quaternion.w * scale
   );
+}
+
+function applyMountingOffset(transformedQuaternion, bone) {
+  // Apply the stored mounting offset AFTER tree axis transformation
+  // This compensates for sensors being askew or rotated from their ideal mounting position
+  if (mountingOffsets[bone]) {
+    // corrected = transformed * offset
+    return transformedQuaternion.clone().multiply(mountingOffsets[bone]);
+  }
+  return transformedQuaternion;
 }
 
 var flag = true;
@@ -132,10 +145,45 @@ function initGlobalLocalLast() {
 function calibrate() {
   var keys = Object.keys(mac2Bones);
   for (var i = 0; i < keys.length; i++) {
+    // Safety check - ensure entry exists and has last property
+    if (!mac2Bones[keys[i]] || !mac2Bones[keys[i]].last) {
+      continue;
+    }
+    
     mac2Bones[keys[i]].calibration.x = mac2Bones[keys[i]].last.x;
     mac2Bones[keys[i]].calibration.y = mac2Bones[keys[i]].last.y;
     mac2Bones[keys[i]].calibration.z = mac2Bones[keys[i]].last.z;
     mac2Bones[keys[i]].calibration.w = mac2Bones[keys[i]].last.w;
+    
+    // AUTO-CALCULATE MOUNTING OFFSETS
+    // This compensates for sensors being askew from their ideal mounting position
+    var bone = model.getObjectByName(rigPrefix + keys[i].replace("Alt", ""));
+    if (bone && trees[treeType] && trees[treeType][keys[i]]) {
+      // Get expected bone orientation in T-pose (from the model)
+      var expectedBoneQ = bone.quaternion.clone().normalize();
+      
+      // Get actual sensor reading and apply the TREE MAPPING to it
+      // (this is what the sensor SHOULD read if mounted perfectly)
+      var sensorQ = new THREE.Quaternion(
+        mac2Bones[keys[i]].last.x,
+        mac2Bones[keys[i]].last.y,
+        mac2Bones[keys[i]].last.z,
+        mac2Bones[keys[i]].last.w
+      ).normalize();
+      
+      // Apply tree axis transformation (what it would be if mounted perfectly)
+      var transformedSensorQ = getTransformedQuaternion(sensorQ, keys[i]);
+      
+      // Calculate the offset: how much does the transformed sensor differ from expected bone?
+      // This captures any rotational misalignment in mounting
+      var transformedInverse = transformedSensorQ.clone().invert();
+      var mountingOffset = expectedBoneQ.clone().multiply(transformedInverse);
+      
+      // Store the offset for this bone
+      mountingOffsets[keys[i]] = mountingOffset;
+      
+      console.log('Mounting offset calculated for ' + keys[i] + ':', mountingOffset);
+    }
   }
 
   //initialPosition = new THREE.Vector3(initialPosition.x, initialPosition.y, initialPosition.z).scale(positionSensitivity);
@@ -165,6 +213,11 @@ function calibrate() {
 function boxCalibrate() {
   var keys = Object.keys(mac2Bones);
   for (var i = 0; i < keys.length; i++) {
+    // Safety check - ensure entry exists and has last property
+    if (!mac2Bones[keys[i]] || !mac2Bones[keys[i]].last) {
+      continue;
+    }
+    
     mac2Bones[keys[i]].bcalibration.x = mac2Bones[keys[i]].last.x;
     mac2Bones[keys[i]].bcalibration.y = mac2Bones[keys[i]].last.y;
     mac2Bones[keys[i]].bcalibration.z = mac2Bones[keys[i]].last.z;
@@ -350,8 +403,10 @@ function handleWSMessage(obj) {
 
     var alt = new THREE.Quaternion().multiplyQuaternions(rawQuaternion, refQInverse, bc);
     alt = getTransformedQuaternion(alt, bone).normalize();
+    alt = applyMountingOffset(alt, bone); // Apply mounting offset after tree transformation
 
     var hipQ = getTransformedQuaternion(transformedQ, bone).normalize();
+    hipQ = applyMountingOffset(hipQ, bone); // Apply mounting offset after tree transformation
 
     x.quaternion.slerp(hipQ, slerpDict[bone] || slerpFactor);
 
@@ -366,8 +421,10 @@ function handleWSMessage(obj) {
     //var alt = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion, bc);
     var alt = new THREE.Quaternion().multiplyQuaternions(rawQuaternion, refQInverse, bc);
     alt = getTransformedQuaternion(alt, bone).normalize();
+    alt = applyMountingOffset(alt, bone);
 
     var hipQ = getTransformedQuaternion(transformedQ, bone).normalize();
+    hipQ = applyMountingOffset(hipQ, bone);
     x.quaternion.slerp(hipQ, slerpDict[bone] || slerpFactor);
 
     setLocal("Hips", alt.x, alt.y, alt.z, alt.w);
@@ -383,6 +440,7 @@ function handleWSMessage(obj) {
 
 
     var leftuplegQ = getTransformedQuaternion(transformedQ, bone);
+    leftuplegQ = applyMountingOffset(leftuplegQ, bone);
 
     var obj = mac2Bones["Hips"].global;
     var hipsQ = new THREE.Quaternion(obj.x, obj.y, obj.z, obj.w).normalize();
@@ -403,6 +461,7 @@ function handleWSMessage(obj) {
 
     
     var rightuplegQ = getTransformedQuaternion(transformedQ, bone);
+    rightuplegQ = applyMountingOffset(rightuplegQ, bone);
 
     var obj = mac2Bones["Hips"].global;
     var hipsQ = new THREE.Quaternion(obj.x, obj.y, obj.z, obj.w).normalize();
@@ -422,6 +481,7 @@ function handleWSMessage(obj) {
    // var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion, bc);
 
     var spineQ = getTransformedQuaternion(transformedQ, bone);
+    spineQ = applyMountingOffset(spineQ, bone);
 
     var obj = mac2Bones["Hips"].local;
     var hipQ = new THREE.Quaternion(obj.x, obj.y, obj.z, obj.w).normalize();
@@ -442,6 +502,7 @@ function handleWSMessage(obj) {
     //    var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion, bc);
 
     var headQ = getTransformedQuaternion(transformedQ, bone);
+    headQ = applyMountingOffset(headQ, bone);
 
     var obj = mac2Bones["Spine"].global;
     var hipQ = new THREE.Quaternion(obj.x, obj.y, obj.z, obj.w).normalize();
@@ -464,6 +525,7 @@ function handleWSMessage(obj) {
     //var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion, bc);
 
     var leftarmQ = getTransformedQuaternion(transformedQ, bone);
+    leftarmQ = applyMountingOffset(leftarmQ, bone);
 
     var obj = mac2Bones["Spine"].global;
     var spineQ = new THREE.Quaternion(obj.x, obj.y, obj.z, obj.w).normalize();
@@ -482,6 +544,7 @@ function handleWSMessage(obj) {
     //    var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion, bc);
 
     var rightarmQ = getTransformedQuaternion(transformedQ, bone);
+    rightarmQ = applyMountingOffset(rightarmQ, bone);
     var obj = mac2Bones["Spine"].global;
     var spineQ = new THREE.Quaternion(obj.x, obj.y, obj.z, obj.w).normalize();
     var spineQinverse = new THREE.Quaternion().copy(spineQ).invert();
@@ -503,6 +566,7 @@ function handleWSMessage(obj) {
     //var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion, bc);
 
     var leftforearmQ = getTransformedQuaternion(transformedQ, bone);
+    leftforearmQ = applyMountingOffset(leftforearmQ, bone);
 
     var obj = mac2Bones["LeftArm"].global;
     var leftarmQ = new THREE.Quaternion(obj.x, obj.y, obj.z, obj.w).normalize();
@@ -521,6 +585,7 @@ function handleWSMessage(obj) {
 
     var transformedQ = new THREE.Quaternion().multiplyQuaternions(rawQuaternion, refQInverse, bc);
     var lefthandQ = getTransformedQuaternion(transformedQ, bone);
+    lefthandQ = applyMountingOffset(lefthandQ, bone);
 
     var obj = mac2Bones["LeftForeArm"].global;
     var leftarmQ = new THREE.Quaternion(obj.x, obj.y, obj.z, obj.w).normalize();
@@ -538,6 +603,7 @@ function handleWSMessage(obj) {
     var transformedQ = new THREE.Quaternion().multiplyQuaternions(rawQuaternion, refQInverse, bc);
     //    var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion, bc);
     var rightforearmQ = getTransformedQuaternion(transformedQ, bone);
+    rightforearmQ = applyMountingOffset(rightforearmQ, bone);
 
     var obj = mac2Bones["RightArm"].global;
     var rightarmQ = new THREE.Quaternion(obj.x, obj.y, obj.z, obj.w).normalize();
@@ -559,6 +625,7 @@ function handleWSMessage(obj) {
 
     var transformedQ = new THREE.Quaternion().multiplyQuaternions(rawQuaternion, refQInverse, bc);
     var righthandQ = getTransformedQuaternion(transformedQ, bone);
+    righthandQ = applyMountingOffset(righthandQ, bone);
 
     var obj = mac2Bones["RightForeArm"].global;
     var rightforearmQ = new THREE.Quaternion(obj.x, obj.y, obj.z, obj.w).normalize();
@@ -583,6 +650,7 @@ function handleWSMessage(obj) {
     //var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion, bc);
 
     var leftlegQ = getTransformedQuaternion(transformedQ, bone);
+    leftlegQ = applyMountingOffset(leftlegQ, bone);
 
     var obj = mac2Bones["LeftUpLeg"].global;
     var leftuplegQ = new THREE.Quaternion(obj.x, obj.y, obj.z, obj.w).normalize();
@@ -601,6 +669,7 @@ function handleWSMessage(obj) {
     //var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion, bc);
 
     var rightlegQ = getTransformedQuaternion(transformedQ, bone);
+    rightlegQ = applyMountingOffset(rightlegQ, bone);
 
     var obj = mac2Bones["RightUpLeg"].global;
     var rightuplegQ = new THREE.Quaternion(obj.x, obj.y, obj.z, obj.w).normalize();
@@ -619,6 +688,7 @@ function handleWSMessage(obj) {
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
     var transformedQ = new THREE.Quaternion().multiplyQuaternions(rawQuaternion, refQInverse, bc);
     var leftfootQ = getTransformedQuaternion(transformedQ, bone);
+    leftfootQ = applyMountingOffset(leftfootQ, bone);
 
     var obj = mac2Bones["LeftLeg"].global;
     var leftlegQ = new THREE.Quaternion(obj.x, obj.y, obj.z, obj.w).normalize();
@@ -635,6 +705,7 @@ function handleWSMessage(obj) {
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
     var transformedQ = new THREE.Quaternion().multiplyQuaternions(rawQuaternion, refQInverse, bc);
     var rightfootQ = getTransformedQuaternion(transformedQ, bone);
+    rightfootQ = applyMountingOffset(rightfootQ, bone);
 
     var obj = mac2Bones["RightLeg"].global;
     var rightlegQ = new THREE.Quaternion(obj.x, obj.y, obj.z, obj.w).normalize();
