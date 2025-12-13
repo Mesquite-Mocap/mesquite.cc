@@ -656,6 +656,11 @@ function handleWSMessage(obj) {
   }
 
   // deal with hip position
+  console.log(obj);
+
+  if( bone == "Hips" || obj.px && obj.py && obj.pz ) {
+    obj.sensorPosition = { x: obj.px, y: obj.py, z: obj.pz};
+  }
 
 
   if (obj.sensorPosition !== undefined) {
