@@ -35,31 +35,50 @@
         "axis": {
           "order": "YZX",
           "sign": "-+-"
-        }
+        },
+        "tposeOffset": [
+          {"axis": "Y", "degrees": -90},
+          {"axis": "X", "degrees": 180},
+          {"axis": "Y", "degrees": 180}
+        ]
       },
       "LeftHand": {
         "axis": {
           "order": "YZX",
           "sign": "-+-"
-        }
+        },
+        "tposeOffset": [
+          {"axis": "Z", "degrees": 180},
+          {"axis": "Y", "degrees": 180},
+          {"axis": "X", "degrees": 180}
+        ]
       },
       "RightArm": {
         "axis": {
           "order": "YZX",
           "sign": "-+-"
-        }
+        },
+        "tposeOffset": [
+          {"axis": "Y", "degrees": 90}
+        ]
       },
       "RightForeArm": {
         "axis": {
           "order": "YZX",
           "sign": "-+-"
-        }
+        },
+        "tposeOffset": [
+          {"axis": "Y", "degrees": 90}
+        ]
       },
       "RightHand": {
         "axis": {
           "order": "YZX",
           "sign": "-+-"
-        }
+        },
+        "tposeOffset": [
+          {"axis": "Y", "degrees": 90}
+        ]
       },
       "LeftUpLeg": {
         "axis": {

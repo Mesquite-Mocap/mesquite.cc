@@ -12,6 +12,10 @@ var positionSensitivity = 100;
 var mountingOffsets = {}; // stores per-bone mounting quaternion offsets
 var mountingOffsetsCalculated = false; // flag to only calculate once
 
+// Static T-pose anatomical offsets - compensates for sensor neutral position vs bone T-pose
+// These are applied BEFORE mounting offset calculation
+var tposeOffsets = {};
+
 // smooth position
 var kfx = new KalmanFilter({ R: 0.01, Q: 3 });
 var kfy = new KalmanFilter({ R: 0.01, Q: 3 });
@@ -30,19 +34,54 @@ function adjustQuaternionForThickness(quaternion, thickness) {
 }
 
 function applyMountingOffset(transformedQuaternion, bone) {
-  // Apply the stored mounting offset AFTER tree axis transformation
-  // This compensates for sensors being askew or rotated from their ideal mounting position
-  if (mountingOffsets[bone]) {
-    // corrected = transformed * offset
-    return transformedQuaternion.clone().multiply(mountingOffsets[bone]);
+  // Apply static T-pose offset first (if exists for this bone)
+  var result = transformedQuaternion.clone();
+  if (tposeOffsets[bone]) {
+    result.multiply(tposeOffsets[bone]);
   }
-  return transformedQuaternion;
+  
+  // Then apply the mounting offset (compensates for askew sensor placement)
+  if (mountingOffsets[bone]) {
+    result.multiply(mountingOffsets[bone]);
+  }
+  
+  return result;
 }
 
 var flag = true;
 
 function initGlobalLocalLast() {
   flag = false;
+  
+  // Initialize T-pose offsets from meta.json
+  tposeOffsets = {};
+  var boneNames = ["Hips", "HipsAlt", "Spine", "Head", "LeftArm", "LeftForeArm", "LeftHand", 
+                   "RightArm", "RightForeArm", "RightHand", "LeftUpLeg", "LeftLeg", "LeftFoot",
+                   "RightUpLeg", "RightLeg", "RightFoot"];
+  
+  for (var i = 0; i < boneNames.length; i++) {
+    var boneName = boneNames[i];
+    var boneConfig = trees[treeType] && trees[treeType][boneName];
+    
+    if (boneConfig && boneConfig.tposeOffset && boneConfig.tposeOffset.length > 0) {
+      // Build composite quaternion from array of rotations
+      var compositeQ = new THREE.Quaternion(0, 0, 0, 1);
+      for (var j = 0; j < boneConfig.tposeOffset.length; j++) {
+        var rotation = boneConfig.tposeOffset[j];
+        var radians = rotation.degrees * Math.PI / 180;
+        var axis = rotation.axis === 'X' ? new THREE.Vector3(1, 0, 0) :
+                   rotation.axis === 'Y' ? new THREE.Vector3(0, 1, 0) :
+                   new THREE.Vector3(0, 0, 1);
+        var rotQ = new THREE.Quaternion().setFromAxisAngle(axis, radians);
+        compositeQ.multiply(rotQ);
+      }
+      tposeOffsets[boneName] = compositeQ;
+    } else {
+      // Default to identity quaternion
+      tposeOffsets[boneName] = new THREE.Quaternion(0, 0, 0, 1);
+    }
+  }
+  
   var bone = model.getObjectByName(rigPrefix + "Hips");
   mac2Bones["Hips"] = { calibration: { x: 0, y: 0, z: 0, w: 1 }, last: { x: 0, y: 0, z: 0, w: 1 }, global: { x: 0, y: 0, z: 0, w: 1 }, local: { x: 0, y: 0, z: 0, w: 1 }, bcalibration: { x: 0, y: 0, z: 0, w: 1 } };
   setGlobal("Hips", bone.quaternion.x, bone.quaternion.y, bone.quaternion.z, bone.quaternion.w);
@@ -177,10 +216,57 @@ function calibrate() {
         // Apply tree axis transformation (what it would be if mounted perfectly)
         var transformedSensorQ = getTransformedQuaternion(sensorQ, keys[i]);
         
-        // Calculate the offset: how much does the transformed sensor differ from expected bone?
-        // This captures any rotational misalignment in mounting
+        // Apply T-pose offset if this bone has one (for arms/forearms/hands)
+        if (tposeOffsets[keys[i]]) {
+          transformedSensorQ.multiply(tposeOffsets[keys[i]]);
+        }
+        
+        // BIDIRECTIONAL MOUNTING DETECTION
+        // Check if sensor is mounted backwards (180° flipped)
+        // Arms/forearms/hands/feet: can flip in Y-axis
+        // Head/spine/hips/legs: can flip in Z-axis
         var transformedInverse = transformedSensorQ.clone().invert();
-        var mountingOffset = expectedBoneQ.clone().multiply(transformedInverse);
+        var normalOffset = expectedBoneQ.clone().multiply(transformedInverse);
+        
+        // Determine flip axis based on bone type
+        var flipAxis;
+        if (keys[i].indexOf("Arm") !== -1 || keys[i].indexOf("Hand") !== -1 || keys[i].indexOf("Foot") !== -1) {
+          // Arms, forearms, hands, feet: flip in Y
+          flipAxis = new THREE.Vector3(0, 1, 0);
+        } else if (keys[i].indexOf("Leg") !== -1 || 
+                   keys[i] === "Head" || keys[i] === "Spine" || keys[i].indexOf("Hips") !== -1) {
+          // Head, spine, hips, legs: flip in Z
+          flipAxis = new THREE.Vector3(0, 0, 1);
+        } else {
+          // Default: no flip detection
+          flipAxis = null;
+        }
+        
+        var mountingOffset;
+        if (flipAxis) {
+          // Test flipped version (180° rotation)
+          var flipQ = new THREE.Quaternion().setFromAxisAngle(flipAxis, Math.PI);
+          var flippedSensorQ = transformedSensorQ.clone().multiply(flipQ);
+          var flippedInverse = flippedSensorQ.clone().invert();
+          var flippedOffset = expectedBoneQ.clone().multiply(flippedInverse);
+          
+          // Calculate angular distance for both orientations (smaller = better match)
+          var normalAngle = 2 * Math.acos(Math.abs(normalOffset.w));
+          var flippedAngle = 2 * Math.acos(Math.abs(flippedOffset.w));
+          
+          if (flippedAngle < normalAngle) {
+            // Flipped version is closer - sensor is mounted backwards
+            mountingOffset = flippedOffset;
+            console.log('Detected backward mounting for ' + keys[i] + ' (flipped ' + 
+                       (flipAxis.y === 1 ? 'Y' : 'Z') + '). Using corrected offset.');
+          } else {
+            // Normal orientation
+            mountingOffset = normalOffset;
+          }
+        } else {
+          // No flip detection for this bone
+          mountingOffset = normalOffset;
+        }
         
         // Store the offset for this bone
         mountingOffsets[keys[i]] = mountingOffset;
@@ -492,7 +578,7 @@ function handleWSMessage(obj) {
     var spineQ = getTransformedQuaternion(transformedQ, bone);
     spineQ = applyMountingOffset(spineQ, bone);
 
-    var obj = mac2Bones["Hips"].local;
+    var obj = mac2Bones["Hips"].global;  // Use global instead of local to account for Hips mounting offset
     var hipQ = new THREE.Quaternion(obj.x, obj.y, obj.z, obj.w).normalize();
     var hipQinverse = new THREE.Quaternion().copy(hipQ).invert();
     var hipCorrection = new THREE.Quaternion().copy(hipQinverse).multiply(spineQ).normalize();
@@ -604,7 +690,7 @@ function handleWSMessage(obj) {
     x.quaternion.slerp(lefthandCorrection, slerpDict[bone] || slerpFactor);
 
     setLocal(bone, lefthandCorrection.x, lefthandCorrection.y, lefthandCorrection.z, lefthandCorrection.w);
-    // setGlobal(bone, leftforearmQ.x, leftforearmQ.y, leftforearmQ.z, leftforearmQ.w);
+    setGlobal(bone, lefthandQ.x, lefthandQ.y, lefthandQ.z, lefthandQ.w);
   }
 
   if (bone == "RightForeArm") {
@@ -646,7 +732,7 @@ function handleWSMessage(obj) {
     x.quaternion.slerp(righthandCorrection, slerpDict[bone] || slerpFactor);
 
     setLocal(bone, righthandCorrection.x, righthandCorrection.y, righthandCorrection.z, righthandCorrection.w);
-    //setGlobal(bone, righthandQ.x, righthandQ.y, righthandQ.z, righthandQ.w);
+    setGlobal(bone, righthandQ.x, righthandQ.y, righthandQ.z, righthandQ.w);
   }
 
 
