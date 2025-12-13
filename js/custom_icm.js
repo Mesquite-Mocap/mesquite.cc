@@ -396,7 +396,6 @@ function handleWSMessage(obj) {
   const slerpFactor = .24; // range: 0.0 to 1.0
 
 
-
   if (bone == "Hips" && hipsAltLast + 1000 < new Date().getTime()) {
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
     var transformedQ = new THREE.Quaternion().multiplyQuaternions(rawQuaternion, refQInverse, bc);
