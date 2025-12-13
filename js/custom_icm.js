@@ -10,6 +10,7 @@ var positionSensitivity = 100;
 
 // Sensor mounting offset calibration - compensates for askew sensor placement
 var mountingOffsets = {}; // stores per-bone mounting quaternion offsets
+var mountingOffsetsCalculated = false; // flag to only calculate once
 
 // smooth position
 var kfx = new KalmanFilter({ R: 0.01, Q: 3 });
@@ -155,35 +156,44 @@ function calibrate() {
     mac2Bones[keys[i]].calibration.z = mac2Bones[keys[i]].last.z;
     mac2Bones[keys[i]].calibration.w = mac2Bones[keys[i]].last.w;
     
-    // AUTO-CALCULATE MOUNTING OFFSETS
+    // AUTO-CALCULATE MOUNTING OFFSETS (only on first calibration)
     // This compensates for sensors being askew from their ideal mounting position
-    var bone = model.getObjectByName(rigPrefix + keys[i].replace("Alt", ""));
-    if (bone && trees[treeType] && trees[treeType][keys[i]]) {
-      // Get expected bone orientation in T-pose (from the model)
-      var expectedBoneQ = bone.quaternion.clone().normalize();
-      
-      // Get actual sensor reading and apply the TREE MAPPING to it
-      // (this is what the sensor SHOULD read if mounted perfectly)
-      var sensorQ = new THREE.Quaternion(
-        mac2Bones[keys[i]].last.x,
-        mac2Bones[keys[i]].last.y,
-        mac2Bones[keys[i]].last.z,
-        mac2Bones[keys[i]].last.w
-      ).normalize();
-      
-      // Apply tree axis transformation (what it would be if mounted perfectly)
-      var transformedSensorQ = getTransformedQuaternion(sensorQ, keys[i]);
-      
-      // Calculate the offset: how much does the transformed sensor differ from expected bone?
-      // This captures any rotational misalignment in mounting
-      var transformedInverse = transformedSensorQ.clone().invert();
-      var mountingOffset = expectedBoneQ.clone().multiply(transformedInverse);
-      
-      // Store the offset for this bone
-      mountingOffsets[keys[i]] = mountingOffset;
-      
-      console.log('Mounting offset calculated for ' + keys[i] + ':', mountingOffset);
+    // Once calculated, these offsets are preserved across T-pose resets
+    if (!mountingOffsetsCalculated) {
+      var bone = model.getObjectByName(rigPrefix + keys[i].replace("Alt", ""));
+      if (bone && trees[treeType] && trees[treeType][keys[i]]) {
+        // Get expected bone orientation in T-pose (from the model)
+        var expectedBoneQ = bone.quaternion.clone().normalize();
+        
+        // Get actual sensor reading and apply the TREE MAPPING to it
+        // (this is what the sensor SHOULD read if mounted perfectly)
+        var sensorQ = new THREE.Quaternion(
+          mac2Bones[keys[i]].last.x,
+          mac2Bones[keys[i]].last.y,
+          mac2Bones[keys[i]].last.z,
+          mac2Bones[keys[i]].last.w
+        ).normalize();
+        
+        // Apply tree axis transformation (what it would be if mounted perfectly)
+        var transformedSensorQ = getTransformedQuaternion(sensorQ, keys[i]);
+        
+        // Calculate the offset: how much does the transformed sensor differ from expected bone?
+        // This captures any rotational misalignment in mounting
+        var transformedInverse = transformedSensorQ.clone().invert();
+        var mountingOffset = expectedBoneQ.clone().multiply(transformedInverse);
+        
+        // Store the offset for this bone
+        mountingOffsets[keys[i]] = mountingOffset;
+        
+        console.log('Mounting offset calculated for ' + keys[i] + ':', mountingOffset);
+      }
     }
+  }
+  
+  // Mark mounting offsets as calculated after first calibration
+  if (!mountingOffsetsCalculated) {
+    mountingOffsetsCalculated = true;
+    console.log('Mounting offsets locked. Subsequent T-pose calibrations will preserve these offsets.');
   }
 
   //initialPosition = new THREE.Vector3(initialPosition.x, initialPosition.y, initialPosition.z).scale(positionSensitivity);
@@ -756,6 +766,16 @@ function handleWSMessage(obj) {
       obj.sensorPosition.y * positionSensitivity - initialPosition.y + 100,
       obj.sensorPosition.z * positionSensitivity - initialPosition.z
     );
+    
+    // Apply mounting offset to position vector
+    // The phone's orientation affects how position data should be interpreted
+    if (bone == "Hips" && mountingOffsets["Hips"]) {
+      // Rotate the position vector by the hip mounting offset to account for phone orientation
+      sensorPosition.applyQuaternion(mountingOffsets["Hips"]);
+    } else if (bone == "HipsAlt" && mountingOffsets["HipsAlt"]) {
+      sensorPosition.applyQuaternion(mountingOffsets["HipsAlt"]);
+    }
+    
     //set this as position of the bone
     // console.log(sensorPosition);
 
