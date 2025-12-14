@@ -37,9 +37,9 @@
           "sign": "-+-"
         },
         "tposeOffset": [
-          {"axis": "Y", "degrees": -90},
           {"axis": "X", "degrees": 180},
-          {"axis": "Y", "degrees": 180}
+          {"axis": "Y", "degrees": 90},
+          {"axis": "Z", "degrees": 0}
         ]
       },
       "LeftHand": {
@@ -48,9 +48,9 @@
           "sign": "-+-"
         },
         "tposeOffset": [
-          {"axis": "Z", "degrees": 180},
+          {"axis": "X", "degrees": 180},
           {"axis": "Y", "degrees": 180},
-          {"axis": "X", "degrees": 180}
+          {"axis": "Z", "degrees": 180}
         ]
       },
       "RightArm": {
@@ -59,7 +59,9 @@
           "sign": "-+-"
         },
         "tposeOffset": [
-          {"axis": "Y", "degrees": 90}
+          {"axis": "X", "degrees": 0},
+          {"axis": "Y", "degrees": 0},
+          {"axis": "Z", "degrees": 0}
         ]
       },
       "RightForeArm": {
@@ -68,7 +70,9 @@
           "sign": "-+-"
         },
         "tposeOffset": [
-          {"axis": "Y", "degrees": 90}
+          {"axis": "X", "degrees": 0},
+          {"axis": "Y", "degrees": -90},
+          {"axis": "Z", "degrees": 180}
         ]
       },
       "RightHand": {
@@ -77,7 +81,9 @@
           "sign": "-+-"
         },
         "tposeOffset": [
-          {"axis": "Y", "degrees": 90}
+          {"axis": "X", "degrees": 180},
+          {"axis": "Y", "degrees": 180},
+          {"axis": "Z", "degrees": 180}
         ]
       },
       "LeftUpLeg": {
