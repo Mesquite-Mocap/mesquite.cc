@@ -316,10 +316,6 @@ function calibrate() {
         // Calculate the angular offset to validate calibration quality
         var offsetAngleDeg = (2 * Math.acos(Math.abs(mountingOffset.w)) * 180 / Math.PI);
         
-        // Log with angle information
-        console.log('Mounting offset calculated for ' + keys[i] + ':', 
-                   'angle=' + offsetAngleDeg.toFixed(1) + '°',
-                   mountingOffset);
         
         // Validate: mounting offset should be reasonable (< 60 degrees for most bones)
         // Larger offsets suggest incorrect box calibration or T-pose
