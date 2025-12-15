@@ -246,3 +246,8 @@ body table.striped>tbody>tr:nth-child(odd) {
 	margin-left: -12px;
 	margin-top:-13px;
 }
+
+#hipsStatus span.chip{
+	display: block;
+	background: transparent;
+}
