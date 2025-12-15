@@ -313,6 +313,25 @@ function calibrate() {
         // Store the offset for this bone
         mountingOffsets[keys[i]] = mountingOffset;
         
+        // Calculate the angular offset to validate calibration quality
+        var offsetAngleDeg = (2 * Math.acos(Math.abs(mountingOffset.w)) * 180 / Math.PI);
+        
+        // Log with angle information
+        console.log('Mounting offset calculated for ' + keys[i] + ':', 
+                   'angle=' + offsetAngleDeg.toFixed(1) + '°',
+                   mountingOffset);
+        
+        // Validate: mounting offset should be reasonable (< 60 degrees for most bones)
+        // Larger offsets suggest incorrect box calibration or T-pose
+        var maxAngle = 60;
+        if (keys[i].indexOf("Arm") !== -1 || keys[i].indexOf("Hand") !== -1) {
+          maxAngle = 90; // Arms/hands can have larger offsets due to T-pose geometry
+        }
+        
+        if (offsetAngleDeg > maxAngle) {
+          console.warn('WARNING: Large mounting offset detected for ' + keys[i] + ' (' + 
+                      offsetAngleDeg.toFixed(1) + '°). This may indicate incorrect box calibration or T-pose position.');
+        }
       }
     }
   }
@@ -320,6 +339,47 @@ function calibrate() {
   // Mark mounting offsets as calculated after first calibration
   if (!mountingOffsetsCalculated) {
     mountingOffsetsCalculated = true;
+    
+    // Validate overall calibration quality
+    var validationFailed = false;
+    var badBones = [];
+    var totalOffsetAngle = 0;
+    var boneCount = 0;
+    
+    for (var boneName in mountingOffsets) {
+      var offset = mountingOffsets[boneName];
+      var angleDeg = (2 * Math.acos(Math.abs(offset.w)) * 180 / Math.PI);
+      totalOffsetAngle += angleDeg;
+      boneCount++;
+      
+      var threshold = 60;
+      if (boneName.indexOf("Arm") !== -1 || boneName.indexOf("Hand") !== -1) {
+        threshold = 90;
+      }
+      
+      if (angleDeg > threshold) {
+        validationFailed = true;
+        badBones.push(boneName + ' (' + angleDeg.toFixed(1) + '°)');
+      }
+    }
+    
+    if (validationFailed) {
+      var errorMsg = 'T-POSE CALIBRATION ISSUE DETECTED!\n\n' +
+                    'Large mounting offsets found for: ' + badBones.join(', ') + '\n\n' +
+                    'This usually means:\n' +
+                    '1. Box calibration was not done in the correct flat position\n' +
+                    '2. T-pose position is incorrect (arms not extended, legs not straight, etc.)\n\n' +
+                    'Please:\n' +
+                    '1. Refresh the page to start over\n' +
+                    '2. Do box calibration with sensors lying flat\n' +
+                    '3. Set T-pose with proper form (arms straight out, legs straight down)';
+      
+      alert(errorMsg);
+      window.location.reload();
+    } else {
+      var avgOffset = (totalOffsetAngle / boneCount).toFixed(1);
+      M.toast({ html: 'T-pose calibration successful! Average mounting offset: ' + avgOffset + '°', displayLength: 5000, classes: 'green toastheader' });
+    }
   }
 
   //initialPosition = new THREE.Vector3(initialPosition.x, initialPosition.y, initialPosition.z).scale(positionSensitivity);
