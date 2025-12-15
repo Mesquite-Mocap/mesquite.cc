@@ -61,7 +61,7 @@ async function connectToPort(port) {
             var l = JSON.parse(txt);
             handleWSMessage(l);
           } catch (e) {
-            console.error(e);
+            //console.error(e);
           }
           line = line.slice(line.indexOf("\n") + 1);
 
