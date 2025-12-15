@@ -48,6 +48,47 @@ function applyMountingOffset(transformedQuaternion, bone) {
   return result;
 }
 
+function applySensorOffsetCompensation(quaternion, bone) {
+  // Apply dynamic compensation for sensors that are physically offset from bone pivot
+  // This corrects for geometric artifacts when sensor is displaced from rotation center
+  
+  if (!trees[treeType] || !trees[treeType][bone] || !trees[treeType][bone].sensorOffset) {
+    return quaternion;
+  }
+  
+  var offset = trees[treeType][bone].sensorOffset.position;
+  if (!offset || offset.length !== 3) {
+    return quaternion;
+  }
+  
+  // Get compensation strength from config (default to 0.5 if not specified)
+  var compensationStrength = trees[treeType][bone].sensorOffset.compensationStrength || 0.5;
+  
+  // Extract euler angles from quaternion to analyze rotation
+  var euler = new THREE.Euler().setFromQuaternion(quaternion, 'XYZ');
+  
+  // Calculate compensation based on the sensor's offset position
+  // When sensor is offset, rotations create apparent cross-axis components
+  var offsetVector = new THREE.Vector3(offset[0], offset[1], offset[2]);
+  var offsetLength = offsetVector.length();
+  
+  if (offsetLength < 0.01) return quaternion; // No significant offset
+  
+  // For upper legs: X rotation (forward/back) creates apparent Z rotation (outward/inward)
+  // The compensation is proportional to sin(X) * offset_Z
+  var xRotation = euler.x;
+  var zCompensation = Math.sin(xRotation) * (offset[2] / offsetLength) * compensationStrength;
+  
+  // Apply compensation rotation
+  var compensationQ = new THREE.Quaternion().setFromAxisAngle(
+    new THREE.Vector3(0, 0, 1), 
+    zCompensation
+  );
+  
+  return quaternion.clone().multiply(compensationQ);
+}
+
+
 var flag = true;
 
 function initGlobalLocalLast() {
@@ -201,8 +242,11 @@ function calibrate() {
     if (!mountingOffsetsCalculated) {
       var bone = model.getObjectByName(rigPrefix + keys[i].replace("Alt", ""));
       if (bone && trees[treeType] && trees[treeType][keys[i]]) {
-        // Get expected bone orientation in T-pose (from the model)
-        var expectedBoneQ = bone.quaternion.clone().normalize();
+        // Get expected bone orientation in T-pose (from the model in world space)
+        bone.updateMatrixWorld(true); // Ensure world matrix is current
+        var expectedBoneQ = new THREE.Quaternion();
+        bone.getWorldQuaternion(expectedBoneQ);
+        expectedBoneQ.normalize();
         
         // Get actual sensor reading and apply the TREE MAPPING to it
         // (this is what the sensor SHOULD read if mounted perfectly)
@@ -410,7 +454,7 @@ function getTransformedQuaternion(transformedQ, bone) {
 }
 
 function handleWSMessage(obj) {
-  //console.log(obj);
+ // console.log(obj);
   if (flag) {
     initGlobalLocalLast();
   }
@@ -425,8 +469,6 @@ function handleWSMessage(obj) {
   mac2Bones[bone].last.y = parseFloat(obj.y);
   mac2Bones[bone].last.z = parseFloat(obj.z);
   mac2Bones[bone].last.w = parseFloat(obj.w);
-
-  // console.log(obj);
 
   statsObjs[lowerFirstLetter(bone)].update();
 
@@ -536,6 +578,7 @@ function handleWSMessage(obj) {
 
     var leftuplegQ = getTransformedQuaternion(transformedQ, bone);
     leftuplegQ = applyMountingOffset(leftuplegQ, bone);
+    leftuplegQ = applySensorOffsetCompensation(leftuplegQ, bone);
 
     var obj = mac2Bones["Hips"].global;
     var hipsQ = new THREE.Quaternion(obj.x, obj.y, obj.z, obj.w).normalize();
@@ -557,6 +600,7 @@ function handleWSMessage(obj) {
     
     var rightuplegQ = getTransformedQuaternion(transformedQ, bone);
     rightuplegQ = applyMountingOffset(rightuplegQ, bone);
+    rightuplegQ = applySensorOffsetCompensation(rightuplegQ, bone);
 
     var obj = mac2Bones["Hips"].global;
     var hipsQ = new THREE.Quaternion(obj.x, obj.y, obj.z, obj.w).normalize();
@@ -578,7 +622,13 @@ function handleWSMessage(obj) {
     var spineQ = getTransformedQuaternion(transformedQ, bone);
     spineQ = applyMountingOffset(spineQ, bone);
 
-    var obj = mac2Bones["Hips"].global;  // Use global instead of local to account for Hips mounting offset
+    // Use HipsAlt if Hips is not available (check if global has valid data)
+    var parentBone = mac2Bones["Hips"];
+    if (!parentBone || !parentBone.global || (parentBone.global.x === 0 && parentBone.global.y === 0 && parentBone.global.z === 0 && parentBone.global.w === 1)) {
+      parentBone = mac2Bones["HipsAlt"];
+    }
+    
+    var obj = parentBone.global;  // Use global instead of local to account for parent mounting offset
     var hipQ = new THREE.Quaternion(obj.x, obj.y, obj.z, obj.w).normalize();
     var hipQinverse = new THREE.Quaternion().copy(hipQ).invert();
     var hipCorrection = new THREE.Quaternion().copy(hipQinverse).multiply(spineQ).normalize();
@@ -821,9 +871,7 @@ function handleWSMessage(obj) {
     mac2Bones[bone].global = { x: 0, y: 0, z: 0, w: 1 };
   }
 
-  // deal with hip position
-  console.log(obj);
-
+ 
   if( bone == "Hips" || obj.px && obj.py && obj.pz ) {
     obj.sensorPosition = { x: obj.px, y: obj.py, z: obj.pz};
   }

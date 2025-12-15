@@ -5,25 +5,45 @@
         "axis": {
           "order": "YZX",
           "sign": "-+-"
-        }
+        },
+        "tposeOffset": [
+          {"axis": "X", "degrees": 0},
+          {"axis": "Y", "degrees": 0},
+          {"axis": "Z", "degrees": 0}
+        ]
       },
       "Hips": {
         "axis": {
           "order": "XYZ",
           "sign": "-+-"
-        }
+        },
+        "tposeOffset": [
+          {"axis": "X", "degrees": 0},
+          {"axis": "Y", "degrees": 0},
+          {"axis": "Z", "degrees": 0}
+        ]
       },
       "HipsAlt": {
         "axis": {
           "order": "YZX",
           "sign": "-++"
-        }
+        },
+        "tposeOffset": [
+          {"axis": "X", "degrees": 0},
+          {"axis": "Y", "degrees": 0},
+          {"axis": "Z", "degrees": 0}
+        ]
       },
       "Head": {
         "axis": {
           "order": "YZX",
           "sign": "-+-"
-        }
+        },
+        "tposeOffset": [
+          {"axis": "X", "degrees": 0},
+          {"axis": "Y", "degrees": 0},
+          {"axis": "Z", "degrees": 0}
+        ]
       },
       "LeftArm": {
         "axis": {
@@ -90,6 +110,15 @@
         "axis": {
           "order": "YZX",
           "sign": "-+-"
+        },
+        "tposeOffset": [
+          {"axis": "X", "degrees": 0},
+          {"axis": "Y", "degrees": 0},
+          {"axis": "Z", "degrees": 0}
+        ],
+        "sensorOffset": {
+          "position": [0, -0.15, 0.08],
+          "compensationStrength": 2.0
         }
       },
       "LeftLeg": {
@@ -108,6 +137,15 @@
         "axis": {
           "order": "YZX",
           "sign": "-+-"
+        },
+        "tposeOffset": [
+          {"axis": "X", "degrees": 0},
+          {"axis": "Y", "degrees": 0},
+          {"axis": "Z", "degrees": 0}
+        ],
+        "sensorOffset": {
+          "position": [0, -0.15, -0.08],
+          "compensationStrength": 2.0
         }
       },
       "RightLeg": {
