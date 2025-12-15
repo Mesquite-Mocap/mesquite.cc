@@ -301,8 +301,6 @@ function calibrate() {
           if (flippedAngle < normalAngle) {
             // Flipped version is closer - sensor is mounted backwards
             mountingOffset = flippedOffset;
-            console.log('Detected backward mounting for ' + keys[i] + ' (flipped ' + 
-                       (flipAxis.y === 1 ? 'Y' : 'Z') + '). Using corrected offset.');
           } else {
             // Normal orientation
             mountingOffset = normalOffset;
@@ -315,7 +313,6 @@ function calibrate() {
         // Store the offset for this bone
         mountingOffsets[keys[i]] = mountingOffset;
         
-        console.log('Mounting offset calculated for ' + keys[i] + ':', mountingOffset);
       }
     }
   }
@@ -323,7 +320,6 @@ function calibrate() {
   // Mark mounting offsets as calculated after first calibration
   if (!mountingOffsetsCalculated) {
     mountingOffsetsCalculated = true;
-    console.log('Mounting offsets locked. Subsequent T-pose calibrations will preserve these offsets.');
   }
 
   //initialPosition = new THREE.Vector3(initialPosition.x, initialPosition.y, initialPosition.z).scale(positionSensitivity);
@@ -1022,7 +1018,7 @@ function initInitialPosition(id, x, y, z, w) {
 
 
 function getParentQuaternion(child) {
-  console.log(child);
+//  console.log(child);
 
   var id = dependencyGraph[child];
   var keys = Object.keys(mac2Bones);
