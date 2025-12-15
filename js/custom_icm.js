@@ -371,7 +371,7 @@ function calibrate() {
                     '3. Set T-pose with proper form (arms straight out, legs straight down)';
       
       alert(errorMsg);
-      window.location.reload();
+      //window.location.reload();
     } else {
       var avgOffset = (totalOffsetAngle / boneCount).toFixed(1);
       M.toast({ html: 'T-pose calibration successful! Average mounting offset: ' + avgOffset + '°', displayLength: 5000, classes: 'green toastheader' });
