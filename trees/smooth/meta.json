@@ -47,7 +47,7 @@
       },
       "LeftArm": {
         "axis": {
-          "order": "XZY",
+          "order": "YZX",
           "sign": "-+-"
         },
         "tposeOffset": [
