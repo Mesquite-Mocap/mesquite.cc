@@ -19,7 +19,7 @@
         },
         "posswap": {
           "order": "XYZ",
-          "sign": "-++"
+          "sign": "-+-"
         },
         "tposeOffset": [
           {"axis": "X", "degrees": 0},
@@ -29,11 +29,11 @@
       },
       "HipsAlt": {
         "axis": {
-          "order": "YZX",
+          "order": "XZY",
           "sign": "-+-"
         },
         "posswap": {
-          "order": "XYZ",
+          "order": "YXZ",
           "sign": "-++"
         },
         "tposeOffset": [

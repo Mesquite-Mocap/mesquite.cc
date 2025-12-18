@@ -955,13 +955,20 @@ function handleWSMessage(obj) {
   }
 
  
-  // Position data - always use Hips for positioning regardless of which bone sent it
-  if( bone == "Hips" || (bone == "HipsAlt" && obj.px && obj.py && obj.pz) ) {
+  // Position data - only use Hips px,py,pz for positioning
+  // But use HipsAlt's posswap config when HipsAlt is active (within last 1 second)
+  if( bone == "Hips" && obj.px && obj.py && obj.pz ) {
     obj.sensorPosition = { x: obj.px, y: obj.py, z: obj.pz};
     
-    // Apply posswap transformation to raw position data using Hips configuration
+    // Determine which posswap configuration to use based on HipsAlt activity
+    var posswapBone = (hipsAltLast + 1000 >= new Date().getTime()) ? "HipsAlt" : "Hips";
+    
+    // Apply posswap transformation to raw position data
     // This handles axis reordering and sign flipping (like tree axis mapping for orientation)
-    obj.sensorPosition = getTransformedPosition(obj.sensorPosition, "Hips");
+    obj.sensorPosition = getTransformedPosition(obj.sensorPosition, posswapBone);
+  } else {
+    // Ensure HipsAlt or other bones don't process position data
+    obj.sensorPosition = undefined;
   }
 
 
@@ -975,11 +982,11 @@ function handleWSMessage(obj) {
       initialPosition.y = obj.sensorPosition.y * positionSensitivity;
       initialPosition.z = obj.sensorPosition.z * positionSensitivity;
     }
-    if (calibrated == true) {
+    if (calibrated == false) {
       initialPosition.x = obj.sensorPosition.x * positionSensitivity;
       initialPosition.y = obj.sensorPosition.y * positionSensitivity;
       initialPosition.z = obj.sensorPosition.z * positionSensitivity;
-      calibrated = false;
+      calibrated = true;
     }
 
     var sensorPosition = new THREE.Vector3(
@@ -1003,13 +1010,13 @@ function handleWSMessage(obj) {
     hipsBone.position.set(
       sensorPosition.x,
       sensorPosition.y,
-      -sensorPosition.z
+      sensorPosition.z
     );
     */
 
     hipsBone.position.lerp(new THREE.Vector3(sensorPosition.x,
       sensorPosition.y,
-      -sensorPosition.z), 0.1);
+      sensorPosition.z), 0.1);
 
     if(!$("body").hasClass("up")) {
       updateTrackingLine(hipsBone.position);
