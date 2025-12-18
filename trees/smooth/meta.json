@@ -17,6 +17,10 @@
           "order": "XYZ",
           "sign": "-+-"
         },
+        "posswap": {
+          "order": "XYZ",
+          "sign": "-++"
+        },
         "tposeOffset": [
           {"axis": "X", "degrees": 0},
           {"axis": "Y", "degrees": 0},
@@ -26,6 +30,10 @@
       "HipsAlt": {
         "axis": {
           "order": "YZX",
+          "sign": "-+-"
+        },
+        "posswap": {
+          "order": "XYZ",
           "sign": "-++"
         },
         "tposeOffset": [
@@ -123,7 +131,7 @@
         ],
         "sensorOffset": {
           "position": [0, -0.15, 0.08],
-          "compensationStrength": 2.0
+          "compensationStrength": 0
         }
       },
       "LeftLeg": {
@@ -150,7 +158,7 @@
         ],
         "sensorOffset": {
           "position": [0, -0.15, -0.08],
-          "compensationStrength": 2.0
+          "compensationStrength": 0
         }
       },
       "RightLeg": {

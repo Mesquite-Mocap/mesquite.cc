@@ -108,7 +108,7 @@ navigator.serial.addEventListener("connect", (e) => {
 
   // check if port matches the one in localStorage
 
-  console.log(port.getInfo().usbProductId);
+  //console.log(port.getInfo().usbProductId);
   if (port.getInfo().usbProductId == localStorage.getItem("port")) {
     connectToPort(port);
   }

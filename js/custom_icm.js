@@ -3,6 +3,7 @@ window.sY = 0;
 window.sX = 0;
 window.sZ = 0;
 hipsAltLast = 0;
+hipsLast = 0;
 
 var calibrated = false;
 initialPosition = { x: 0, y: 0, z: 0 };
@@ -378,7 +379,8 @@ function calibrate() {
     }
   }
 
-  //initialPosition = new THREE.Vector3(initialPosition.x, initialPosition.y, initialPosition.z).scale(positionSensitivity);
+  // Reset position to origin on T-pose calibration
+  initialPosition = { x: 0, y: 0, z: 0 };
   calibrated = true;
   line_tracker = [];
 
@@ -505,6 +507,29 @@ function getTransformedQuaternion(transformedQ, bone) {
   return new THREE.Quaternion(x, y, z, transformedQ.w).normalize();
 }
 
+// Transform position vector using posswap configuration (similar to axis mapping for orientation)
+function getTransformedPosition(position, bone) {
+  // Check if posswap config exists for this bone
+  if (!trees[treeType] || !trees[treeType][bone] || !trees[treeType][bone].posswap) {
+    // No posswap config - return original position
+    return position;
+  }
+  
+  var posswap = trees[treeType][bone].posswap;
+  var axisOrder = posswap.order.toLowerCase();
+  var axisSign = posswap.sign;
+  
+  // Create array mapping for position components
+  var posArray = { x: position.x, y: position.y, z: position.z };
+  
+  // Apply axis reordering and sign flipping
+  var x = posArray[axisOrder[0]] * parseInt(axisSign[0] + 1);
+  var y = posArray[axisOrder[1]] * parseInt(axisSign[1] + 1);
+  var z = posArray[axisOrder[2]] * parseInt(axisSign[2] + 1);
+  
+  return { x: x, y: y, z: z };
+}
+
 function handleWSMessage(obj) {
  // console.log(obj);
   if (flag) {
@@ -586,6 +611,7 @@ function handleWSMessage(obj) {
   const slerpFactor = .24; // range: 0.0 to 1.0
 
 
+  // Hips orientation - use when HipsAlt is not available (timeout > 1 second)
   if (bone == "Hips" && hipsAltLast + 1000 < new Date().getTime()) {
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
     var transformedQ = new THREE.Quaternion().multiplyQuaternions(rawQuaternion, refQInverse, bc);
@@ -599,10 +625,14 @@ function handleWSMessage(obj) {
 
     x.quaternion.slerp(hipQ, slerpDict[bone] || slerpFactor);
 
-    setLocal("Hips", alt.x, alt.y, alt.z, alt.w);
-    setGlobal(bone, hipQ.x, hipQ.y, hipQ.z, hipQ.w);
+    if(hipsAltLast + 1000 < new Date().getTime()){
+      setLocal("Hips", alt.x, alt.y, alt.z, alt.w);
+      setGlobal(bone, hipQ.x, hipQ.y, hipQ.z, hipQ.w);
+    }
+    hipsLast = new Date().getTime();
   }
 
+  // HipsAlt orientation - preferred for orientation when available
   if (bone == "HipsAlt") {
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
     var transformedQ = new THREE.Quaternion().multiplyQuaternions(rawQuaternion, refQInverse, bc);
@@ -616,6 +646,7 @@ function handleWSMessage(obj) {
     hipQ = applyMountingOffset(hipQ, bone);
     x.quaternion.slerp(hipQ, slerpDict[bone] || slerpFactor);
 
+    // Always update Hips orientation when HipsAlt is available (it takes priority)
     setLocal("Hips", alt.x, alt.y, alt.z, alt.w);
     setGlobal("Hips", hipQ.x, hipQ.y, hipQ.z, hipQ.w);
     hipsAltLast = new Date().getTime();
@@ -924,13 +955,17 @@ function handleWSMessage(obj) {
   }
 
  
-  if( bone == "Hips" || obj.px && obj.py && obj.pz ) {
+  // Position data - always use Hips for positioning regardless of which bone sent it
+  if( bone == "Hips" || (bone == "HipsAlt" && obj.px && obj.py && obj.pz) ) {
     obj.sensorPosition = { x: obj.px, y: obj.py, z: obj.pz};
+    
+    // Apply posswap transformation to raw position data using Hips configuration
+    // This handles axis reordering and sign flipping (like tree axis mapping for orientation)
+    obj.sensorPosition = getTransformedPosition(obj.sensorPosition, "Hips");
   }
 
 
   if (obj.sensorPosition !== undefined) {
-    obj.sensorPosition.x *= -1;
     if (
       initialPosition.x == 0 &&
       initialPosition.y == 0 &&
@@ -954,12 +989,9 @@ function handleWSMessage(obj) {
     );
     
     // Apply mounting offset to position vector
-    // The phone's orientation affects how position data should be interpreted
-    if (bone == "Hips" && mountingOffsets["Hips"]) {
-      // Rotate the position vector by the hip mounting offset to account for phone orientation
+    // Always use Hips mounting offset since Hips is used for positioning
+    if (mountingOffsets["Hips"]) {
       sensorPosition.applyQuaternion(mountingOffsets["Hips"]);
-    } else if (bone == "HipsAlt" && mountingOffsets["HipsAlt"]) {
-      sensorPosition.applyQuaternion(mountingOffsets["HipsAlt"]);
     }
     
     //set this as position of the bone
@@ -1172,6 +1204,14 @@ function restartPods() {
 }
 function restartPodsConfirm() {
   $("#restartPods").prop('disabled', true);
+  
+  // Reset mounting offsets flag to allow recalculation
+  mountingOffsetsCalculated = false;
+  mountingOffsets = {};
+  
+  // Reset position to origin
+  initialPosition = { x: 0, y: 0, z: 0 };
+  
   window.sWrite("reboot");
   M.toast({ html: '<ul><li>Please get in a T-pose and  wait for <span class="secs" style="font-size:200%;font-weight:bold">30 seconds</span>.</li><li>When done the T-Pose* will be set.</li><li><sub>* You can click on "Set T-Pose" button to do this at anytime.</sub></li>', classes: 'yellow black-text', displayLength: 30 * 1000 });
   setTimeout(function () {
