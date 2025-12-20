@@ -225,6 +225,8 @@ function initGlobalLocalLast() {
 
 
 function calibrate() {
+ initialPosition = model.getObjectByName("mmHips").position
+  
   var keys = Object.keys(mac2Bones);
   for (var i = 0; i < keys.length; i++) {
     // Safety check - ensure entry exists and has last property
@@ -313,22 +315,7 @@ function calibrate() {
         
         // Store the offset for this bone
         mountingOffsets[keys[i]] = mountingOffset;
-        
-        // Calculate the angular offset to validate calibration quality
-        var offsetAngleDeg = (2 * Math.acos(Math.abs(mountingOffset.w)) * 180 / Math.PI);
-        
-        
-        // Validate: mounting offset should be reasonable (< 60 degrees for most bones)
-        // Larger offsets suggest incorrect box calibration or T-pose
-        var maxAngle = 60;
-        if (keys[i].indexOf("Arm") !== -1 || keys[i].indexOf("Hand") !== -1) {
-          maxAngle = 90; // Arms/hands can have larger offsets due to T-pose geometry
-        }
-        
-        if (offsetAngleDeg > maxAngle) {
-          console.warn('WARNING: Large mounting offset detected for ' + keys[i] + ' (' + 
-                      offsetAngleDeg.toFixed(1) + '°). This may indicate incorrect box calibration or T-pose position.');
-        }
+    
       }
     }
   }
@@ -380,11 +367,9 @@ function calibrate() {
   }
 
   // Reset position to origin on T-pose calibration
-  initialPosition = { x: 0, y: 0, z: 0 };
+ // initialPosition = { x: 0, y: 0, z: 0 };
   calibrated = true;
   line_tracker = [];
-
-
 
   $("#calibratein5").removeClass("animate__infinite");
   $("#recordButton").fadeIn();
@@ -973,21 +958,6 @@ function handleWSMessage(obj) {
 
 
   if (obj.sensorPosition !== undefined) {
-    if (
-      initialPosition.x == 0 &&
-      initialPosition.y == 0 &&
-      initialPosition.z == 0
-    ) {
-      initialPosition.x = obj.sensorPosition.x * positionSensitivity;
-      initialPosition.y = obj.sensorPosition.y * positionSensitivity;
-      initialPosition.z = obj.sensorPosition.z * positionSensitivity;
-    }
-    if (calibrated == false) {
-      initialPosition.x = obj.sensorPosition.x * positionSensitivity;
-      initialPosition.y = obj.sensorPosition.y * positionSensitivity;
-      initialPosition.z = obj.sensorPosition.z * positionSensitivity;
-      calibrated = true;
-    }
 
     var sensorPosition = new THREE.Vector3(
       obj.sensorPosition.x * positionSensitivity - initialPosition.x,
@@ -1248,10 +1218,10 @@ function calibratein5() {
   M.Toast.dismissAll();
   M.toast({ html: 'T-Pose Calibration', classes: 'green black-text toastheader', displayLength: 1000000 });
       if($("body").hasClass("up")) {
-  M.toast({ html: 'Please wear the pods and get in a T-pose for 5 seconds.<br> <button class="btn-flat toast-action blue white-text" style="width:340px" onclick="M.Toast.dismissAll();calibratein5Confirm()">Start Timer</button><button class="btn-flat toast-action red white-text" style="margin-right:0" onclick="M.Toast.dismissAll();">Cancel</button>', classes: ' blue-grey lighten-4 black-text toastheader', displayLength: 1000000 });
+  M.toast({ html: 'Please wear the pods and get in a t-pose for 5 seconds.<br> <button class="btn-flat toast-action blue white-text" style="width:340px" onclick="M.Toast.dismissAll();calibratein5Confirm()">Start Timer</button><button class="btn-flat toast-action red white-text" style="margin-right:0" onclick="M.Toast.dismissAll();">Cancel</button>', classes: ' blue-grey lighten-4 black-text toastheader', displayLength: 1000000 });
       }
       else {
-          M.toast({ html: 'Please wear the pods and get in a T-pose for 5 seconds.<br> <button class="btn-flat toast-action blue white-text" style="width:340px;margin-right:0" onclick="M.Toast.dismissAll();calibratein5Confirm()">Start Timer</button>', classes: ' blue-grey lighten-4 black-text toastheader', displayLength: 1000000 });
+          M.toast({ html: 'Please wear the pods and get in a t-pose for 5 seconds.<br> <button class="btn-flat toast-action blue white-text" style="width:340px;margin-right:0" onclick="M.Toast.dismissAll();calibratein5Confirm()">Start Timer</button>', classes: ' blue-grey lighten-4 black-text toastheader', displayLength: 1000000 });
       }
 
 
@@ -1339,7 +1309,7 @@ function boxCalibratein30Confirm() {
 function calibratein5Confirm() {
   $("#calibratein5").prop('disabled', true);
     M.toast({ html: 'T-Pose Calibration in Progress...', classes: 'red black-text toastheader', displayLength: 5 * 1000 });
-  M.toast({ html: '<ul><li>Please get in a T-pose and  wait for <span class="secs" style="font-size:200%;font-weight:bold">5 seconds</span>.</li><li>When done the T-Pose* will be set.</li><img style="width:70%;display:block;margin:auto" src="icons/t-pose.png"><li><sub>* You can click on "Set T-Pose" button to do this at anytime.</sub></li>', classes: 'white black-text blue-grey lighten-4', displayLength: 5 * 1000 });
+  M.toast({ html: '<ul><li>Please get in a t-pose and  wait for <span class="secs" style="font-size:200%;font-weight:bold">5 seconds</span>.</li><li>When done the T-Pose* will be set.</li><img style="width:70%;display:block;margin:auto" src="icons/t-pose.png"><li><sub>* You can click on "Set T-Pose" button to do this at anytime.</sub></li>', classes: 'white black-text blue-grey lighten-4', displayLength: 5 * 1000 });
   setTimeout(function () {
     calibrate();
     $("#calibratein5").prop('disabled', false);

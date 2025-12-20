@@ -29,7 +29,7 @@
       },
       "HipsAlt": {
         "axis": {
-          "order": "XZY",
+          "order": "YZX",
           "sign": "-+-"
         },
         "posswap": {
