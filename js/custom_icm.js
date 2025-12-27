@@ -346,28 +346,9 @@ function calibrate() {
         badBones.push(boneName + ' (' + angleDeg.toFixed(1) + '°)');
       }
     }
-    
-    if (validationFailed) {
-      var errorMsg = 'T-POSE CALIBRATION ISSUE DETECTED!\n\n' +
-                    'Large mounting offsets found for: ' + badBones.join(', ') + '\n\n' +
-                    'This usually means:\n' +
-                    '1. Box calibration was not done in the correct flat position\n' +
-                    '2. T-pose position is incorrect (arms not extended, legs not straight, etc.)\n\n' +
-                    'Please:\n' +
-                    '1. Refresh the page to start over\n' +
-                    '2. Do box calibration with sensors lying flat\n' +
-                    '3. Set T-pose with proper form (arms straight out, legs straight down)';
-      
-      alert(errorMsg);
-      //window.location.reload();
-    } else {
-      var avgOffset = (totalOffsetAngle / boneCount).toFixed(1);
-      M.toast({ html: 'T-pose calibration successful! Average mounting offset: ' + avgOffset + '°', displayLength: 5000, classes: 'green toastheader' });
-    }
   }
 
   // Reset position to origin on T-pose calibration
- // initialPosition = { x: 0, y: 0, z: 0 };
   calibrated = true;
   line_tracker = [];
 
@@ -622,17 +603,12 @@ function handleWSMessage(obj) {
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
     var transformedQ = new THREE.Quaternion().multiplyQuaternions(rawQuaternion, refQInverse, bc);
 
-    //var alt = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion, bc);
-    var alt = new THREE.Quaternion().multiplyQuaternions(rawQuaternion, refQInverse, bc);
-    alt = getTransformedQuaternion(alt, bone).normalize();
-    alt = applyMountingOffset(alt, bone);
 
     var hipQ = getTransformedQuaternion(transformedQ, bone).normalize();
     hipQ = applyMountingOffset(hipQ, bone);
     x.quaternion.slerp(hipQ, slerpDict[bone] || slerpFactor);
 
-    // Always update Hips orientation when HipsAlt is available (it takes priority)
-    setLocal("Hips", alt.x, alt.y, alt.z, alt.w);
+    setLocal("Hips", hipQ.x, hipQ.y, hipQ.z, hipQ.w);
     setGlobal("Hips", hipQ.x, hipQ.y, hipQ.z, hipQ.w);
     hipsAltLast = new Date().getTime();
   }
@@ -957,33 +933,16 @@ function handleWSMessage(obj) {
   }
 
 
-  if (obj.sensorPosition !== undefined) {
-
+  if (bone == "Hips" && obj.sensorPosition !== undefined) {
     var sensorPosition = new THREE.Vector3(
       obj.sensorPosition.x * positionSensitivity - initialPosition.x,
       obj.sensorPosition.y * positionSensitivity - initialPosition.y + 100,
       obj.sensorPosition.z * positionSensitivity - initialPosition.z
     );
     
-    // Apply mounting offset to position vector
-    // Always use Hips mounting offset since Hips is used for positioning
-    if (mountingOffsets["Hips"]) {
-      sensorPosition.applyQuaternion(mountingOffsets["Hips"]);
-    }
-    
-    //set this as position of the bone
-    // console.log(sensorPosition);
 
     const hipsBone = model.getObjectByName(rigPrefix + "Hips");
     
-    /*   
-    hipsBone.position.set(
-      sensorPosition.x,
-      sensorPosition.y,
-      sensorPosition.z
-    );
-    */
-
     hipsBone.position.lerp(new THREE.Vector3(sensorPosition.x,
       sensorPosition.y,
       sensorPosition.z), 0.1);
