@@ -34,7 +34,7 @@ async function connect() {
   // - Request a port and open a connection.
   port = await navigator.serial.requestPort();
   // - Wait for the port to open.toggleUIConnected
-  await port.open({ baudRate: 921600 });
+  await port.open({ baudRate: 2000000 });
   $("body").addClass("connected");
 
 
@@ -110,12 +110,6 @@ function logData(line) {
   try {
     var x = JSON.parse(line);
     // console.log(x);
-
-        if (x && x.p) {
-      handleAggregate(x);     // NEW
-    } else {
-      handleWSMessage(x);     // existing path
-    }
     if (x.face) {
       var canvas = document.getElementById("facecanvas");
       var ctx = canvas.getContext("2d");
