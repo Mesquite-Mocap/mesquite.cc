@@ -1,4 +1,100 @@
 var rigPrefix = "mm";
+const DEBUG_WS = false;
+const ENABLE_RAF_PIPELINE = false;
+const LOW_LATENCY_MODE = true;
+const ENABLE_STATUS_UI = true;
+const ENABLE_STATS_UPDATES = true;
+const STATS_UPDATE_MS = 0;
+const RENDER_MODE = "immediate"; // "immediate" or "frame-locked"
+const SMOOTHING_ENABLE = true;
+const SMOOTHING_ALPHA = 0.35; // 0..1, higher = smoother but more lag
+const SMOOTHING_MODE = "raf"; // "raf" or "packet"
+const SMOOTHING_HZ = 120; // responsiveness for raf smoothing
+const POD_DISCONNECT_MS = 1200;
+const POD_ID_COUNT = 15;
+
+const __podLastSeen = Object.create(null); // bone -> ms
+const __podStatus = Object.create(null);   // bone -> "connected"|"disconnected"
+const __podLastSeenById = new Array(POD_ID_COUNT).fill(0); // id -> ms
+
+function __getStatusEl(bone) {
+  return (
+    document.getElementById(bone + "Status") ||
+    document.getElementById(lowerFirstLetter(bone) + "Status")
+  );
+}
+
+function __markPodConnected(bone, statusEl, now) {
+  __podLastSeen[bone] = now;
+  if (!statusEl) return;
+
+  if (__podStatus[bone] !== "connected") {
+    __podStatus[bone] = "connected";
+    statusEl.classList.add("connected");
+    if (ENABLE_STATUS_UI) {
+      statusEl.innerHTML = "<b class='green-text'>ON</b>";
+    }
+  }
+  statusEl.dataset.last = String(now);
+}
+
+function __updatePodCountsAndDisconnects() {
+  const now = Date.now();
+  let activeBoneCount = 0;
+
+  for (const bone in __podLastSeen) {
+    if (!Object.prototype.hasOwnProperty.call(__podLastSeen, bone)) continue;
+    const last = __podLastSeen[bone] || 0;
+    if (now - last <= POD_DISCONNECT_MS) {
+      activeBoneCount++;
+      continue;
+    }
+
+    if (__podStatus[bone] !== "disconnected") {
+      __podStatus[bone] = "disconnected";
+      const statusEl = __getStatusEl(bone);
+      if (statusEl) {
+        statusEl.classList.remove("connected");
+        statusEl.innerHTML = "<b class='red-text'>DISCONNECTED</b>";
+      }
+    }
+  }
+
+  let activeIdCount = 0;
+  for (let i = 0; i < __podLastSeenById.length; i++) {
+    const last = __podLastSeenById[i] || 0;
+    if (now - last <= POD_DISCONNECT_MS) activeIdCount++;
+  }
+
+  const activeCount = activeIdCount || activeBoneCount;
+  const countEls = document.querySelectorAll(".podCount");
+  if (countEls.length) {
+    for (const el of countEls) {
+      el.textContent = String(activeCount);
+    }
+  }
+}
+
+// Fast-path bone quaternion apply (used by the low-latency pipeline)
+window.applyQuatToBone = function(bone, x, y, z, w) {
+  if (typeof model === "undefined" || !model) return;
+
+  const boneName = (bone || "").replace("Alt", "");
+  const target = model.getObjectByName(rigPrefix + boneName);
+  if (!target) return;
+
+  // Raw sensor quaternion
+  let q = new THREE.Quaternion(x, y, z, w).normalize();
+
+  // Apply your existing mapping/offset pipeline (keeps your behavior consistent)
+  q = getTransformedQuaternion(q, bone);
+  q = applyMountingOffset(q, bone);
+  q = applySensorOffsetCompensation(q, bone);
+
+  target.quaternion.copy(q);
+};
+
+
 window.sY = 0;
 window.sX = 0;
 window.sZ = 0;
@@ -16,6 +112,88 @@ var mountingOffsetsCalculated = false; // flag to only calculate once
 // Static T-pose anatomical offsets - compensates for sensor neutral position vs bone T-pose
 // These are applied BEFORE mounting offset calculation
 var tposeOffsets = {};
+
+
+// ======================= LOW-LATENCY PIPELINE =======================
+// Cache latest sample per bone; apply to rig once per render frame.
+const __latest = new Map(); // bone -> sample
+let __lastStatusUpdate = 0;
+
+// Call this for every incoming sample (cheap)
+function __ingestSample(s) {
+  __latest.set(s.bone, s);
+}
+
+// OPTIONAL: UI updates throttled to 10 Hz (prevents DOM spam)
+function __updateStatusUI_10hz() {
+  const now = performance.now();
+  if (now - __lastStatusUpdate < 100) return; // 10 Hz
+  __lastStatusUpdate = now;
+
+  // If you already have status UI code, move it here later.
+  // For now: do nothing (keeps latency low).
+}
+
+// Apply latest cached quats once per animation frame
+function __applyLatestLoop() {
+  for (const [bone, s] of __latest) {
+    // IMPORTANT: this must call your existing rig update path.
+    // Replace the next line with your existing function that applies quaternion to the bone.
+    // Example (placeholder): setBoneQuaternion(bone, s.x, s.y, s.z, s.w);
+
+    if (typeof window.applyQuatToBone === "function") {
+      window.applyQuatToBone(bone, s.x, s.y, s.z, s.w);
+    } else {
+      // If your project already applies the quat inside handleWSMessage, you can ignore this.
+      // We'll keep ingestion and let your existing pipeline run.
+    }
+  }
+
+  __updateStatusUI_10hz();
+  requestAnimationFrame(__applyLatestLoop);
+}
+if (ENABLE_RAF_PIPELINE) {
+  requestAnimationFrame(__applyLatestLoop);
+}
+// ====================================================================
+
+
+
+const POD_ID_TO_BONE_DEFAULT = {
+  0: "Head",
+  1: "Spine",
+  2: "HipsAlt",
+  3: "LeftArm",      // IMPORTANT: your rig/mac2Bones uses LeftArm (not LeftUpArm)
+  4: "LeftForeArm",     // If your 5th pod is not RightArm, change this to the correct bone
+  5: "LeftHand",
+  6: "RightArm",
+  7: "RightForeArm",
+  8: "RightHand",
+  9: "LeftUpLeg",
+  10: "LeftLeg",
+  11: "LeftFoot",
+  12: "RightUpLeg",
+  13: "RightLeg",
+  14: "RightFoot",
+};
+
+// If incoming mapping uses legacy names, normalize them to names your rig actually uses
+const BONE_ALIASES = {
+  LeftUpArm: "LeftArm",
+  RightUpArm: "RightArm",
+  Hips: "Hips",
+  HipsAlt: "HipsAlt",
+};
+
+function resolveBoneName(id) {
+  const map = (window.POD_ID_TO_BONE_OVERRIDE && typeof window.POD_ID_TO_BONE_OVERRIDE === "object")
+    ? window.POD_ID_TO_BONE_OVERRIDE
+    : POD_ID_TO_BONE_DEFAULT;
+
+  const raw = map[id];
+  return BONE_ALIASES[raw] || raw;
+}
+
 
 // smooth position
 var kfx = new KalmanFilter({ R: 0.01, Q: 3 });
@@ -89,12 +267,85 @@ function applySensorOffsetCompensation(quaternion, bone) {
   return quaternion.clone().multiply(compensationQ);
 }
 
+const __smoothTargets = new Map(); // bone -> { obj, q }
+let __smoothLoopStarted = false;
+let __lastSmoothTs = 0;
+
+function __queueSmoothQuat(target, bone, quat) {
+  if (!target) return;
+
+  let entry = __smoothTargets.get(bone);
+  if (!entry) {
+    entry = { obj: target, q: new THREE.Quaternion() };
+    __smoothTargets.set(bone, entry);
+  } else {
+    entry.obj = target;
+  }
+
+  entry.q.copy(quat);
+
+  if (!__smoothLoopStarted) {
+    __smoothLoopStarted = true;
+    requestAnimationFrame(__smoothLoop);
+  }
+}
+
+function __smoothLoop(ts) {
+  if (!__lastSmoothTs) __lastSmoothTs = ts;
+  const dtMs = ts - __lastSmoothTs;
+  __lastSmoothTs = ts;
+
+  const alpha = 1 - Math.exp(-dtMs * (SMOOTHING_HZ / 1000));
+  for (const entry of __smoothTargets.values()) {
+    if (entry.obj) entry.obj.quaternion.slerp(entry.q, alpha);
+  }
+
+  requestAnimationFrame(__smoothLoop);
+}
+
+function applyBoneQuat(target, quat, bone, slerpFactor) {
+  if (!target) return;
+  if (LOW_LATENCY_MODE) {
+    if (SMOOTHING_ENABLE && SMOOTHING_MODE === "raf") {
+      __queueSmoothQuat(target, bone, quat);
+      return;
+    }
+    if (SMOOTHING_ENABLE) {
+      target.quaternion.slerp(quat, SMOOTHING_ALPHA);
+    } else {
+      target.quaternion.copy(quat);
+    }
+    return;
+  }
+
+  const t = (typeof slerpDict !== "undefined" && slerpDict[bone] != null)
+    ? slerpDict[bone]
+    : slerpFactor;
+  target.quaternion.slerp(quat, t);
+}
+
 
 var flag = true;
 
 function initGlobalLocalLast() {
+  // DO NOT flip flag until we confirm the rig is actually available.
+  if (!window.model || typeof model.getObjectByName !== "function") {
+    console.warn("[INIT] model not ready yet");
+    return false;
+  }
+
+  const hipsObj = model.getObjectByName(rigPrefix + "Hips");
+  const spineObj = model.getObjectByName(rigPrefix + "Spine");
+  const headObj = model.getObjectByName(rigPrefix + "Head");
+
+  if (!hipsObj || !spineObj || !headObj) {
+    console.warn("[INIT] rig bones not ready yet");
+    return false;
+  }
+
+  // Only now is it safe to mark init complete
   flag = false;
-  
+
   // Initialize T-pose offsets from meta.json
   tposeOffsets = {};
   var boneNames = ["Hips", "HipsAlt", "Spine", "Head", "LeftArm", "LeftForeArm", "LeftHand", 
@@ -220,6 +471,7 @@ function initGlobalLocalLast() {
   setLocal("RightHand", bone.quaternion.x, bone.quaternion.y, bone.quaternion.z, bone.quaternion.w);
   initInitialPosition("RightHand", bone.quaternion.x, bone.quaternion.y, bone.quaternion.z, bone.quaternion.w);
 
+  return true;
 }
 
 
@@ -496,69 +748,246 @@ function getTransformedPosition(position, bone) {
   return { x: x, y: y, z: z };
 }
 
-function handleWSMessage(obj) {
- // console.log(obj);
-  if (flag) {
-    initGlobalLocalLast();
+const __latestById = Object.create(null);  // id -> last packet
+const __dirtyIds = new Set();
+let __renderLoopStarted = false;
+
+// ---------- Frame-locked render (smooth pacing, preserves source FPS) ----------
+let __pendingAggregate = null;
+let __nextApplyAt = 0;
+let __frameIntervalMs = 1000 / 60;
+
+function __updateFrameIntervalFromFrame(frame) {
+  if (!frame || !frame.fps) return;
+  const fps = Math.max(10, Math.min(240, frame.fps | 0));
+  __frameIntervalMs = 1000 / fps;
+}
+
+function __applyAggregateFrame(frame) {
+  if (!frame || !Array.isArray(frame.p)) return;
+
+  for (const row of frame.p) {
+    if (!Array.isArray(row) || row.length < 8) continue;
+
+    const pid = row[0] | 0;
+    const bone = (typeof resolveBoneName === "function") ? resolveBoneName(pid) : null;
+    if (!bone) continue;
+
+    const obj = {
+      id: String(pid),
+      bone,
+      count: row[1],
+      millis: row[2],
+      batt: row[3],
+      x: row[4],
+      y: row[5],
+      z: row[6],
+      w: row[7],
+    };
+
+    if (!Number.isFinite(obj.x) || !Number.isFinite(obj.y) || !Number.isFinite(obj.z) || !Number.isFinite(obj.w)) {
+      continue;
+    }
+
+    if (typeof handleWSMessage === "function") handleWSMessage(obj);
   }
-  var bone = obj.bone;
-  var x = model.getObjectByName(rigPrefix + bone.replace("Alt", ""));
-  // console.log(bone, x);
-  if (!bone || !x) {
+}
+
+function __renderAggregateLoop(ts) {
+  if (!__nextApplyAt) __nextApplyAt = ts;
+
+  if (__pendingAggregate) {
+    if (ts >= __nextApplyAt) {
+      __applyAggregateFrame(__pendingAggregate);
+      __pendingAggregate = null;
+      __nextApplyAt = ts + __frameIntervalMs;
+    }
+  }
+
+  requestAnimationFrame(__renderAggregateLoop);
+}
+
+requestAnimationFrame(__renderAggregateLoop);
+
+// Parent-first bone update order (stabilizes hierarchy)
+const __boneOrder = [
+  "Hips", "Spine", "Head",
+  "LeftArm", "LeftForeArm", "LeftHand",
+  "RightArm", "RightForeArm", "RightHand",
+  "LeftUpLeg", "LeftLeg", "LeftFoot",
+  "RightUpLeg", "RightLeg", "RightFoot"
+];
+const __boneRank = Object.create(null);
+for (let i = 0; i < __boneOrder.length; i++) __boneRank[__boneOrder[i]] = i;
+
+function __rankForId(id) {
+  const b = mac2Bones?.[id]?.id;
+  return (__boneRank[b] !== undefined) ? __boneRank[b] : 999;
+}
+
+function __startRenderLoop() {
+  if (__renderLoopStarted) return;
+  __renderLoopStarted = true;
+  requestAnimationFrame(__renderLoop);
+}
+
+function __renderLoop() {
+  if (__dirtyIds.size) {
+    const ids = Array.from(__dirtyIds);
+    ids.sort((a, b) => __rankForId(a) - __rankForId(b));
+
+    for (const id of ids) {
+      const pkt = __latestById[id];
+      if (pkt) __applyPacket(pkt);
+    }
+    __dirtyIds.clear();
+  }
+  requestAnimationFrame(__renderLoop);
+}
+
+// --- Aggregate frame -> per-bone updates (SINGLE SOURCE OF TRUTH) ---
+window.handleAggregate = function(frame) {
+  if (!frame || !Array.isArray(frame.p)) return;
+  const now = Date.now();
+
+  for (const row of frame.p) {
+    if (!Array.isArray(row) || row.length < 8) continue;
+    const pid = row[0] | 0;
+    if (pid >= 0 && pid < __podLastSeenById.length) {
+      __podLastSeenById[pid] = now;
+    }
+  }
+
+  if (RENDER_MODE === "frame-locked") {
+    __updateFrameIntervalFromFrame(frame);
+    __pendingAggregate = frame;
     return;
   }
+
+  __applyAggregateFrame(frame);
+};
+
+
+
+
+function handleWSMessage(obj) {
+  if (DEBUG_WS) console.log("Received WS message:", obj);
+  if (!obj) return;
+
+  // Accept both formats:
+  // 1) Aggregate format: { bone, count, millis, batt, x,y,z,w }
+  // 2) Legacy format:    { id,   count, millis, batt, x,y,z,w }
+  if (!obj.bone && obj.id != null) {
+    const pid = Number(obj.id);
+    obj.bone = (typeof resolveBoneName === "function")
+      ? resolveBoneName(pid)
+      : (POD_ID_TO_BONE_DEFAULT[pid] || null);
+  }
+
+  // If still no bone, nothing we can do.
+  if (!obj.bone) return;
+
+  // Ensure globals are initialized once before touching mac2Bones/stats/DOM
+  if (typeof flag !== "undefined" && flag) {
+    // Only init after the rig exists; otherwise just wait for the next frame
+    if (!window.model || !model.getObjectByName || !model.getObjectByName(rigPrefix + "Hips")) return;
+    initGlobalLocalLast();
+  }
+
+  if (typeof mac2Bones === "undefined") return;
+
+  // (keep the rest of your existing handleWSMessage code unchanged below this)
+
+var bone = obj.bone;
+
+  // Ensure this bone exists in our dictionaries
+  if (!mac2Bones[bone]) {
+    return;
+  }
+
+  // UI element might be "HeadStatus" (capital) or "headStatus" (lowercase).
+  // Do NOT block rig updates if UI entry is missing.
+  const statusEl = __getStatusEl(bone);
+  __markPodConnected(bone, statusEl, Date.now());
+
+  // ---- Rig lookup (do NOT return early; only skip quaternion apply) ----
+  const targetName = rigPrefix + bone.replace("Alt", "");
+  const x = (window.model && typeof model.getObjectByName === "function")
+    ? model.getObjectByName(targetName)
+    : null;
+
+  if (!x) {
+    // Keep UI updates working even if the rig bone isn't found.
+  }
+
 
   mac2Bones[bone].last.x = parseFloat(obj.x);
   mac2Bones[bone].last.y = parseFloat(obj.y);
   mac2Bones[bone].last.z = parseFloat(obj.z);
   mac2Bones[bone].last.w = parseFloat(obj.w);
 
-  statsObjs[lowerFirstLetter(bone)].update();
-
-  var millis = parseInt(obj.millis || "-1");
-  var count = parseInt(obj.count || "-1");
-  //console.log(millis, count);
-  var countText = "";
-
-  var millText = millis == -1 ? "" : "<br><span class='chip'>" + millis + "ms</span>";
-
-  if (millis > 0) {
-    var t = moment(new Date().getTime() - millis);
-    let result = t.fromNow(true);
-
-    millText = "<span class=''>for " + result + "</span>";
-    millText = millText.replace("for a few seconds", "just now");
+    const statsKey = lowerFirstLetter(bone);
+  if (ENABLE_STATS_UPDATES && statsObjs && statsObjs[statsKey] && typeof statsObjs[statsKey].update === "function") {
+    if (STATS_UPDATE_MS > 0) {
+      const now = Date.now();
+      const lastStats = statsObjs[statsKey].__lastUpdate || 0;
+      if (now - lastStats >= STATS_UPDATE_MS) {
+        statsObjs[statsKey].update();
+        statsObjs[statsKey].__lastUpdate = now;
+      }
+    } else {
+      statsObjs[statsKey].update();
+    }
   }
 
-  if (count > 0) {
-    countText = "<br> <span class='chip' style='font-size:12px;padding:2px;line-height26px'>" + count + " <small>frames</small></span>";
+  let doUi = false;
+  if (ENABLE_STATUS_UI && statusEl) {
+    const now = Date.now();
+    const lastUi = parseInt(statusEl.dataset.lastUi || "0", 10);
+    if (now - lastUi >= 80) {          // ~12.5 Hz UI updates
+      statusEl.dataset.lastUi = String(now);
+      doUi = true;
+    }
   }
 
-  /*
-  var newBatt = parseFloat(obj.batt) * 100 - 80;
-  newBatt *= 9;
-  */
-  var newBatt = parseFloat(obj.batt)*100;
-  //console.log(newBatt, obj.batt);
-  newBatt = Math.min(100, Math.max(0, newBatt)).toFixed(0);
+  if (doUi && statusEl) {
+    // Build UI strings ONLY when we will render them (big perf win)
+    const millis = parseInt(obj.millis || "-1", 10);
+    const count  = parseInt(obj.count || "-1", 10);
 
+    let millText = (millis <= 0) ? "" : "<br><span class='chip'>" + millis + "ms</span>";
+    if (millis > 0) {
+      const t = moment(Date.now() - millis);
+      let result = t.fromNow(true);
+      millText = "<span class=''>for " + result + "</span>";
+      millText = millText.replace("for a few seconds", "just now");
+    }
 
-  var battClass = "";
-  if (newBatt < 20) {
-    battClass = "red-text";
-  } else if (newBatt < 40) {
-    battClass = "orange-text";
-  } else if (newBatt < 60) {
-    battClass = "yellow-text";
-  } else {
-    battClass = "green-text";
+    let countText = "";
+    if (count > 0) {
+      countText = "<br> <span class='chip' style='font-size:12px;padding:2px;line-height:26px'>" +
+        count + " <small>frames</small></span>";
+    }
+
+    let newBatt = Math.min(100, Math.max(0, parseFloat(obj.batt))).toFixed(0);
+    let battClass = (newBatt < 20) ? "red-text" :
+                    (newBatt < 40) ? "orange-text" :
+                    (newBatt < 60) ? "yellow-text" : "green-text";
+
+    statusEl.innerHTML =
+      "<b style='margin-right:5px;font-size:16px;text-shadow:0px 0px 1px' class='green white-text chip'>ON</b>" +
+      millText +
+      countText +
+      "<span class='chip' style='font-size:12px;padding:2px;line-height:26px'>" +
+        "<i style='transform:rotate(90deg);vertical-align:middle;text-shadow:0px 0px 1px black;margin-left:0' class='material-icons " +
+        battClass +
+        "'>battery_full</i> " +
+        newBatt +
+        "%</span>";
+
+    $("#" + statusEl.id).addClass("connected");
+    statusEl.dataset.last = String(Date.now());
   }
-
-  document.getElementById(lowerFirstLetter(bone) + "Status").innerHTML = "<b style='margin-right:5px;font-size:16px;text-shadow:0px 0px 1px' class='green white-text chip'>ON</b>" + millText + countText + "<span class='chip' style='font-size:12px;padding:2px;line-height:26px'>" + "<i style='transform:rotate(90deg);vertical-align:middle;text-shadow:0px 0px 1px black;margin-left:0' class='material-icons " + battClass + "'>battery_full</i> " +
-    newBatt + "%</span>";
-  $("#" + lowerFirstLetter(bone) + "Status").addClass("connected");
-
-  document.getElementById(lowerFirstLetter(bone) + "Status").dataset.last = new Date().getTime();
 
 
   var rawQuaternion = new THREE.Quaternion(parseFloat(obj.x), parseFloat(obj.y), parseFloat(obj.z), parseFloat(obj.w));
@@ -589,7 +1018,7 @@ function handleWSMessage(obj) {
     var hipQ = getTransformedQuaternion(transformedQ, bone).normalize();
     hipQ = applyMountingOffset(hipQ, bone); // Apply mounting offset after tree transformation
 
-    x.quaternion.slerp(hipQ, slerpDict[bone] || slerpFactor);
+    applyBoneQuat(x, hipQ, bone, slerpFactor);
 
     if(hipsAltLast + 1000 < new Date().getTime()){
       setLocal("Hips", alt.x, alt.y, alt.z, alt.w);
@@ -606,7 +1035,7 @@ function handleWSMessage(obj) {
 
     var hipQ = getTransformedQuaternion(transformedQ, bone).normalize();
     hipQ = applyMountingOffset(hipQ, bone);
-    x.quaternion.slerp(hipQ, slerpDict[bone] || slerpFactor);
+    applyBoneQuat(x, hipQ, bone, slerpFactor);
 
     setLocal("Hips", hipQ.x, hipQ.y, hipQ.z, hipQ.w);
     setGlobal("Hips", hipQ.x, hipQ.y, hipQ.z, hipQ.w);
@@ -630,7 +1059,7 @@ function handleWSMessage(obj) {
     var hipsCorrection = new THREE.Quaternion().copy(hipsQinverse).multiply(leftuplegQ).normalize();
     
 
-    x.quaternion.slerp(hipsCorrection, slerpDict[bone] || slerpFactor);
+    applyBoneQuat(x, hipsCorrection, bone, slerpFactor);
 
     setLocal(bone, hipsCorrection.x, hipsCorrection.y, hipsCorrection.z, hipsCorrection.w);
     setGlobal(bone, leftuplegQ.x, leftuplegQ.y, leftuplegQ.z, leftuplegQ.w);
@@ -652,7 +1081,7 @@ function handleWSMessage(obj) {
     var hipsCorrection = new THREE.Quaternion().copy(hipsQinverse).multiply(rightuplegQ).normalize();
 
 
-    x.quaternion.slerp(hipsCorrection, slerpDict[bone] || slerpFactor);
+    applyBoneQuat(x, hipsCorrection, bone, slerpFactor);
 
     setLocal(bone, hipsCorrection.x, hipsCorrection.y, hipsCorrection.z, hipsCorrection.w);
     setGlobal(bone, rightuplegQ.x, rightuplegQ.y, rightuplegQ.z, rightuplegQ.w);
@@ -679,7 +1108,7 @@ function handleWSMessage(obj) {
 
     //x.quaternion.copy(hipCorrection);
 
-    x.quaternion.slerp(hipCorrection, slerpDict[bone] || slerpFactor);
+    applyBoneQuat(x, hipCorrection, bone, slerpFactor);
 
     setLocal(bone, hipCorrection.x, hipCorrection.y, hipCorrection.z, hipCorrection.w);
     setGlobal(bone, spineQ.x, spineQ.y, spineQ.z, spineQ.w);
@@ -701,7 +1130,7 @@ function handleWSMessage(obj) {
     //(hipCorrection, bone);
     //x.rotation.set(zt[0], zt[1], zt[2]);
     //x.quaternion.copy(headQ);
-    x.quaternion.slerp(hipCorrection, slerpDict[bone] || slerpFactor);
+    applyBoneQuat(x, hipCorrection, bone, slerpFactor);
 
     setLocal(bone, hipCorrection.x, hipCorrection.y, hipCorrection.z, hipCorrection.w);
     setGlobal(bone, headQ.x, headQ.y, headQ.z, headQ.w);
@@ -721,7 +1150,7 @@ function handleWSMessage(obj) {
     var spineQinverse = new THREE.Quaternion().copy(spineQ).invert();
     var spineCorrection = new THREE.Quaternion().copy(spineQinverse).multiply(leftarmQ).normalize();
 
-    x.quaternion.slerp(spineCorrection, slerpDict[bone] || slerpFactor);
+    applyBoneQuat(x, spineCorrection, bone, slerpFactor);
 
     setLocal(bone, spineCorrection.x, spineCorrection.y, spineCorrection.z, spineCorrection.w);
     setGlobal(bone, leftarmQ.x, leftarmQ.y, leftarmQ.z, leftarmQ.w);
@@ -742,7 +1171,7 @@ function handleWSMessage(obj) {
     //var zt = smoothEuler(spineCorrection, bone);
     //x.rotation.set(zt[0], zt[1], zt[2]);
     //x.quaternion.copy(spineCorrection);
-    x.quaternion.slerp(spineCorrection, slerpDict[bone] || slerpFactor);
+    applyBoneQuat(x, spineCorrection, bone, slerpFactor);
 
     setLocal(bone, spineCorrection.x, spineCorrection.y, spineCorrection.z, spineCorrection.w);
     setGlobal(bone, rightarmQ.x, rightarmQ.y, rightarmQ.z, rightarmQ.w);
@@ -763,7 +1192,7 @@ function handleWSMessage(obj) {
     var leftarmCorrection = new THREE.Quaternion().copy(leftarmQinverse).multiply(leftforearmQ).normalize();
 
 
-    x.quaternion.slerp(leftarmCorrection, slerpDict[bone] || slerpFactor);
+    applyBoneQuat(x, leftarmCorrection, bone, slerpFactor);
 
     setLocal(bone, leftarmCorrection.x, leftarmCorrection.y, leftarmCorrection.z, leftarmCorrection.w);
     setGlobal(bone, leftforearmQ.x, leftforearmQ.y, leftforearmQ.z, leftforearmQ.w);
@@ -781,7 +1210,7 @@ function handleWSMessage(obj) {
     var leftarmQinverse = new THREE.Quaternion().copy(leftarmQ).invert();
     var lefthandCorrection = new THREE.Quaternion().copy(leftarmQinverse).multiply(lefthandQ).normalize();
 
-    x.quaternion.slerp(lefthandCorrection, slerpDict[bone] || slerpFactor);
+    applyBoneQuat(x, lefthandCorrection, bone, slerpFactor);
 
     setLocal(bone, lefthandCorrection.x, lefthandCorrection.y, lefthandCorrection.z, lefthandCorrection.w);
     setGlobal(bone, lefthandQ.x, lefthandQ.y, lefthandQ.z, lefthandQ.w);
@@ -802,7 +1231,7 @@ function handleWSMessage(obj) {
     //var zt = smoothEuler(rightarmCorrection, bone);
     //x.rotation.set(zt[0], zt[1], zt[2]);
     //x.quaternion.copy(rightarmCorrection);
-    x.quaternion.slerp(rightarmCorrection, slerpDict[bone] || slerpFactor);
+    applyBoneQuat(x, rightarmCorrection, bone, slerpFactor);
 
     setLocal(bone, rightarmCorrection.x, rightarmCorrection.y, rightarmCorrection.z, rightarmCorrection.w);
     setGlobal(bone, rightforearmQ.x, rightforearmQ.y, rightforearmQ.z, rightforearmQ.w);
@@ -823,7 +1252,7 @@ function handleWSMessage(obj) {
 
    // console.log(righthandCorrection);
 
-    x.quaternion.slerp(righthandCorrection, slerpDict[bone] || slerpFactor);
+    applyBoneQuat(x, righthandCorrection, bone, slerpFactor);
 
     setLocal(bone, righthandCorrection.x, righthandCorrection.y, righthandCorrection.z, righthandCorrection.w);
     setGlobal(bone, righthandQ.x, righthandQ.y, righthandQ.z, righthandQ.w);
@@ -846,7 +1275,7 @@ function handleWSMessage(obj) {
     var leftuplegQinverse = new THREE.Quaternion().copy(leftuplegQ).invert();
     var leftuplegCorrection = new THREE.Quaternion().copy(leftuplegQinverse).multiply(leftlegQ).normalize();
 
-    x.quaternion.slerp(leftuplegCorrection, slerpDict[bone] || slerpFactor);
+    applyBoneQuat(x, leftuplegCorrection, bone, slerpFactor);
 
     setLocal(bone, leftuplegCorrection.x, leftuplegCorrection.y, leftuplegCorrection.z, leftuplegCorrection.w);
     setGlobal(bone, leftlegQ.x, leftlegQ.y, leftlegQ.z, leftlegQ.w);
@@ -865,7 +1294,7 @@ function handleWSMessage(obj) {
     var rightuplegQinverse = new THREE.Quaternion().copy(rightuplegQ).invert();
     var rightuplegCorrection = new THREE.Quaternion().copy(rightuplegQinverse).multiply(rightlegQ).normalize();
 
-    x.quaternion.slerp(rightuplegCorrection, slerpDict[bone] || slerpFactor);
+    applyBoneQuat(x, rightuplegCorrection, bone, slerpFactor);
 
     setLocal(bone, rightuplegCorrection.x, rightuplegCorrection.y, rightuplegCorrection.z, rightuplegCorrection.w);
     setGlobal(bone, rightlegQ.x, rightlegQ.y, rightlegQ.z, rightlegQ.w);
@@ -884,7 +1313,7 @@ function handleWSMessage(obj) {
     var leftlegQinverse = new THREE.Quaternion().copy(leftlegQ).invert();
     var leftlegCorrection = new THREE.Quaternion().copy(leftlegQinverse).multiply(leftfootQ).normalize();
 
-    x.quaternion.slerp(leftlegCorrection, slerpDict[bone] || slerpFactor);
+    applyBoneQuat(x, leftlegCorrection, bone, slerpFactor);
 
     setLocal(bone, leftlegCorrection.x, leftlegCorrection.y, leftlegCorrection.z, leftlegCorrection.w);
     //setGlobal(bone, leftfootQ.x, leftfootQ.y, leftfootQ.z, leftfootQ.w);
@@ -901,7 +1330,7 @@ function handleWSMessage(obj) {
     var rightlegQinverse = new THREE.Quaternion().copy(rightlegQ).invert();
     var rightlegCorrection = new THREE.Quaternion().copy(rightlegQinverse).multiply(rightfootQ).normalize();
 
-    x.quaternion.slerp(rightlegCorrection, slerpDict[bone] || slerpFactor);
+    applyBoneQuat(x, rightlegCorrection, bone, slerpFactor);
 
     setLocal(bone, rightlegCorrection.x, rightlegCorrection.y, rightlegCorrection.z, rightlegCorrection.w);
     //setGlobal(bone, rightfootQ.x, rightfootQ.y, rightfootQ.z, rightfootQ.w);
@@ -954,8 +1383,7 @@ function handleWSMessage(obj) {
 
 
 
-  var podCount = $("#deviceMapList td.connected").length;
-  $(".podCount").text(podCount);
+  // Count is handled in __updatePodCountsAndDisconnects().
 
 
 
@@ -1294,19 +1722,8 @@ function calibratein5Confirm() {
 
 
 setInterval(function () {
-  $("td.connected").each(function () {
-    var last = parseInt($(this).attr("data-last"));
-    var now = new Date().getTime();
-
-    if (Math.abs(now - last) > 1200) {
-      $(this).removeClass("connected");
-      $(this).html("<b class='red-text'>DISCONNECTED</b>");
-    }
-  });
-
-  var podCount = $("#deviceMapList td.connected").length;
-  $(".podCount").text(podCount);
-}, 1000);
+  __updatePodCountsAndDisconnects();
+}, 500);
 
 function showTreeGuide() {
   // openGuide(); return;
