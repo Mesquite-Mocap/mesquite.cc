@@ -1,12 +1,9 @@
 var rigPrefix = "mm";
-window.sY = 0;
-window.sX = 0;
-window.sZ = 0;
-hipsAltLast = 0;
-hipsLast = 0;
+var hipsAltLast = 0;
+var hipsLast = 0;
 
 var calibrated = false;
-initialPosition = { x: 0, y: 0, z: 0 };
+var initialPosition = { x: 0, y: 0, z: 0 };
 var positionSensitivity = 100;
 
 // Sensor mounting offset calibration - compensates for askew sensor placement
@@ -40,52 +37,52 @@ function applyMountingOffset(transformedQuaternion, bone) {
   if (tposeOffsets[bone]) {
     result.multiply(tposeOffsets[bone]);
   }
-  
+
   // Then apply the mounting offset (compensates for askew sensor placement)
   if (mountingOffsets[bone]) {
     result.multiply(mountingOffsets[bone]);
   }
-  
+
   return result;
 }
 
 function applySensorOffsetCompensation(quaternion, bone) {
   // Apply dynamic compensation for sensors that are physically offset from bone pivot
   // This corrects for geometric artifacts when sensor is displaced from rotation center
-  
+
   if (!trees[treeType] || !trees[treeType][bone] || !trees[treeType][bone].sensorOffset) {
     return quaternion;
   }
-  
+
   var offset = trees[treeType][bone].sensorOffset.position;
   if (!offset || offset.length !== 3) {
     return quaternion;
   }
-  
+
   // Get compensation strength from config (default to 0.5 if not specified)
   var compensationStrength = trees[treeType][bone].sensorOffset.compensationStrength || 0.5;
-  
+
   // Extract euler angles from quaternion to analyze rotation
   var euler = new THREE.Euler().setFromQuaternion(quaternion, 'XYZ');
-  
+
   // Calculate compensation based on the sensor's offset position
   // When sensor is offset, rotations create apparent cross-axis components
   var offsetVector = new THREE.Vector3(offset[0], offset[1], offset[2]);
   var offsetLength = offsetVector.length();
-  
+
   if (offsetLength < 0.01) return quaternion; // No significant offset
-  
+
   // For upper legs: X rotation (forward/back) creates apparent Z rotation (outward/inward)
   // The compensation is proportional to sin(X) * offset_Z
   var xRotation = euler.x;
   var zCompensation = Math.sin(xRotation) * (offset[2] / offsetLength) * compensationStrength;
-  
+
   // Apply compensation rotation
   var compensationQ = new THREE.Quaternion().setFromAxisAngle(
-    new THREE.Vector3(0, 0, 1), 
+    new THREE.Vector3(0, 0, 1),
     zCompensation
   );
-  
+
   return quaternion.clone().multiply(compensationQ);
 }
 
@@ -94,17 +91,17 @@ var flag = true;
 
 function initGlobalLocalLast() {
   flag = false;
-  
+
   // Initialize T-pose offsets from meta.json
   tposeOffsets = {};
-  var boneNames = ["Hips", "HipsAlt", "Spine", "Head", "LeftArm", "LeftForeArm", "LeftHand", 
+  var boneNames = ["Hips", "HipsAlt", "Spine", "Head", "LeftArm", "LeftForeArm", "LeftHand",
                    "RightArm", "RightForeArm", "RightHand", "LeftUpLeg", "LeftLeg", "LeftFoot",
                    "RightUpLeg", "RightLeg", "RightFoot"];
-  
+
   for (var i = 0; i < boneNames.length; i++) {
     var boneName = boneNames[i];
     var boneConfig = trees[treeType] && trees[treeType][boneName];
-    
+
     if (boneConfig && boneConfig.tposeOffset && boneConfig.tposeOffset.length > 0) {
       // Build composite quaternion from array of rotations
       var compositeQ = new THREE.Quaternion(0, 0, 0, 1);
@@ -123,18 +120,18 @@ function initGlobalLocalLast() {
       tposeOffsets[boneName] = new THREE.Quaternion(0, 0, 0, 1);
     }
   }
-  
+
   var bone = model.getObjectByName(rigPrefix + "Hips");
   mac2Bones["Hips"] = { calibration: { x: 0, y: 0, z: 0, w: 1 }, last: { x: 0, y: 0, z: 0, w: 1 }, global: { x: 0, y: 0, z: 0, w: 1 }, local: { x: 0, y: 0, z: 0, w: 1 }, bcalibration: { x: 0, y: 0, z: 0, w: 1 } };
   setGlobal("Hips", bone.quaternion.x, bone.quaternion.y, bone.quaternion.z, bone.quaternion.w);
   setLocal("Hips", bone.quaternion.x, bone.quaternion.y, bone.quaternion.z, bone.quaternion.w);
   initInitialPosition("Hips", bone.quaternion.x, bone.quaternion.y, bone.quaternion.z, bone.quaternion.w);
-  
+
   mac2Bones["HipsAlt"] = { calibration: { x: 0, y: 0, z: 0, w: 1 }, last: { x: 0, y: 0, z: 0, w: 1 }, global: { x: 0, y: 0, z: 0, w: 1 }, local: { x: 0, y: 0, z: 0, w: 1 }, bcalibration: { x: 0, y: 0, z: 0, w: 1 } };
   setGlobal("HipsAlt", bone.quaternion.x, bone.quaternion.y, bone.quaternion.z, bone.quaternion.w);
   setLocal("HipsAlt", bone.quaternion.x, bone.quaternion.y, bone.quaternion.z, bone.quaternion.w);
   initInitialPosition("HipsAlt", bone.quaternion.x, bone.quaternion.y, bone.quaternion.z, bone.quaternion.w);
-  
+
 
   bone = model.getObjectByName(rigPrefix + "Spine");
   mac2Bones["Spine"] = { calibration: { x: 0, y: 0, z: 0, w: 1 }, last: { x: 0, y: 0, z: 0, w: 1 }, global: { x: 0, y: 0, z: 0, w: 1 }, local: { x: 0, y: 0, z: 0, w: 1 }, bcalibration: { x: 0, y: 0, z: 0, w: 1 } };
@@ -223,22 +220,20 @@ function initGlobalLocalLast() {
 }
 
 
-
 function calibrate() {
- initialPosition = model.getObjectByName("mmHips").position
-  
+  initialPosition = model.getObjectByName("mmHips").position;
   var keys = Object.keys(mac2Bones);
   for (var i = 0; i < keys.length; i++) {
     // Safety check - ensure entry exists and has last property
     if (!mac2Bones[keys[i]] || !mac2Bones[keys[i]].last) {
       continue;
     }
-    
+
     mac2Bones[keys[i]].calibration.x = mac2Bones[keys[i]].last.x;
     mac2Bones[keys[i]].calibration.y = mac2Bones[keys[i]].last.y;
     mac2Bones[keys[i]].calibration.z = mac2Bones[keys[i]].last.z;
     mac2Bones[keys[i]].calibration.w = mac2Bones[keys[i]].last.w;
-    
+
     // AUTO-CALCULATE MOUNTING OFFSETS (only on first calibration)
     // This compensates for sensors being askew from their ideal mounting position
     // Once calculated, these offsets are preserved across T-pose resets
@@ -250,7 +245,7 @@ function calibrate() {
         var expectedBoneQ = new THREE.Quaternion();
         bone.getWorldQuaternion(expectedBoneQ);
         expectedBoneQ.normalize();
-        
+
         // Get actual sensor reading and apply the TREE MAPPING to it
         // (this is what the sensor SHOULD read if mounted perfectly)
         var sensorQ = new THREE.Quaternion(
@@ -259,28 +254,28 @@ function calibrate() {
           mac2Bones[keys[i]].last.z,
           mac2Bones[keys[i]].last.w
         ).normalize();
-        
+
         // Apply tree axis transformation (what it would be if mounted perfectly)
         var transformedSensorQ = getTransformedQuaternion(sensorQ, keys[i]);
-        
+
         // Apply T-pose offset if this bone has one (for arms/forearms/hands)
         if (tposeOffsets[keys[i]]) {
           transformedSensorQ.multiply(tposeOffsets[keys[i]]);
         }
-        
+
         // BIDIRECTIONAL MOUNTING DETECTION
         // Check if sensor is mounted backwards (180° flipped)
         // Arms/forearms/hands/feet: can flip in Y-axis
         // Head/spine/hips/legs: can flip in Z-axis
         var transformedInverse = transformedSensorQ.clone().invert();
         var normalOffset = expectedBoneQ.clone().multiply(transformedInverse);
-        
+
         // Determine flip axis based on bone type
         var flipAxis;
         if (keys[i].indexOf("Arm") !== -1 || keys[i].indexOf("Hand") !== -1 || keys[i].indexOf("Foot") !== -1) {
           // Arms, forearms, hands, feet: flip in Y
           flipAxis = new THREE.Vector3(0, 1, 0);
-        } else if (keys[i].indexOf("Leg") !== -1 || 
+        } else if (keys[i].indexOf("Leg") !== -1 ||
                    keys[i] === "Head" || keys[i] === "Spine" || keys[i].indexOf("Hips") !== -1) {
           // Head, spine, hips, legs: flip in Z
           flipAxis = new THREE.Vector3(0, 0, 1);
@@ -288,7 +283,7 @@ function calibrate() {
           // Default: no flip detection
           flipAxis = null;
         }
-        
+
         var mountingOffset;
         if (flipAxis) {
           // Test flipped version (180° rotation)
@@ -296,11 +291,11 @@ function calibrate() {
           var flippedSensorQ = transformedSensorQ.clone().multiply(flipQ);
           var flippedInverse = flippedSensorQ.clone().invert();
           var flippedOffset = expectedBoneQ.clone().multiply(flippedInverse);
-          
+
           // Calculate angular distance for both orientations (smaller = better match)
           var normalAngle = 2 * Math.acos(Math.abs(normalOffset.w));
           var flippedAngle = 2 * Math.acos(Math.abs(flippedOffset.w));
-          
+
           if (flippedAngle < normalAngle) {
             // Flipped version is closer - sensor is mounted backwards
             mountingOffset = flippedOffset;
@@ -312,35 +307,35 @@ function calibrate() {
           // No flip detection for this bone
           mountingOffset = normalOffset;
         }
-        
+
         // Store the offset for this bone
         mountingOffsets[keys[i]] = mountingOffset;
-    
+
       }
     }
   }
-  
+
   // Mark mounting offsets as calculated after first calibration
   if (!mountingOffsetsCalculated) {
     mountingOffsetsCalculated = true;
-    
+
     // Validate overall calibration quality
     var validationFailed = false;
     var badBones = [];
     var totalOffsetAngle = 0;
     var boneCount = 0;
-    
+
     for (var boneName in mountingOffsets) {
       var offset = mountingOffsets[boneName];
       var angleDeg = (2 * Math.acos(Math.abs(offset.w)) * 180 / Math.PI);
       totalOffsetAngle += angleDeg;
       boneCount++;
-      
+
       var threshold = 60;
       if (boneName.indexOf("Arm") !== -1 || boneName.indexOf("Hand") !== -1) {
         threshold = 90;
       }
-      
+
       if (angleDeg > threshold) {
         validationFailed = true;
         badBones.push(boneName + ' (' + angleDeg.toFixed(1) + '°)');
@@ -350,7 +345,6 @@ function calibrate() {
 
   // Reset position to origin on T-pose calibration
   calibrated = true;
-  line_tracker = [];
 
   $("#calibratein5").removeClass("animate__infinite");
   $("#recordButton").fadeIn();
@@ -377,7 +371,7 @@ function boxCalibrate() {
     if (!mac2Bones[keys[i]] || !mac2Bones[keys[i]].last) {
       continue;
     }
-    
+
     mac2Bones[keys[i]].bcalibration.x = mac2Bones[keys[i]].last.x;
     mac2Bones[keys[i]].bcalibration.y = mac2Bones[keys[i]].last.y;
     mac2Bones[keys[i]].bcalibration.z = mac2Bones[keys[i]].last.z;
@@ -386,7 +380,6 @@ function boxCalibrate() {
   $("#boxCDiv").fadeIn();
   $("#calibratein5").fadeIn();
   $("#settingsButton").removeClass("animate__infinite");
- // getBoxCalibration();
 }
 
 function getBoxCalibration() {
@@ -411,26 +404,6 @@ function lowerFirstLetter(string) {
   return string.charAt(0).toLowerCase() + string.slice(1);
 }
 
-// 3. Update Function
-function updateTrackingLine(newHipPosition) {
-  // Convert newHipPosition to an array and add it to positions
-  line_tracker.push(newHipPosition.x, newHipPosition.y - 100, newHipPosition.z);
-
-  // Optional: Limit the length of the line
-  var maxLength = 10000; // maximum number of vertices
-  if (line_tracker.length > maxLength * 3) {
-    line_tracker.splice(0, 3); // remove the oldest vertex
-  }
-
-  // Update the line geometry
-  trackingLine.geometry.setAttribute(
-    "position",
-    new THREE.BufferAttribute(new Float32Array(line_tracker), 3)
-  );
-  trackingLine.geometry.attributes.position.needsUpdate = true;
-  trackingLine.geometry.setDrawRange(0, line_tracker.length / 3);
-}
-
 function mapRange(value, low1, high1, low2, high2) {
   return low2 + (high2 - low2) * (value - low1) / (high1 - low1);
 }
@@ -444,32 +417,6 @@ function getTransformedQuaternion(transformedQ, bone) {
   var y = transformedQ[axisOrder[1]] * parseInt(axisSign[1] + 1);
   var z = transformedQ[axisOrder[2]] * parseInt(axisSign[2] + 1);
 
-
-  /*
-  var q = new THREE.Quaternion(x, y, z, transformedQ.w);
-  var e = new THREE.Euler().setFromQuaternion(q, "XYZ");
-
-  if(filtersx[bone] == undefined){
-    filtersx[bone] = new KalmanFilter();
-  }
-  x = filtersx[bone].filter(e.x);
-
-  if(filtersy[bone] == undefined){
-    filtersy[bone] = new KalmanFilter();
-  }
-  y = filtersy[bone].filter(e.y);
-
-  if(filtersz[bone] == undefined){
-    filtersz[bone] = new KalmanFilter();
-  }
-  z = filtersz[bone].filter(e.z);
-
-  e = new THREE.Euler(x, y, z, "XYZ");
-
-  var q2 = new THREE.Quaternion().setFromEuler(e, "XYZ");
-  return q2;
-  */
-
   return new THREE.Quaternion(x, y, z, transformedQ.w).normalize();
 }
 
@@ -480,30 +427,29 @@ function getTransformedPosition(position, bone) {
     // No posswap config - return original position
     return position;
   }
-  
+
   var posswap = trees[treeType][bone].posswap;
   var axisOrder = posswap.order.toLowerCase();
   var axisSign = posswap.sign;
-  
+
   // Create array mapping for position components
   var posArray = { x: position.x, y: position.y, z: position.z };
-  
+
   // Apply axis reordering and sign flipping
   var x = posArray[axisOrder[0]] * parseInt(axisSign[0] + 1);
   var y = posArray[axisOrder[1]] * parseInt(axisSign[1] + 1);
   var z = posArray[axisOrder[2]] * parseInt(axisSign[2] + 1);
-  
+
   return { x: x, y: y, z: z };
 }
 
 function handleWSMessage(obj) {
- // console.log(obj);
   if (flag) {
     initGlobalLocalLast();
   }
   var bone = obj.bone;
   var x = model.getObjectByName(rigPrefix + bone.replace("Alt", ""));
-  // console.log(bone, x);
+
   if (!bone || !x) {
     return;
   }
@@ -517,7 +463,6 @@ function handleWSMessage(obj) {
 
   var millis = parseInt(obj.millis || "-1");
   var count = parseInt(obj.count || "-1");
-  //console.log(millis, count);
   var countText = "";
 
   var millText = millis == -1 ? "" : "<br><span class='chip'>" + millis + "ms</span>";
@@ -534,12 +479,7 @@ function handleWSMessage(obj) {
     countText = "<br> <span class='chip' style='font-size:12px;padding:2px;line-height26px'>" + count + " <small>frames</small></span>";
   }
 
-  /*
-  var newBatt = parseFloat(obj.batt) * 100 - 80;
-  newBatt *= 9;
-  */
-  var newBatt = parseFloat(obj.batt)*100;
-  //console.log(newBatt, obj.batt);
+  var newBatt = parseFloat(obj.batt) * 100;
   newBatt = Math.min(100, Math.max(0, newBatt)).toFixed(0);
 
 
@@ -617,7 +557,6 @@ function handleWSMessage(obj) {
   if (bone == "LeftUpLeg") {
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
     var transformedQ = new THREE.Quaternion().multiplyQuaternions(rawQuaternion, refQInverse, bc);
-    //var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion, bc);
 
 
     var leftuplegQ = getTransformedQuaternion(transformedQ, bone);
@@ -628,7 +567,7 @@ function handleWSMessage(obj) {
     var hipsQ = new THREE.Quaternion(obj.x, obj.y, obj.z, obj.w).normalize();
     var hipsQinverse = new THREE.Quaternion().copy(hipsQ).invert();
     var hipsCorrection = new THREE.Quaternion().copy(hipsQinverse).multiply(leftuplegQ).normalize();
-    
+
 
     x.quaternion.slerp(hipsCorrection, slerpDict[bone] || slerpFactor);
 
@@ -639,9 +578,8 @@ function handleWSMessage(obj) {
   if (bone == "RightUpLeg") {
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
     var transformedQ = new THREE.Quaternion().multiplyQuaternions(rawQuaternion, refQInverse, bc);
-    //var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion, bc);
 
-    
+
     var rightuplegQ = getTransformedQuaternion(transformedQ, bone);
     rightuplegQ = applyMountingOffset(rightuplegQ, bone);
     rightuplegQ = applySensorOffsetCompensation(rightuplegQ, bone);
@@ -661,7 +599,6 @@ function handleWSMessage(obj) {
   if (bone == "Spine") {
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
     var transformedQ = new THREE.Quaternion().multiplyQuaternions(rawQuaternion, refQInverse, bc);
-   // var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion, bc);
 
     var spineQ = getTransformedQuaternion(transformedQ, bone);
     spineQ = applyMountingOffset(spineQ, bone);
@@ -671,7 +608,7 @@ function handleWSMessage(obj) {
     if (!parentBone || !parentBone.global || (parentBone.global.x === 0 && parentBone.global.y === 0 && parentBone.global.z === 0 && parentBone.global.w === 1)) {
       parentBone = mac2Bones["HipsAlt"];
     }
-    
+
     var obj = parentBone.global;  // Use global instead of local to account for parent mounting offset
     var hipQ = new THREE.Quaternion(obj.x, obj.y, obj.z, obj.w).normalize();
     var hipQinverse = new THREE.Quaternion().copy(hipQ).invert();
@@ -688,7 +625,6 @@ function handleWSMessage(obj) {
   if (bone == "Head") {
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
     var transformedQ = new THREE.Quaternion().multiplyQuaternions(rawQuaternion, refQInverse, bc);
-    //    var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion, bc);
 
     var headQ = getTransformedQuaternion(transformedQ, bone);
     headQ = applyMountingOffset(headQ, bone);
@@ -698,9 +634,6 @@ function handleWSMessage(obj) {
     var hipQinverse = new THREE.Quaternion().copy(hipQ).invert();
     var hipCorrection = new THREE.Quaternion().copy(hipQinverse).multiply(headQ).normalize();
 
-    //(hipCorrection, bone);
-    //x.rotation.set(zt[0], zt[1], zt[2]);
-    //x.quaternion.copy(headQ);
     x.quaternion.slerp(hipCorrection, slerpDict[bone] || slerpFactor);
 
     setLocal(bone, hipCorrection.x, hipCorrection.y, hipCorrection.z, hipCorrection.w);
@@ -709,9 +642,7 @@ function handleWSMessage(obj) {
 
   if (bone == "LeftArm") {
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
-
     var transformedQ = new THREE.Quaternion().multiplyQuaternions(rawQuaternion, refQInverse, bc);
-    //var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion, bc);
 
     var leftarmQ = getTransformedQuaternion(transformedQ, bone);
     leftarmQ = applyMountingOffset(leftarmQ, bone);
@@ -730,7 +661,6 @@ function handleWSMessage(obj) {
   if (bone == "RightArm") {
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
     var transformedQ = new THREE.Quaternion().multiplyQuaternions(rawQuaternion, refQInverse, bc);
-    //    var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion, bc);
 
     var rightarmQ = getTransformedQuaternion(transformedQ, bone);
     rightarmQ = applyMountingOffset(rightarmQ, bone);
@@ -739,9 +669,6 @@ function handleWSMessage(obj) {
     var spineQinverse = new THREE.Quaternion().copy(spineQ).invert();
     var spineCorrection = new THREE.Quaternion().copy(spineQinverse).multiply(rightarmQ).normalize();
 
-    //var zt = smoothEuler(spineCorrection, bone);
-    //x.rotation.set(zt[0], zt[1], zt[2]);
-    //x.quaternion.copy(spineCorrection);
     x.quaternion.slerp(spineCorrection, slerpDict[bone] || slerpFactor);
 
     setLocal(bone, spineCorrection.x, spineCorrection.y, spineCorrection.z, spineCorrection.w);
@@ -750,9 +677,7 @@ function handleWSMessage(obj) {
 
   if (bone == "LeftForeArm") {
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
-
     var transformedQ = new THREE.Quaternion().multiplyQuaternions(rawQuaternion, refQInverse, bc);
-    //var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion, bc);
 
     var leftforearmQ = getTransformedQuaternion(transformedQ, bone);
     leftforearmQ = applyMountingOffset(leftforearmQ, bone);
@@ -790,7 +715,6 @@ function handleWSMessage(obj) {
   if (bone == "RightForeArm") {
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
     var transformedQ = new THREE.Quaternion().multiplyQuaternions(rawQuaternion, refQInverse, bc);
-    //    var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion, bc);
     var rightforearmQ = getTransformedQuaternion(transformedQ, bone);
     rightforearmQ = applyMountingOffset(rightforearmQ, bone);
 
@@ -799,9 +723,6 @@ function handleWSMessage(obj) {
     var rightarmQinverse = new THREE.Quaternion().copy(rightarmQ).invert();
     var rightarmCorrection = new THREE.Quaternion().copy(rightarmQinverse).multiply(rightforearmQ).normalize();
 
-    //var zt = smoothEuler(rightarmCorrection, bone);
-    //x.rotation.set(zt[0], zt[1], zt[2]);
-    //x.quaternion.copy(rightarmCorrection);
     x.quaternion.slerp(rightarmCorrection, slerpDict[bone] || slerpFactor);
 
     setLocal(bone, rightarmCorrection.x, rightarmCorrection.y, rightarmCorrection.z, rightarmCorrection.w);
@@ -811,7 +732,6 @@ function handleWSMessage(obj) {
 
   if (bone == "RightHand") {
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
-
     var transformedQ = new THREE.Quaternion().multiplyQuaternions(rawQuaternion, refQInverse, bc);
     var righthandQ = getTransformedQuaternion(transformedQ, bone);
     righthandQ = applyMountingOffset(righthandQ, bone);
@@ -821,8 +741,6 @@ function handleWSMessage(obj) {
     var rightforearmQinverse = new THREE.Quaternion().copy(rightforearmQ).invert();
     var righthandCorrection = new THREE.Quaternion().copy(rightforearmQinverse).multiply(righthandQ).normalize();
 
-   // console.log(righthandCorrection);
-
     x.quaternion.slerp(righthandCorrection, slerpDict[bone] || slerpFactor);
 
     setLocal(bone, righthandCorrection.x, righthandCorrection.y, righthandCorrection.z, righthandCorrection.w);
@@ -830,13 +748,9 @@ function handleWSMessage(obj) {
   }
 
 
-
-
-
   if (bone == "LeftLeg") {
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
     var transformedQ = new THREE.Quaternion().multiplyQuaternions(rawQuaternion, refQInverse, bc);
-    //var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion, bc);
 
     var leftlegQ = getTransformedQuaternion(transformedQ, bone);
     leftlegQ = applyMountingOffset(leftlegQ, bone);
@@ -855,7 +769,6 @@ function handleWSMessage(obj) {
   if (bone == "RightLeg") {
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
     var transformedQ = new THREE.Quaternion().multiplyQuaternions(rawQuaternion, refQInverse, bc);
-    //var transformedQ = new THREE.Quaternion().multiplyQuaternions(refQInverse, rawQuaternion, bc);
 
     var rightlegQ = getTransformedQuaternion(transformedQ, bone);
     rightlegQ = applyMountingOffset(rightlegQ, bone);
@@ -872,7 +785,6 @@ function handleWSMessage(obj) {
   }
 
 
-
   if (bone == "LeftFoot") {
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
     var transformedQ = new THREE.Quaternion().multiplyQuaternions(rawQuaternion, refQInverse, bc);
@@ -887,7 +799,6 @@ function handleWSMessage(obj) {
     x.quaternion.slerp(leftlegCorrection, slerpDict[bone] || slerpFactor);
 
     setLocal(bone, leftlegCorrection.x, leftlegCorrection.y, leftlegCorrection.z, leftlegCorrection.w);
-    //setGlobal(bone, leftfootQ.x, leftfootQ.y, leftfootQ.z, leftfootQ.w);
   }
 
   if (bone == "RightFoot") {
@@ -904,7 +815,6 @@ function handleWSMessage(obj) {
     x.quaternion.slerp(rightlegCorrection, slerpDict[bone] || slerpFactor);
 
     setLocal(bone, rightlegCorrection.x, rightlegCorrection.y, rightlegCorrection.z, rightlegCorrection.w);
-    //setGlobal(bone, rightfootQ.x, rightfootQ.y, rightfootQ.z, rightfootQ.w);
   }
 
   if (!mac2Bones[bone]) {
@@ -915,15 +825,15 @@ function handleWSMessage(obj) {
     mac2Bones[bone].global = { x: 0, y: 0, z: 0, w: 1 };
   }
 
- 
+
   // Position data - only use Hips px,py,pz for positioning
   // But use HipsAlt's posswap config when HipsAlt is active (within last 1 second)
   if( bone == "Hips" && obj.px && obj.py && obj.pz ) {
     obj.sensorPosition = { x: obj.px, y: obj.py, z: obj.pz};
-    
+
     // Determine which posswap configuration to use based on HipsAlt activity
     var posswapBone = (hipsAltLast + 1000 >= new Date().getTime()) ? "HipsAlt" : "Hips";
-    
+
     // Apply posswap transformation to raw position data
     // This handles axis reordering and sign flipping (like tree axis mapping for orientation)
     obj.sensorPosition = getTransformedPosition(obj.sensorPosition, posswapBone);
@@ -936,37 +846,24 @@ function handleWSMessage(obj) {
   if (bone == "Hips" && obj.sensorPosition !== undefined) {
     var sensorPosition = new THREE.Vector3(
       obj.sensorPosition.x * positionSensitivity - initialPosition.x,
-      obj.sensorPosition.y * positionSensitivity - initialPosition.y + 100,
+      obj.sensorPosition.y * positionSensitivity - initialPosition.y + 170,
       obj.sensorPosition.z * positionSensitivity - initialPosition.z
     );
-    
+
 
     const hipsBone = model.getObjectByName(rigPrefix + "Hips");
-    
+
     hipsBone.position.lerp(new THREE.Vector3(sensorPosition.x,
       sensorPosition.y,
       sensorPosition.z), 0.1);
-
-    if(!$("body").hasClass("up")) {
-      updateTrackingLine(hipsBone.position);
-    }
   }
-
 
 
   var podCount = $("#deviceMapList td.connected").length;
   $(".podCount").text(podCount);
 
 
-
 }
-
-var lastPosition = {
-  x: 0,
-  y: 0,
-  z: 0
-}
-
 
 function swapXZAxesInQuaternion(quat) {
   // Create a quaternion representing a 90-degree rotation around the Y axis
@@ -996,7 +893,6 @@ function swapYZAxesInQuaternion(quat) {
   return swappedQuat;
 }
 
-var data56 = null;
 function setBoneOrientation(bone, q) {
   bone.quaternion.set(q.x, q.y, q.z, q.w);
 }
@@ -1062,26 +958,11 @@ function getParentQuaternion(child) {
   return null;
 }
 
-// function quatern2rotMat(q) {
-//     var R = [[], [], []];
-//     R[0][0] = 2 * Math.pow(q[0], 2) - 1 + 2 * Math.pow(q[1], 2);
-//     R[0][1] = 2 * (q[1] * q[2] + q[0] * q[3]);
-//     R[0][2] = 2 * (q[1] * q[3] - q[0] * q[2]);
-//     R[1][0] = 2 * (q[1] * q[2] - q[0] * q[3]);
-//     R[1][1] = 2 * Math.pow(q[0], 2) - 1 + 2 * Math.pow(q[2], 2);
-//     R[1][2] = 2 * (q[2] * q[3] + q[0] * q[1]);
-//     R[2][0] = 2 * (q[1] * q[3] + q[0] * q[2]);
-//     R[2][1] = 2 * (q[2] * q[3] - q[0] * q[1]);
-//     R[2][2] = 2 * Math.pow(q[0], 2) - 1 + 2 * Math.pow(q[3], 2);
-//     return R;
-// }
-
 function rotateQuaternion(originalQuaternion, rotationQuaternion) {
   const rotatedQuaternion = new THREE.Quaternion();
   rotatedQuaternion.multiplyQuaternions(rotationQuaternion, originalQuaternion);
   return rotatedQuaternion;
 }
-
 
 
 function boneSelectChanged(select) {
@@ -1140,14 +1021,14 @@ function restartPods() {
 }
 function restartPodsConfirm() {
   $("#restartPods").prop('disabled', true);
-  
+
   // Reset mounting offsets flag to allow recalculation
   mountingOffsetsCalculated = false;
   mountingOffsets = {};
-  
+
   // Reset position to origin
   initialPosition = { x: 0, y: 0, z: 0 };
-  
+
   window.sWrite("reboot");
   M.toast({ html: '<ul><li>Please get in a T-pose and  wait for <span class="secs" style="font-size:200%;font-weight:bold">30 seconds</span>.</li><li>When done the T-Pose* will be set.</li><li><sub>* You can click on "Set T-Pose" button to do this at anytime.</sub></li>', classes: 'yellow black-text', displayLength: 30 * 1000 });
   setTimeout(function () {
@@ -1205,8 +1086,6 @@ function skipBoxCalibrate() {
   $("#boxcalibratein30").remove();
   $("#boxCDiv").fadeIn();
     $("#calibratein5").fadeIn();
-      $("#settingsButton").removeClass("animate__infinite");
-     // getBoxCalibration();
 
 }
 
@@ -1309,15 +1188,13 @@ setInterval(function () {
 }, 1000);
 
 function showTreeGuide() {
-  // openGuide(); return;
-
   $("#overlay").fadeIn();
-  $("#overlay iframe").attr("src", "./trees/" + treeType + "/wearguide")
+  $("#overlay iframe").attr("src", "./trees/" + treeType + "/wearguide");
 }
 
 function openGuide() {
   $("#overlay").fadeOut();
-  window.open("./trees/" + treeType + "/wearguide", "_blank", 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no')
+  window.open("./trees/" + treeType + "/wearguide", "_blank", 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no');
 }
 
 function settingsOpen() {
@@ -1343,7 +1220,6 @@ function closeSettings() {
 
 function smoothEuler(q, bone) {
   var ret = quaternionToEulerDegreesRad(q);
-  // return ret;
 
   if (filtersx[bone] == undefined) {
     filtersx[bone] = new KalmanFilter();

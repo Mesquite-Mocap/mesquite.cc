@@ -13,11 +13,8 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/kalmanjs@1.1.0/lib/kalman.min.js"></script>
-  <script src="js/moment.min.js "></script>
-    <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
-  />
+  <script src="js/moment.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
 
   <title> MESQUITE.cc </title>
   <style>
@@ -209,8 +206,6 @@ var slerpDict = {
 
     let camera, scene, renderer, stats, viewportGizmo, grid;
 
-
-
     var statsObjs = {
       "head": {
         "status": "Not Connected",
@@ -367,9 +362,6 @@ var slerpDict = {
 
   </script>
 
-
-
-
   <button id='calibratein5' onclick='calibratein5()' style='right:0;bottom:0; position: absolute; display:none;'
     class="animate__animated animate__jello animate__delay-1s animate__infinite auxButton main btn waves-effect waves-light white black-text large">
     <i class="material-icons looks_3" style="vertical-align:middle;font-size:200%">looks_3</i>
@@ -377,19 +369,16 @@ var slerpDict = {
     <i class="material-icons " style="vertical-align:middle;font-size:200%">accessibility</i> Pose
   </button>
 
-
   <button id='boxcalibratein30' onclick='boxCalibrateIn30()' style='right:0;bottom:0; position: absolute'
     class="auxButton main btn waves-effect waves-light white black-text large animate__animated animate__headShake animate__delay-2s animate__infinite">
     <i class="material-icons " style="vertical-align:middle;font-size:200%">looks_two</i> Box Calibrate
   </button>
-
 
   <button id="recordButton" style="position:absolute; left:0; bottom:0px; z-index: 1;display:none; animation-iteration-count: 10;"
     class="animate__animated animate__pulse animate__delay-1s auxButton main btn waves-effect waves-light green black-text large" onclick="toggleRecording()">
     <i class="material-icons" style="vertical-align:middle;font-size:200%">fiber_manual_record</i>
     Record BVH
   </button>
-
 
   <button id="restartPods"
     style="display:none;position:absolute; left:50vw; margin-left: -90px; width: 180px; bottom:0px; z-index: 1;"
@@ -398,11 +387,9 @@ var slerpDict = {
     Restart Pods
   </button>
 
-
   <button id='linkPods' class="main btn waves-effect waves-light white black-text animate__animated animate__pulse animate__delay-1s animate__infinite">Link Dongle
     <i style='font-size:200%;vertical-align:middle' class="material-icons left">looks_one</i>
   </button>
-
 
   <button onclick="settingsOpen()" id='settingsButton' style='position:fixed;right:0;top:0'
     class="auxButton main btn waves-effect waves-light white black-text large animate__animated animate__tada animate__delay-1s animate__infinite">Pods  <span id='podCount'
@@ -430,9 +417,6 @@ var slerpDict = {
           </ul>
         </div>
 
-
-
-
         <div id="deviceMapList">
           <div class="row">
             <div class="col s1">
@@ -453,8 +437,6 @@ var slerpDict = {
             </button>
           </div>
 
-
-
           <div class="row" id="boxCDiv" style="display:none">
             <label style="padding-left:15px">Box Calibration</label>
             <button onclick="getBoxCalibration()" class="btn waves-effect waves-light white black-text" style="border-radius: 30px;    line-height: 30px;
@@ -473,7 +455,7 @@ var slerpDict = {
             width: 100%;
             left: 0;
             height: 30px;
-            cursor:pointer" type="file" id="boxCalibrationFile" style="display:none" onchange="uploadBoxCalibration()">
+            cursor:pointer" type="file" id="boxCalibrationFile" onchange="uploadBoxCalibration()">
             </button>
 
 
@@ -600,7 +582,7 @@ var slerpDict = {
   </div>
 
   <div id="overlay"
-    style="position:fixed;top:0;left:0;width:100vw;height:100vh;background-color:rgb(0,0,0,);z-index:99999999999999;display:none">
+    style="position:fixed;top:0;left:0;width:100vw;height:100vh;background-color:rgb(0,0,0);z-index:99999999999999;display:none">
 
     <iframe id="treeGuide" src="./trees/velvet/wearguide" style="width:100%;height:100%;border:none"></iframe>
 
@@ -624,19 +606,16 @@ var slerpDict = {
     </div>
   </div>
 
+  <script src="js/custom_icm.js"></script>
+  <script src="js/three.min.js"></script>
+  <script src="js/bvh_converter.js"></script>
 
+  <script>
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("./js/sw.js");
+    }
+  </script>
 
 </body>
-
-
-<script src="js/custom_icm.js"></script>
-<script src="js/three.min.js"></script>
-<script src="js/bvh_converter.js"></script>
-
-<script>
-  if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("./js/sw.js");
-  }
-</script>
 
 </html>

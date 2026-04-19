@@ -55,14 +55,6 @@ const blendshapesMap = {
     // '': 'tongueOut'
 };
 
-
-
-import vision from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.3";
-//const { FaceLandmarker, HandLandmarker, FilesetResolver, DrawingUtils } = vision;
-
-
-
-
 import {
     FilesetResolver,
     DrawingUtils,
@@ -81,9 +73,6 @@ async function createFaceLandmarker() {
             modelAssetPath: 'https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task',
             delegate: "GPU"
         },
-        outputFaceBlendshapes: true,
-        outputFaceGeometry: true,
-        outputFacialTransformationMatrices: true,
         outputFaceBlendshapes: true,
         outputFaceGeometry: true,
         outputFacialTransformationMatrices: true,
@@ -109,11 +98,7 @@ async function createHandLandmarker() {
     await hands.setOptions({
         runningMode: "VIDEO"
     });
-
 }
-
-
-
 
 createFaceLandmarker();
 createHandLandmarker();
