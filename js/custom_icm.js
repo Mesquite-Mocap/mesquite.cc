@@ -5,6 +5,7 @@ var hipsLast = 0;
 var calibrated = false;
 var initialPosition = { x: 0, y: 0, z: 0 };
 var positionSensitivity = 100;
+var hipToGroundOffset = 100; // Calculated during T-pose calibration to keep feet on ground
 
 // Sensor mounting offset calibration - compensates for askew sensor placement
 var mountingOffsets = {}; // stores per-bone mounting quaternion offsets
@@ -221,7 +222,7 @@ function initGlobalLocalLast() {
 
 
 function calibrate() {
-  initialPosition = model.getObjectByName("mmHips").position;
+ // initialPosition = model.getObjectByName("mmHips").position;
   var keys = Object.keys(mac2Bones);
   for (var i = 0; i < keys.length; i++) {
     // Safety check - ensure entry exists and has last property
@@ -341,6 +342,22 @@ function calibrate() {
         badBones.push(boneName + ' (' + angleDeg.toFixed(1) + '°)');
       }
     }
+  }
+
+  // Use Y=0 as ground, hips at T-pose should be at Y=170
+  var hipsBone = model.getObjectByName(rigPrefix + "Hips");
+
+  if (hipsBone) {
+
+      initialPosition = {
+        x: lastHipsPosition.x,
+        y: lastHipsPosition.y,
+        z: lastHipsPosition.z 
+      };
+
+
+    // Set the hips bone to T-pose position (0, 170, 0)
+    hipsBone.position.set(0, 170, 0);
   }
 
   // Reset position to origin on T-pose calibration
@@ -829,6 +846,8 @@ function handleWSMessage(obj) {
   // Position data - only use Hips px,py,pz for positioning
   // But use HipsAlt's posswap config when HipsAlt is active (within last 1 second)
   if( bone == "Hips" && obj.px && obj.py && obj.pz ) {
+        lastHipsPosition = { x: obj.px * positionSensitivity, y: obj.py * positionSensitivity, z: obj.pz * positionSensitivity };
+
     obj.sensorPosition = { x: obj.px, y: obj.py, z: obj.pz};
 
     // Determine which posswap configuration to use based on HipsAlt activity
@@ -844,9 +863,10 @@ function handleWSMessage(obj) {
 
 
   if (bone == "Hips" && obj.sensorPosition !== undefined) {
+
     var sensorPosition = new THREE.Vector3(
       obj.sensorPosition.x * positionSensitivity - initialPosition.x,
-      obj.sensorPosition.y * positionSensitivity - initialPosition.y + 170,
+      obj.sensorPosition.y * positionSensitivity - initialPosition.y + hipToGroundOffset, // Add hip-to-ground offset to Y-axis
       obj.sensorPosition.z * positionSensitivity - initialPosition.z
     );
 
