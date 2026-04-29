@@ -89,7 +89,7 @@
       "RightArm": {
         "axis": {
           "order": "YZX",
-          "sign": "+++"
+          "sign": "-+-"
         },
         "tposeOffset": [
           {"axis": "X", "degrees": 0},
