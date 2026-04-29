@@ -13,7 +13,7 @@
           "sign": "-+-"
         }
       },
-      "HipsAlt": {
+      "_HipsAlt_DISABLED": {
         "axis": {
           "order": "YZX",
           "sign": "-+-"

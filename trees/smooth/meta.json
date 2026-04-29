@@ -15,7 +15,7 @@
       "Hips": {
         "axis": {
           "order": "XYZ",
-          "sign": "-+-"
+          "sign": "+++"
         },
         "posswap": {
           "order": "XYZ",
@@ -27,7 +27,7 @@
           {"axis": "Z", "degrees": 0}
         ]
       },
-      "HipsAlt": {
+      "_HipsAlt_DISABLED": {
         "axis": {
           "order": "YZX",
           "sign": "-+-"
@@ -81,15 +81,15 @@
           "sign": "-+-"
         },
         "tposeOffset": [
-          {"axis": "X", "degrees": 180},
-          {"axis": "Y", "degrees": 180},
-          {"axis": "Z", "degrees": 180}
+          {"axis": "X", "degrees": 0},
+          {"axis": "Y", "degrees": 0},
+          {"axis": "Z", "degrees": 0}
         ]
       },
       "RightArm": {
         "axis": {
           "order": "YZX",
-          "sign": "-+-"
+          "sign": "+++"
         },
         "tposeOffset": [
           {"axis": "X", "degrees": 0},
@@ -115,7 +115,7 @@
         },
         "tposeOffset": [
           {"axis": "X", "degrees": 180},
-          {"axis": "Y", "degrees": 180},
+          {"axis": "Y", "degrees": -180},
           {"axis": "Z", "degrees": 180}
         ]
       },

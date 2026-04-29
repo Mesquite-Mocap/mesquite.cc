@@ -1,6 +1,7 @@
 var rigPrefix = "mm";
-var hipsAltLast = 0;
-var hipsLast = 0;
+// [HipsAlt DISABLED] phone is the only Hips sensor; kept for future revisit
+// var hipsAltLast = 0;
+// var hipsLast = 0;
 
 var calibrated = false;
 var initialPosition = { x: 0, y: 0, z: 0 };
@@ -95,7 +96,8 @@ function initGlobalLocalLast() {
 
   // Initialize T-pose offsets from meta.json
   tposeOffsets = {};
-  var boneNames = ["Hips", "HipsAlt", "Spine", "Head", "LeftArm", "LeftForeArm", "LeftHand",
+  // [HipsAlt DISABLED] removed "HipsAlt" from list
+  var boneNames = ["Hips", /* "HipsAlt", */ "Spine", "Head", "LeftArm", "LeftForeArm", "LeftHand",
                    "RightArm", "RightForeArm", "RightHand", "LeftUpLeg", "LeftLeg", "LeftFoot",
                    "RightUpLeg", "RightLeg", "RightFoot"];
 
@@ -128,10 +130,11 @@ function initGlobalLocalLast() {
   setLocal("Hips", bone.quaternion.x, bone.quaternion.y, bone.quaternion.z, bone.quaternion.w);
   initInitialPosition("Hips", bone.quaternion.x, bone.quaternion.y, bone.quaternion.z, bone.quaternion.w);
 
-  mac2Bones["HipsAlt"] = { calibration: { x: 0, y: 0, z: 0, w: 1 }, last: { x: 0, y: 0, z: 0, w: 1 }, global: { x: 0, y: 0, z: 0, w: 1 }, local: { x: 0, y: 0, z: 0, w: 1 }, bcalibration: { x: 0, y: 0, z: 0, w: 1 } };
-  setGlobal("HipsAlt", bone.quaternion.x, bone.quaternion.y, bone.quaternion.z, bone.quaternion.w);
-  setLocal("HipsAlt", bone.quaternion.x, bone.quaternion.y, bone.quaternion.z, bone.quaternion.w);
-  initInitialPosition("HipsAlt", bone.quaternion.x, bone.quaternion.y, bone.quaternion.z, bone.quaternion.w);
+  // [HipsAlt DISABLED] initialization block
+  // mac2Bones["HipsAlt"] = { calibration: { x: 0, y: 0, z: 0, w: 1 }, last: { x: 0, y: 0, z: 0, w: 1 }, global: { x: 0, y: 0, z: 0, w: 1 }, local: { x: 0, y: 0, z: 0, w: 1 }, bcalibration: { x: 0, y: 0, z: 0, w: 1 } };
+  // setGlobal("HipsAlt", bone.quaternion.x, bone.quaternion.y, bone.quaternion.z, bone.quaternion.w);
+  // setLocal("HipsAlt", bone.quaternion.x, bone.quaternion.y, bone.quaternion.z, bone.quaternion.w);
+  // initInitialPosition("HipsAlt", bone.quaternion.x, bone.quaternion.y, bone.quaternion.z, bone.quaternion.w);
 
 
   bone = model.getObjectByName(rigPrefix + "Spine");
@@ -534,8 +537,9 @@ function handleWSMessage(obj) {
   const slerpFactor = .24; // range: 0.0 to 1.0
 
 
-  // Hips orientation - use when HipsAlt is not available (timeout > 1 second)
-  if (bone == "Hips" && hipsAltLast + 1000 < new Date().getTime()) {
+  // Hips orientation - phone is the sole Hips sensor (HipsAlt logic disabled)
+  // [HipsAlt DISABLED] removed `&& hipsAltLast + 1000 < new Date().getTime()` guard
+  if (bone == "Hips" /* && hipsAltLast + 1000 < new Date().getTime() */) {
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
     var transformedQ = new THREE.Quaternion().multiplyQuaternions(rawQuaternion, refQInverse, bc);
 
@@ -548,14 +552,16 @@ function handleWSMessage(obj) {
 
     x.quaternion.slerp(hipQ, slerpDict[bone] || slerpFactor);
 
-    if(hipsAltLast + 1000 < new Date().getTime()){
+    // [HipsAlt DISABLED] inner timeout guard removed - always commit Hips state
+    // if(hipsAltLast + 1000 < new Date().getTime()){
       setLocal("Hips", alt.x, alt.y, alt.z, alt.w);
       setGlobal(bone, hipQ.x, hipQ.y, hipQ.z, hipQ.w);
-    }
-    hipsLast = new Date().getTime();
+    // }
+    // hipsLast = new Date().getTime();
   }
 
-  // HipsAlt orientation - preferred for orientation when available
+  // [HipsAlt DISABLED] entire HipsAlt orientation block - phone is the only Hips sensor
+  /*
   if (bone == "HipsAlt") {
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
     var transformedQ = new THREE.Quaternion().multiplyQuaternions(rawQuaternion, refQInverse, bc);
@@ -569,6 +575,7 @@ function handleWSMessage(obj) {
     setGlobal("Hips", hipQ.x, hipQ.y, hipQ.z, hipQ.w);
     hipsAltLast = new Date().getTime();
   }
+  */
 
 
   if (bone == "LeftUpLeg") {
@@ -620,11 +627,11 @@ function handleWSMessage(obj) {
     var spineQ = getTransformedQuaternion(transformedQ, bone);
     spineQ = applyMountingOffset(spineQ, bone);
 
-    // Use HipsAlt if Hips is not available (check if global has valid data)
+    // [HipsAlt DISABLED] HipsAlt fallback removed - always use Hips
     var parentBone = mac2Bones["Hips"];
-    if (!parentBone || !parentBone.global || (parentBone.global.x === 0 && parentBone.global.y === 0 && parentBone.global.z === 0 && parentBone.global.w === 1)) {
-      parentBone = mac2Bones["HipsAlt"];
-    }
+    // if (!parentBone || !parentBone.global || (parentBone.global.x === 0 && parentBone.global.y === 0 && parentBone.global.z === 0 && parentBone.global.w === 1)) {
+    //   parentBone = mac2Bones["HipsAlt"];
+    // }
 
     var obj = parentBone.global;  // Use global instead of local to account for parent mounting offset
     var hipQ = new THREE.Quaternion(obj.x, obj.y, obj.z, obj.w).normalize();
@@ -844,20 +851,21 @@ function handleWSMessage(obj) {
 
 
   // Position data - only use Hips px,py,pz for positioning
-  // But use HipsAlt's posswap config when HipsAlt is active (within last 1 second)
+  // [HipsAlt DISABLED] always use Hips posswap config
   if( bone == "Hips" && obj.px && obj.py && obj.pz ) {
         lastHipsPosition = { x: obj.px * positionSensitivity, y: obj.py * positionSensitivity, z: obj.pz * positionSensitivity };
 
     obj.sensorPosition = { x: obj.px, y: obj.py, z: obj.pz};
 
-    // Determine which posswap configuration to use based on HipsAlt activity
-    var posswapBone = (hipsAltLast + 1000 >= new Date().getTime()) ? "HipsAlt" : "Hips";
+    // [HipsAlt DISABLED] always use Hips posswap (was: ternary based on hipsAltLast)
+    var posswapBone = "Hips";
+    // var posswapBone = (hipsAltLast + 1000 >= new Date().getTime()) ? "HipsAlt" : "Hips";
 
     // Apply posswap transformation to raw position data
     // This handles axis reordering and sign flipping (like tree axis mapping for orientation)
     obj.sensorPosition = getTransformedPosition(obj.sensorPosition, posswapBone);
   } else {
-    // Ensure HipsAlt or other bones don't process position data
+    // Ensure non-Hips bones don't process position data
     obj.sensorPosition = undefined;
   }
 
