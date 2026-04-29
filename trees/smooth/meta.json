@@ -70,7 +70,7 @@
           "sign": "-+-"
         },
         "tposeOffset": [
-          {"axis": "X", "degrees": 0},
+          {"axis": "X", "degrees": -90},
           {"axis": "Y", "degrees": 0},
           {"axis": "Z", "degrees": 0}
         ]
