@@ -4,11 +4,6 @@ var server = express();
 var hostname = process.env.HOSTNAME || 'localhost';
 var port = 8080;
 
-server.get("/", function (req, res) {
-    res.redirect("index.html")
-});
-
-
 //server.use(bodyParser());
 server.use(express.static(__dirname + '/'));
 
