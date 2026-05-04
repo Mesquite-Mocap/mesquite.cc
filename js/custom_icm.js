@@ -16,10 +16,13 @@ var mountingOffsetsCalculated = false; // flag to only calculate once
 // These are applied BEFORE mounting offset calculation
 var tposeOffsets = {};
 
-// smooth position
-var kfx = new KalmanFilter({ R: 0.01, Q: 3 });
-var kfy = new KalmanFilter({ R: 0.01, Q: 3 });
-var kfz = new KalmanFilter({ R: 0.01, Q: 3 });
+// [KALMAN DISABLED] kfx/kfy/kfz were declared but never referenced; keeping
+// them out so the page doesn't depend on the kalmanjs CommonJS shim at all.
+// If you want to re-enable position smoothing, restore these and actually
+// pipe them through hipsBone.position updates.
+// var kfx = new KalmanFilter({ R: 0.01, Q: 3 });
+// var kfy = new KalmanFilter({ R: 0.01, Q: 3 });
+// var kfz = new KalmanFilter({ R: 0.01, Q: 3 });
 
 function adjustQuaternionForThickness(quaternion, thickness) {
   // Implement the logic to adjust the quaternion based on thickness
@@ -359,12 +362,29 @@ function calibrate() {
       };
 
 
-    // Set the hips bone to T-pose position (0, 170, 0)
+    // [GROUND FIX v2] Order matters: model.scale.set(1,1,1) is called LATER
+    // in this function (was after this block). When the previous attempt
+    // measured foot Y, the model was still at the load-time scale (0.00001
+    // from threejsscene.js), so the measurement was effectively zero and the
+    // hip stayed at the hardcoded 170 -- mannequin floated.
+    // Now we (1) force model to full scale here, (2) place the hip provisionally,
+    // (3) measure the WHOLE rig's bounding box (covers any bone hierarchy
+    // quirks and works without the Hips pod connected),
+    // (4) shift the model so its lowest point lands on Y=0.
+    model.scale.set(1, 1, 1);
     hipsBone.position.set(0, 170, 0);
-  }
+    model.updateMatrixWorld(true);
 
+    var bbox = new THREE.Box3().setFromObject(model);
+    if (Number.isFinite(bbox.min.y)) {
+      model.position.y -= bbox.min.y;
+      model.updateMatrixWorld(true);
+    }
+  }
   // Reset position to origin on T-pose calibration
   calibrated = true;
+
+
 
   $("#calibratein5").removeClass("animate__infinite");
   $("#recordButton").fadeIn();
@@ -463,6 +483,26 @@ function getTransformedPosition(position, bone) {
   return { x: x, y: y, z: z };
 }
 
+// [ADAPTIVE SLERP] Module-level base factor (was const inside handleWSMessage).
+// Moved out so getAdaptiveSlerp() below can read it without parameter passing.
+var slerpFactorBase = 0.24;
+
+// [ADAPTIVE SLERP] Returns a per-bone slerp factor that scales up when the
+// bone's observed packet rate is below DESIGN_FPS. Low-FPS pods receive a
+// larger factor so each rare packet moves the bone further toward target,
+// which removes the visible lag/stutter that "feels like missing frames".
+//
+// observedFps is updated in handleWSMessage via an EMA on packet intervals.
+// Floored at 4 fps so a near-dead pod doesn't get a runaway factor.
+var DESIGN_FPS = 32;
+function getAdaptiveSlerp(bone) {
+  var baseFactor = (slerpDict && slerpDict[bone]) || slerpFactorBase;
+  var b = mac2Bones[bone];
+  if (!b || !b.observedFps) return baseFactor;
+  var fps = Math.max(b.observedFps, 4);
+  return Math.min(1.0, baseFactor * (DESIGN_FPS / fps));
+}
+
 function handleWSMessage(obj) {
   if (flag) {
     initGlobalLocalLast();
@@ -478,6 +518,19 @@ function handleWSMessage(obj) {
   mac2Bones[bone].last.y = parseFloat(obj.y);
   mac2Bones[bone].last.z = parseFloat(obj.z);
   mac2Bones[bone].last.w = parseFloat(obj.w);
+
+  // [ADAPTIVE SLERP] Track per-bone observed FPS via EMA on packet intervals.
+  // Used by getAdaptiveSlerp() to scale the slerp factor inversely with rate.
+  var _now = Date.now();
+  var _b = mac2Bones[bone];
+  if (_b.lastSeenAt) {
+    var _dt = _now - _b.lastSeenAt;
+    if (_dt > 0) {
+      _b.avgInterval = _b.avgInterval ? (_b.avgInterval * 0.9 + _dt * 0.1) : _dt;
+      _b.observedFps = 1000 / _b.avgInterval;
+    }
+  }
+  _b.lastSeenAt = _now;
 
   statsObjs[lowerFirstLetter(bone)].update();
 
@@ -534,7 +587,9 @@ function handleWSMessage(obj) {
   }
 
   var bc = new THREE.Quaternion(mac2Bones[bone].bcalibration.x, mac2Bones[bone].bcalibration.y, mac2Bones[bone].bcalibration.z, mac2Bones[bone].bcalibration.w);
-  const slerpFactor = .24; // range: 0.0 to 1.0
+  // [ADAPTIVE SLERP] local `slerpFactor` removed - now sourced via
+  // getAdaptiveSlerp(bone) which falls back to the module-level slerpFactorBase.
+  // const slerpFactor = .24;
 
 
   // Hips orientation - phone is the sole Hips sensor (HipsAlt logic disabled)
@@ -550,7 +605,7 @@ function handleWSMessage(obj) {
     var hipQ = getTransformedQuaternion(transformedQ, bone).normalize();
     hipQ = applyMountingOffset(hipQ, bone); // Apply mounting offset after tree transformation
 
-    x.quaternion.slerp(hipQ, slerpDict[bone] || slerpFactor);
+    x.quaternion.slerp(hipQ, getAdaptiveSlerp(bone));
 
     // [HipsAlt DISABLED] inner timeout guard removed - always commit Hips state
     // if(hipsAltLast + 1000 < new Date().getTime()){
@@ -569,7 +624,7 @@ function handleWSMessage(obj) {
 
     var hipQ = getTransformedQuaternion(transformedQ, bone).normalize();
     hipQ = applyMountingOffset(hipQ, bone);
-    x.quaternion.slerp(hipQ, slerpDict[bone] || slerpFactor);
+    x.quaternion.slerp(hipQ, getAdaptiveSlerp(bone));
 
     setLocal("Hips", hipQ.x, hipQ.y, hipQ.z, hipQ.w);
     setGlobal("Hips", hipQ.x, hipQ.y, hipQ.z, hipQ.w);
@@ -593,7 +648,7 @@ function handleWSMessage(obj) {
     var hipsCorrection = new THREE.Quaternion().copy(hipsQinverse).multiply(leftuplegQ).normalize();
 
 
-    x.quaternion.slerp(hipsCorrection, slerpDict[bone] || slerpFactor);
+    x.quaternion.slerp(hipsCorrection, getAdaptiveSlerp(bone));
 
     setLocal(bone, hipsCorrection.x, hipsCorrection.y, hipsCorrection.z, hipsCorrection.w);
     setGlobal(bone, leftuplegQ.x, leftuplegQ.y, leftuplegQ.z, leftuplegQ.w);
@@ -614,7 +669,7 @@ function handleWSMessage(obj) {
     var hipsCorrection = new THREE.Quaternion().copy(hipsQinverse).multiply(rightuplegQ).normalize();
 
 
-    x.quaternion.slerp(hipsCorrection, slerpDict[bone] || slerpFactor);
+    x.quaternion.slerp(hipsCorrection, getAdaptiveSlerp(bone));
 
     setLocal(bone, hipsCorrection.x, hipsCorrection.y, hipsCorrection.z, hipsCorrection.w);
     setGlobal(bone, rightuplegQ.x, rightuplegQ.y, rightuplegQ.z, rightuplegQ.w);
@@ -640,7 +695,7 @@ function handleWSMessage(obj) {
 
     //x.quaternion.copy(hipCorrection);
 
-    x.quaternion.slerp(hipCorrection, slerpDict[bone] || slerpFactor);
+    x.quaternion.slerp(hipCorrection, getAdaptiveSlerp(bone));
 
     setLocal(bone, hipCorrection.x, hipCorrection.y, hipCorrection.z, hipCorrection.w);
     setGlobal(bone, spineQ.x, spineQ.y, spineQ.z, spineQ.w);
@@ -658,7 +713,7 @@ function handleWSMessage(obj) {
     var hipQinverse = new THREE.Quaternion().copy(hipQ).invert();
     var hipCorrection = new THREE.Quaternion().copy(hipQinverse).multiply(headQ).normalize();
 
-    x.quaternion.slerp(hipCorrection, slerpDict[bone] || slerpFactor);
+    x.quaternion.slerp(hipCorrection, getAdaptiveSlerp(bone));
 
     setLocal(bone, hipCorrection.x, hipCorrection.y, hipCorrection.z, hipCorrection.w);
     setGlobal(bone, headQ.x, headQ.y, headQ.z, headQ.w);
@@ -676,7 +731,7 @@ function handleWSMessage(obj) {
     var spineQinverse = new THREE.Quaternion().copy(spineQ).invert();
     var spineCorrection = new THREE.Quaternion().copy(spineQinverse).multiply(leftarmQ).normalize();
 
-    x.quaternion.slerp(spineCorrection, slerpDict[bone] || slerpFactor);
+    x.quaternion.slerp(spineCorrection, getAdaptiveSlerp(bone));
 
     setLocal(bone, spineCorrection.x, spineCorrection.y, spineCorrection.z, spineCorrection.w);
     setGlobal(bone, leftarmQ.x, leftarmQ.y, leftarmQ.z, leftarmQ.w);
@@ -693,7 +748,7 @@ function handleWSMessage(obj) {
     var spineQinverse = new THREE.Quaternion().copy(spineQ).invert();
     var spineCorrection = new THREE.Quaternion().copy(spineQinverse).multiply(rightarmQ).normalize();
 
-    x.quaternion.slerp(spineCorrection, slerpDict[bone] || slerpFactor);
+    x.quaternion.slerp(spineCorrection, getAdaptiveSlerp(bone));
 
     setLocal(bone, spineCorrection.x, spineCorrection.y, spineCorrection.z, spineCorrection.w);
     setGlobal(bone, rightarmQ.x, rightarmQ.y, rightarmQ.z, rightarmQ.w);
@@ -712,7 +767,7 @@ function handleWSMessage(obj) {
     var leftarmCorrection = new THREE.Quaternion().copy(leftarmQinverse).multiply(leftforearmQ).normalize();
 
 
-    x.quaternion.slerp(leftarmCorrection, slerpDict[bone] || slerpFactor);
+    x.quaternion.slerp(leftarmCorrection, getAdaptiveSlerp(bone));
 
     setLocal(bone, leftarmCorrection.x, leftarmCorrection.y, leftarmCorrection.z, leftarmCorrection.w);
     setGlobal(bone, leftforearmQ.x, leftforearmQ.y, leftforearmQ.z, leftforearmQ.w);
@@ -730,7 +785,7 @@ function handleWSMessage(obj) {
     var leftarmQinverse = new THREE.Quaternion().copy(leftarmQ).invert();
     var lefthandCorrection = new THREE.Quaternion().copy(leftarmQinverse).multiply(lefthandQ).normalize();
 
-    x.quaternion.slerp(lefthandCorrection, slerpDict[bone] || slerpFactor);
+    x.quaternion.slerp(lefthandCorrection, getAdaptiveSlerp(bone));
 
     setLocal(bone, lefthandCorrection.x, lefthandCorrection.y, lefthandCorrection.z, lefthandCorrection.w);
     setGlobal(bone, lefthandQ.x, lefthandQ.y, lefthandQ.z, lefthandQ.w);
@@ -747,7 +802,7 @@ function handleWSMessage(obj) {
     var rightarmQinverse = new THREE.Quaternion().copy(rightarmQ).invert();
     var rightarmCorrection = new THREE.Quaternion().copy(rightarmQinverse).multiply(rightforearmQ).normalize();
 
-    x.quaternion.slerp(rightarmCorrection, slerpDict[bone] || slerpFactor);
+    x.quaternion.slerp(rightarmCorrection, getAdaptiveSlerp(bone));
 
     setLocal(bone, rightarmCorrection.x, rightarmCorrection.y, rightarmCorrection.z, rightarmCorrection.w);
     setGlobal(bone, rightforearmQ.x, rightforearmQ.y, rightforearmQ.z, rightforearmQ.w);
@@ -765,7 +820,7 @@ function handleWSMessage(obj) {
     var rightforearmQinverse = new THREE.Quaternion().copy(rightforearmQ).invert();
     var righthandCorrection = new THREE.Quaternion().copy(rightforearmQinverse).multiply(righthandQ).normalize();
 
-    x.quaternion.slerp(righthandCorrection, slerpDict[bone] || slerpFactor);
+    x.quaternion.slerp(righthandCorrection, getAdaptiveSlerp(bone));
 
     setLocal(bone, righthandCorrection.x, righthandCorrection.y, righthandCorrection.z, righthandCorrection.w);
     setGlobal(bone, righthandQ.x, righthandQ.y, righthandQ.z, righthandQ.w);
@@ -784,7 +839,7 @@ function handleWSMessage(obj) {
     var leftuplegQinverse = new THREE.Quaternion().copy(leftuplegQ).invert();
     var leftuplegCorrection = new THREE.Quaternion().copy(leftuplegQinverse).multiply(leftlegQ).normalize();
 
-    x.quaternion.slerp(leftuplegCorrection, slerpDict[bone] || slerpFactor);
+    x.quaternion.slerp(leftuplegCorrection, getAdaptiveSlerp(bone));
 
     setLocal(bone, leftuplegCorrection.x, leftuplegCorrection.y, leftuplegCorrection.z, leftuplegCorrection.w);
     setGlobal(bone, leftlegQ.x, leftlegQ.y, leftlegQ.z, leftlegQ.w);
@@ -802,7 +857,7 @@ function handleWSMessage(obj) {
     var rightuplegQinverse = new THREE.Quaternion().copy(rightuplegQ).invert();
     var rightuplegCorrection = new THREE.Quaternion().copy(rightuplegQinverse).multiply(rightlegQ).normalize();
 
-    x.quaternion.slerp(rightuplegCorrection, slerpDict[bone] || slerpFactor);
+    x.quaternion.slerp(rightuplegCorrection, getAdaptiveSlerp(bone));
 
     setLocal(bone, rightuplegCorrection.x, rightuplegCorrection.y, rightuplegCorrection.z, rightuplegCorrection.w);
     setGlobal(bone, rightlegQ.x, rightlegQ.y, rightlegQ.z, rightlegQ.w);
@@ -820,7 +875,7 @@ function handleWSMessage(obj) {
     var leftlegQinverse = new THREE.Quaternion().copy(leftlegQ).invert();
     var leftlegCorrection = new THREE.Quaternion().copy(leftlegQinverse).multiply(leftfootQ).normalize();
 
-    x.quaternion.slerp(leftlegCorrection, slerpDict[bone] || slerpFactor);
+    x.quaternion.slerp(leftlegCorrection, getAdaptiveSlerp(bone));
 
     setLocal(bone, leftlegCorrection.x, leftlegCorrection.y, leftlegCorrection.z, leftlegCorrection.w);
   }
@@ -836,7 +891,7 @@ function handleWSMessage(obj) {
     var rightlegQinverse = new THREE.Quaternion().copy(rightlegQ).invert();
     var rightlegCorrection = new THREE.Quaternion().copy(rightlegQinverse).multiply(rightfootQ).normalize();
 
-    x.quaternion.slerp(rightlegCorrection, slerpDict[bone] || slerpFactor);
+    x.quaternion.slerp(rightlegCorrection, getAdaptiveSlerp(bone));
 
     setLocal(bone, rightlegCorrection.x, rightlegCorrection.y, rightlegCorrection.z, rightlegCorrection.w);
   }
@@ -872,18 +927,21 @@ function handleWSMessage(obj) {
 
   if (bone == "Hips" && obj.sensorPosition !== undefined) {
 
+    const hipsBone = model.getObjectByName(rigPrefix + "Hips");
+
+    // [FLOATING FIX] IMU vertical position drifts (accelerometer integration
+    // accumulates error within seconds), which made the mannequin float higher
+    // and higher above the grid. We keep horizontal translation (X/Z) but lock
+    // Y to whatever calibrate() set it to (170 in T-pose). This matches what
+    // commercial mocap suits do: phone/IMU position is unreliable on the
+    // vertical axis, so don't trust it.
     var sensorPosition = new THREE.Vector3(
       obj.sensorPosition.x * positionSensitivity - initialPosition.x,
-      obj.sensorPosition.y * positionSensitivity - initialPosition.y + hipToGroundOffset, // Add hip-to-ground offset to Y-axis
+      hipsBone.position.y, // <-- locked to current hip Y; was: obj.sensorPosition.y * positionSensitivity - initialPosition.y + hipToGroundOffset
       obj.sensorPosition.z * positionSensitivity - initialPosition.z
     );
 
-
-    const hipsBone = model.getObjectByName(rigPrefix + "Hips");
-
-    hipsBone.position.lerp(new THREE.Vector3(sensorPosition.x,
-      sensorPosition.y,
-      sensorPosition.z), 0.1);
+    hipsBone.position.lerp(sensorPosition, 0.1);
   }
 
 
