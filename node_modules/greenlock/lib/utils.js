@@ -1,0 +1,165 @@
+'use strict';
+require('./compat.js');
+
+var path = require('path');
+var homeRe = new RegExp('^~(\\/|\\\\|\\' + path.sep + ')');
+// very basic check. Allows *.example.com.
+var re = /^(\*\.)?[a-zA-Z0-9\.\-]+$/;
+var punycode = require('punycode');
+var dnsResolveMxAsync = require('util').promisify(require('dns').resolveMx);
+
+module.exports.attachCertInfo = function(results) {
+	var certInfo = require('cert-info').info(results.cert);
+
+	// subject, altnames, issuedAt, expiresAt
+	Object.keys(certInfo).forEach(function(key) {
+		results[key] = certInfo[key];
+	});
+
+	return results;
+};
+
+module.exports.certHasDomain = function(certInfo, _domain) {
+	var names = (certInfo.altnames || []).slice(0);
+	names.push(certInfo.subject);
+	return names.some(function(name) {
+		var domain = _domain.toLowerCase();
+		name = name.toLowerCase();
+		if ('*.' === name.substr(0, 2)) {
+			name = name.substr(2);
+			domain = domain
+				.split('.')
+				.slice(1)
+				.join('.');
+		}
+		return name === domain;
+	});
+};
+
+module.exports.isValidDomain = function(domain) {
+	if (re.test(domain)) {
+		return domain;
+	}
+
+	domain = punycode.toASCII(domain);
+
+	if (re.test(domain)) {
+		return domain;
+	}
+
+	return '';
+};
+
+module.exports.merge = function(/*defaults, args*/) {
+	var allDefaults = Array.prototype.slice.apply(arguments);
+	var args = allDefaults.shift();
+	var copy = {};
+
+	allDefaults.forEach(function(defaults) {
+		Object.keys(defaults).forEach(function(key) {
+			/*
+      if ('challenges' === key && copy[key] && defaults[key]) {
+        Object.keys(defaults[key]).forEach(function (k) {
+          copy[key][k] = defaults[key][k];
+        });
+      } else {
+        copy[key] = defaults[key];
+      }
+    */
+			copy[key] = defaults[key];
+		});
+	});
+
+	Object.keys(args).forEach(function(key) {
+		/*
+    if ('challenges' === key && copy[key] && args[key]) {
+        Object.keys(args[key]).forEach(function (k) {
+          copy[key][k] = args[key][k];
+        });
+    } else {
+      copy[key] = args[key];
+    }
+    */
+		copy[key] = args[key];
+	});
+
+	return copy;
+};
+
+module.exports.tplCopy = function(copy) {
+	var homedir = require('os').homedir();
+	var tplKeys;
+
+	copy.hostnameGet = function(copy) {
+		return copy.subject || (copy.domains || [])[0] || copy.domain;
+	};
+
+	Object.keys(copy).forEach(function(key) {
+		var newName;
+		if (!/Get$/.test(key)) {
+			return;
+		}
+
+		newName = key.replace(/Get$/, '');
+		copy[newName] = copy[newName] || copy[key](copy);
+	});
+
+	tplKeys = Object.keys(copy);
+	tplKeys.sort(function(a, b) {
+		return b.length - a.length;
+	});
+
+	tplKeys.forEach(function(key) {
+		if ('string' !== typeof copy[key]) {
+			return;
+		}
+
+		copy[key] = copy[key].replace(homeRe, homedir + path.sep);
+	});
+
+	tplKeys.forEach(function(key) {
+		if ('string' !== typeof copy[key]) {
+			return;
+		}
+
+		tplKeys.forEach(function(tplname) {
+			if (!copy[tplname]) {
+				// what can't be templated now may be templatable later
+				return;
+			}
+			copy[key] = copy[key].replace(':' + tplname, copy[tplname]);
+		});
+	});
+
+	return copy;
+};
+
+module.exports.testEmail = function(email) {
+	var parts = (email || '').split('@');
+	var err;
+
+	if (2 !== parts.length || !parts[0] || !parts[1]) {
+		err = new Error("malformed email address '" + email + "'");
+		err.code = 'E_EMAIL';
+		return Promise.reject(err);
+	}
+
+	return dnsResolveMxAsync(parts[1]).then(
+		function(records) {
+			// records only returns when there is data
+			if (!records.length) {
+				throw new Error(
+					'sanity check fail: success, but no MX records returned'
+				);
+			}
+			return email;
+		},
+		function(err) {
+			if ('ENODATA' === err.code) {
+				err = new Error("no MX records found for '" + parts[1] + "'");
+				err.code = 'E_EMAIL';
+				return Promise.reject(err);
+			}
+		}
+	);
+};
