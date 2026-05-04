@@ -1,6 +1,6 @@
 var express = require("express");
 var server = express();
-var bodyParser = require('body-parser');
+//var bodyParser = require('body-parser');
 var hostname = process.env.HOSTNAME || 'localhost';
 var port = 8080;
 
@@ -9,7 +9,7 @@ server.get("/", function (req, res) {
 });
 
 
-server.use(bodyParser());
+//server.use(bodyParser());
 server.use(express.static(__dirname + '/'));
 
 console.log("Simple static server listening at http://" + hostname + ":" + port);
