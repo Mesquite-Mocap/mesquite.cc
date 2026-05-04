@@ -12,7 +12,19 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+  <!-- kalmanjs@1.1.0 ships as a CommonJS module (`module.exports = ...`).
+       Loading it directly throws "module is not defined" in the browser and
+       leaves KalmanFilter undefined. We provide a fake `module` so the
+       library can write into it, then promote the export to a global. -->
+  <script>window.module = { exports: {} };</script>
   <script src="https://cdn.jsdelivr.net/npm/kalmanjs@1.1.0/lib/kalman.min.js"></script>
+  <script>
+    window.KalmanFilter = window.module.exports;
+    delete window.module;
+    if (typeof window.KalmanFilter !== "function") {
+      console.warn("[kalman shim] KalmanFilter did not load - smoothing disabled");
+    }
+  </script>
   <script src="js/moment.min.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
 
@@ -307,6 +319,20 @@ var slerpDict = {
     let firstFrameJointData = null;
 
   </script>
+
+  <!-- [DUPLICATE THREE FIX pt.2] Import map: forces every module that imports
+       "three" (bare specifier) to resolve to our canonical THREE URL. This
+       lets us pull peer-dependency-respecting builds (e.g. esm.sh's
+       ?external=three) without them bundling their own copy of THREE.
+       Must be declared before any <script type="module"> that uses it. -->
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc@latest/build-static/three.module.js"
+    }
+  }
+  </script>
+
   <script type="module" src="js/threejsscene.js"></script>
   <script type="module" src="js/webserialnative.js"></script>
 
@@ -612,13 +638,40 @@ var slerpDict = {
   </div>
 
   <script src="js/custom_icm.js"></script>
-  <script src="js/three.min.js"></script>
+  <!-- [DUPLICATE THREE FIX] was: <script src="js/three.min.js"></script>
+       Loading the legacy global build alongside the module build (imported
+       from the same CDN by js/threejsscene.js) caused
+       "WARNING: Multiple instances of Three.js being imported" and subtle
+       cross-instance breakage (Mesh from copy A not instanceof Mesh of copy B,
+       etc.). Now we import THREE once as a module and expose it on `window.THREE`
+       so legacy scripts (custom_icm.js, bvh_converter.js) keep working.
+       Same URL as js/threejsscene.js -> the browser de-duplicates the module. -->
+  <script type="module">
+    import * as THREE from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc@latest/build-static/three.module.js";
+    window.THREE = THREE;
+  </script>
   <script src="js/bvh_converter.js"></script>
 
   <script>
+    // [SW DISABLED] The previous service worker (js/sw.js) used a cache-first
+    // strategy with no version invalidation, so once a visitor cached an old
+    // build it became permanently stuck on that build regardless of what was
+    // pushed to the server. We unregister any existing SW on this page load
+    // so users who already have the broken one installed get unstuck.
+    // Re-enable + properly version sw.js when caching for offline is needed again.
     if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("./js/sw.js");
+      navigator.serviceWorker.getRegistrations().then(function (regs) {
+        for (var i = 0; i < regs.length; i++) regs[i].unregister();
+      });
+      // Also explicitly clear any caches the old SW created
+      if (window.caches && caches.keys) {
+        caches.keys().then(function (keys) {
+          keys.forEach(function (k) { caches.delete(k); });
+        });
+      }
     }
+    // To re-enable later, swap the block above for:
+    // if ("serviceWorker" in navigator) navigator.serviceWorker.register("./js/sw.js");
   </script>
 
 </body>

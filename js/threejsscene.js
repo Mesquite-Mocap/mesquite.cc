@@ -257,12 +257,24 @@ import { OrbitControls } from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesqui
 // import { KTX2Loader } from "./build/KTX2Loader.js";
 // import { MeshoptDecoder } from "./build/meshopt_decoder.module.js";
 // import {BVHLoader} from "./build/BVHLoader.js"
-import { GLTFLoader } from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc/build/GLTFLoader.js";
-import { KTX2Loader } from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc/build/KTX2Loader.js";
-import { MeshoptDecoder } from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc@latest/build/meshopt_decoder.module.js";
+// [DUPLICATE THREE FIX] previously pulled GLTFLoader/KTX2Loader/MeshoptDecoder
+// from the `build/` folder, while THREE itself comes from `build-static/`.
+// Each `build/` helper bundles its own copy of THREE (different URL = different
+// module instance), which produced "WARNING: Multiple instances of Three.js
+// being imported." All three files exist in build-static/ - using those keeps
+// every helper on the same THREE.
+import { GLTFLoader } from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc@latest/build-static/GLTFLoader.js";
+import { KTX2Loader } from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc@latest/build-static/KTX2Loader.js";
+import { MeshoptDecoder } from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc@latest/build-static/meshopt_decoder.module.js";
 import { BVHLoader } from "https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc@latest/build-static/BVHLoader.js";
 import { CCDIKSolver } from 'https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc@latest/build-static/CCDIKSolver.js';
-import { ViewportGizmo } from 'https://cdn.jsdelivr.net/npm/three-viewport-gizmo@0.1.5/+esm'
+// [DUPLICATE THREE FIX pt.2] was: jsdelivr's `+esm` URL bundles peer deps
+// (including its own copy of THREE), causing duplicate-instance warnings.
+// esm.sh's `?external=three` keeps THREE external; the import map in
+// index.html resolves the bare `three` specifier to our canonical URL,
+// so the gizmo shares the same THREE instance as the rest of the app.
+import { ViewportGizmo } from 'https://esm.sh/three-viewport-gizmo@0.1.5?external=three';
+// previous: import { ViewportGizmo } from 'https://cdn.jsdelivr.net/npm/three-viewport-gizmo@0.1.5/+esm'
 //import { SkinnedMesh } from "three/src/Three.js";
 
 class InfiniteGridHelper extends THREE.GridHelper {
