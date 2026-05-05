@@ -94,6 +94,13 @@ function applySensorOffsetCompensation(quaternion, bone) {
 
 var flag = true;
 
+// [BIND POSE FIX] Captured once when the first packet arrives, before any
+// sensor data has perturbed the rig. calibrate() uses these as the canonical
+// "expected bone orientation at T-pose" values, instead of reading
+// bone.getWorldQuaternion() at calibration time (which would reflect whatever
+// pose the bones happen to be in by then -- not necessarily bind pose).
+var bindPoseQuaternions = {};
+
 function initGlobalLocalLast() {
   flag = false;
 
@@ -103,6 +110,22 @@ function initGlobalLocalLast() {
   var boneNames = ["Hips", /* "HipsAlt", */ "Spine", "Head", "LeftArm", "LeftForeArm", "LeftHand",
                    "RightArm", "RightForeArm", "RightHand", "LeftUpLeg", "LeftLeg", "LeftFoot",
                    "RightUpLeg", "RightLeg", "RightFoot"];
+
+  // [BIND POSE FIX] Snapshot each bone's world orientation NOW, while the rig
+  // is still untouched (no sensor packets have updated bones yet, since this
+  // runs at the very top of the first handleWSMessage call). Save into
+  // bindPoseQuaternions for calibrate() to consult later.
+  for (var b = 0; b < boneNames.length; b++) {
+    var bn = boneNames[b];
+    var bObj = model.getObjectByName(rigPrefix + bn.replace("Alt", ""));
+    if (bObj) {
+      bObj.updateMatrixWorld(true);
+      var bindQ = new THREE.Quaternion();
+      bObj.getWorldQuaternion(bindQ);
+      bindQ.normalize();
+      bindPoseQuaternions[bn] = bindQ;
+    }
+  }
 
   for (var i = 0; i < boneNames.length; i++) {
     var boneName = boneNames[i];
@@ -247,77 +270,49 @@ function calibrate() {
     if (!mountingOffsetsCalculated) {
       var bone = model.getObjectByName(rigPrefix + keys[i].replace("Alt", ""));
       if (bone && trees[treeType] && trees[treeType][keys[i]]) {
-        // Get expected bone orientation in T-pose (from the model in world space)
-        bone.updateMatrixWorld(true); // Ensure world matrix is current
-        var expectedBoneQ = new THREE.Quaternion();
-        bone.getWorldQuaternion(expectedBoneQ);
-        expectedBoneQ.normalize();
-
-        // Get actual sensor reading and apply the TREE MAPPING to it
-        // (this is what the sensor SHOULD read if mounted perfectly)
-        var sensorQ = new THREE.Quaternion(
-          mac2Bones[keys[i]].last.x,
-          mac2Bones[keys[i]].last.y,
-          mac2Bones[keys[i]].last.z,
-          mac2Bones[keys[i]].last.w
-        ).normalize();
-
-        // Apply tree axis transformation (what it would be if mounted perfectly)
-        var transformedSensorQ = getTransformedQuaternion(sensorQ, keys[i]);
-
-        // Apply T-pose offset if this bone has one (for arms/forearms/hands)
-        if (tposeOffsets[keys[i]]) {
-          transformedSensorQ.multiply(tposeOffsets[keys[i]]);
+        // [BIND POSE FIX] Read expectedBoneQ from the bind-pose snapshot
+        // captured at first-packet time, NOT from the current bone state.
+        // Reading the live bone here was wrong: by the time calibrate() runs,
+        // the bone has been driven by previous sensor packets, so its world
+        // quaternion is "wherever the data put it" rather than the canonical
+        // bind pose. That gave a different baseline depending on the user's
+        // physical orientation at calibration moment, which then yawed the
+        // entire rig (e.g. spine rendered facing right when user faced front).
+        var expectedBoneQ = bindPoseQuaternions[keys[i]];
+        if (!expectedBoneQ) {
+          // Safety fallback if bind pose wasn't captured for some reason.
+          bone.updateMatrixWorld(true);
+          expectedBoneQ = new THREE.Quaternion();
+          bone.getWorldQuaternion(expectedBoneQ);
+          expectedBoneQ.normalize();
         }
+        expectedBoneQ = expectedBoneQ.clone();
 
-        // BIDIRECTIONAL MOUNTING DETECTION
-        // Check if sensor is mounted backwards (180° flipped)
-        // Arms/forearms/hands/feet: can flip in Y-axis
-        // Head/spine/hips/legs: can flip in Z-axis
-        var transformedInverse = transformedSensorQ.clone().invert();
-        var normalOffset = expectedBoneQ.clone().multiply(transformedInverse);
-
-        // Determine flip axis based on bone type
-        var flipAxis;
-        if (keys[i].indexOf("Arm") !== -1 || keys[i].indexOf("Hand") !== -1 || keys[i].indexOf("Foot") !== -1) {
-          // Arms, forearms, hands, feet: flip in Y
-          flipAxis = new THREE.Vector3(0, 1, 0);
-        } else if (keys[i].indexOf("Leg") !== -1 ||
-                   keys[i] === "Head" || keys[i] === "Spine" || keys[i].indexOf("Hips") !== -1) {
-          // Head, spine, hips, legs: flip in Z
-          flipAxis = new THREE.Vector3(0, 0, 1);
-        } else {
-          // Default: no flip detection
-          flipAxis = null;
-        }
-
-        var mountingOffset;
-        if (flipAxis) {
-          // Test flipped version (180° rotation)
-          var flipQ = new THREE.Quaternion().setFromAxisAngle(flipAxis, Math.PI);
-          var flippedSensorQ = transformedSensorQ.clone().multiply(flipQ);
-          var flippedInverse = flippedSensorQ.clone().invert();
-          var flippedOffset = expectedBoneQ.clone().multiply(flippedInverse);
-
-          // Calculate angular distance for both orientations (smaller = better match)
-          var normalAngle = 2 * Math.acos(Math.abs(normalOffset.w));
-          var flippedAngle = 2 * Math.acos(Math.abs(flippedOffset.w));
-
-          if (flippedAngle < normalAngle) {
-            // Flipped version is closer - sensor is mounted backwards
-            mountingOffset = flippedOffset;
-          } else {
-            // Normal orientation
-            mountingOffset = normalOffset;
-          }
-        } else {
-          // No flip detection for this bone
-          mountingOffset = normalOffset;
-        }
-
-        // Store the offset for this bone
-        mountingOffsets[keys[i]] = mountingOffset;
-
+        // [CALIBRATION MATH FIX] The previous implementation used
+        //   mountingOffset = expectedBoneQ * (mapped(q_cal) * tposeOffset)^-1
+        // but the runtime path applies mapped(q_raw * q_cal^-1), which at
+        // T-pose evaluates to mapped(identity) = identity -- not mapped(q_cal).
+        // The two formulas only agree when mapped(q_cal) == identity, which
+        // is exactly the empirical condition users were fighting to satisfy
+        // by tweaking order/sign.
+        //
+        // Correct derivation:
+        //   bone_at_T-pose = mapped(identity) * tposeOffset * mountingOffset
+        //                  = identity * tposeOffset * mountingOffset
+        //   We want this to equal expectedBoneQ (the bind-pose orientation).
+        //   Therefore mountingOffset = tposeOffset^-1 * expectedBoneQ.
+        //
+        // This is independent of q_cal AND of the axis remap, so the bone
+        // always snaps to its bind pose at T-pose regardless of pod mounting
+        // or meta.json. Axis remap and tposeOffset are now responsible only
+        // for translating *dynamic* rotations (delta from T-pose) into the
+        // bone's local frame, not for compensating the calibration baseline.
+        //
+        // The bidirectional flip detection that used to live here was a
+        // heuristic to compensate for the broken math. With the math correct,
+        // it's no longer needed and has been removed.
+        var tposeQ = tposeOffsets[keys[i]] || new THREE.Quaternion(0, 0, 0, 1);
+        mountingOffsets[keys[i]] = tposeQ.clone().invert().multiply(expectedBoneQ);
       }
     }
   }
