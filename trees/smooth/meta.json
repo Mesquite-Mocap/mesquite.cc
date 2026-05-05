@@ -44,8 +44,8 @@
       },
       "Head": {
         "axis": {
-          "order": "XYZ",
-          "sign": "+++"
+          "order": "YZX",
+          "sign": "-+-"
         },
         "tposeOffset": [
           {"axis": "X", "degrees": 0},
@@ -55,8 +55,8 @@
       },
       "LeftArm": {
         "axis": {
-          "order": "XYZ",
-          "sign": "+++"
+          "order": "YZX",
+          "sign": "-+-"
         },
         "tposeOffset": [
           {"axis": "X", "degrees": 0},
@@ -66,8 +66,8 @@
       },
       "LeftForeArm": {
         "axis": {
-          "order": "XYZ",
-          "sign": "+++"
+          "order": "YZX",
+          "sign": "-+-"
         },
         "tposeOffset": [
           {"axis": "X", "degrees": 0},
@@ -77,8 +77,8 @@
       },
       "LeftHand": {
         "axis": {
-          "order": "XYZ",
-          "sign": "+++"
+          "order": "YZX",
+          "sign": "-+-"
         },
         "tposeOffset": [
           {"axis": "X", "degrees": 0},
@@ -88,8 +88,8 @@
       },
       "RightArm": {
         "axis": {
-          "order": "XYZ",
-          "sign": "+++"
+          "order": "YZX",
+          "sign": "-+-"
         },
         "tposeOffset": [
           {"axis": "X", "degrees": 0},
@@ -99,8 +99,8 @@
       },
       "RightForeArm": {
         "axis": {
-          "order": "XYZ",
-          "sign": "+++"
+          "order": "YZX",
+          "sign": "-+-"
         },
         "tposeOffset": [
           {"axis": "X", "degrees": 0},
@@ -110,8 +110,8 @@
       },
       "RightHand": {
         "axis": {
-          "order": "XYZ",
-          "sign": "+++"
+          "order": "YZX",
+          "sign": "-+-"
         },
         "tposeOffset": [
           {"axis": "X", "degrees": 0},
