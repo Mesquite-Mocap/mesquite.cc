@@ -15,7 +15,7 @@
       "Hips": {
         "axis": {
           "order": "XYZ",
-          "sign": "+++"
+          "sign": "-+-"
         },
         "posswap": {
           "order": "XYZ",
@@ -121,56 +121,49 @@
       },
       "LeftUpLeg": {
         "axis": {
-          "order": "XYZ",
-          "sign": "+++"
+          "order": "YZX",
+          "sign": "-+-"
         },
         "tposeOffset": [
           {"axis": "X", "degrees": 0},
           {"axis": "Y", "degrees": 0},
           {"axis": "Z", "degrees": 0}
-        ],
-        "sensorOffset": {
-          "position": [0, -0.15, 0.08],
-          "compensationStrength": 0
-        }
+        ]
       },
       "LeftLeg": {
         "axis": {
-          "order": "XYZ",
-          "sign": "+++"
+          "order": "YZX",
+          "sign": "-+-"
         }
       },
       "LeftFoot": {
         "axis": {
-          "order": "XYZ",
-          "sign": "+++"
+          "order": "YZX",
+          "sign": "-+-"
         }
       },
       "RightUpLeg": {
         "axis": {
-          "order": "XYZ",
-          "sign": "+++"
+          "order": "YZX",
+          "sign": "-+-"
         },
         "tposeOffset": [
           {"axis": "X", "degrees": 0},
           {"axis": "Y", "degrees": 0},
           {"axis": "Z", "degrees": 0}
-        ],
-        "sensorOffset": {
-          "position": [0, -0.15, -0.08],
-          "compensationStrength": 0
-        }
+        ]
+
       },
       "RightLeg": {
         "axis": {
-          "order": "XYZ",
-          "sign": "+++"
+          "order": "YZX",
+          "sign": "-+-"
         }
       },
       "RightFoot": {
         "axis": {
-          "order": "XYZ",
-          "sign": "+++"
+          "order": "XZY",
+          "sign": "-++"
         }
       }
   }
