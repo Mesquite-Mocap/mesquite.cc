@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node d:/MoCap/mesquite.cc-1/check_braces.js)",
+      "Bash(node --check d:/MoCap/mesquite.cc-1/js/webserialnative.js)"
+    ]
+  }
+}

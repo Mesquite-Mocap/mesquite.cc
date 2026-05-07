@@ -14,7 +14,7 @@
       },
       "Hips": {
         "axis": {
-          "order": "XYZ",
+          "order": "YZX",
           "sign": "-+-"
         },
         "posswap": {
@@ -27,10 +27,10 @@
           {"axis": "Z", "degrees": 0}
         ]
       },
-      "_HipsAlt_DISABLED": {
+      "HipsAlt": {
         "axis": {
           "order": "YZX",
-          "sign": "-+-"
+          "sign": "---"
         },
         "posswap": {
           "order": "YXZ",
@@ -162,8 +162,8 @@
       },
       "RightFoot": {
         "axis": {
-          "order": "XZY",
-          "sign": "-++"
+          "order": "YZX",
+          "sign": "-+-"
         }
       }
   }

@@ -1,7 +1,10 @@
 var rigPrefix = "mm";
-// [HipsAlt DISABLED] phone is the only Hips sensor; kept for future revisit
-// var hipsAltLast = 0;
-// var hipsLast = 0;
+// [HipsAlt RE-ENABLED] HipsAlt is now the orientation source for the Hips
+// bone. The Hips phone provides position only (see Hips block below). An IMU
+// pod flashed as bone="HipsAlt" sends rotation data; we apply it to the Hips
+// bone since IMU gravity is more reliable than visual-odometry orientation.
+var hipsAltLast = 0;
+// var hipsLast = 0;  // still unused
 
 var calibrated = false;
 var initialPosition = { x: 0, y: 0, z: 0 };
@@ -100,16 +103,35 @@ var flag = true;
 // bone.getWorldQuaternion() at calibration time (which would reflect whatever
 // pose the bones happen to be in by then -- not necessarily bind pose).
 var bindPoseQuaternions = {};
+// [STALE POD FIX] We also need each bone's bind-pose LOCAL quaternion (i.e.
+// bObj.quaternion at bind time) so we can snap a bone back to its rest pose
+// when its pod disconnects. World quaternion alone is not enough -- writing
+// to a bone's quaternion sets its local rotation.
+var bindPoseLocalQuaternions = {};
+
+// [STALE POD FIX] If a bone's pod stops sending packets for this long, we
+// treat it as disconnected: snap the bone back to bind pose, clear its last/
+// calibration/global/local state, and reset lastSeenAt to 0 so subsequent
+// T-pose calibrations skip it. Without this, a dead pod's last orientation
+// gets baked into the next calibration and the mannequin looks crooked
+// forever -- exactly the symptom users hit when a battery dies mid-session.
+var STALE_POD_MS = 2000;
 
 function initGlobalLocalLast() {
   flag = false;
 
   // Initialize T-pose offsets from meta.json
   tposeOffsets = {};
-  // [HipsAlt DISABLED] removed "HipsAlt" from list
-  var boneNames = ["Hips", /* "HipsAlt", */ "Spine", "Head", "LeftArm", "LeftForeArm", "LeftHand",
+  // [HipsAlt RE-ENABLED] HipsAlt is back in the bone list so its tposeOffset
+  // is captured and its bind pose is snapshotted along with everything else.
+  // Shoulders (15, 16) added so bind pose is captured AND mac2Bones state
+  // exists when their pods join. The downstream code is null-safe -- if the
+  // rig has no LeftShoulder/RightShoulder bone the snapshots silently skip
+  // (see `if (bObj)` below) and the per-bone init is guarded too.
+  var boneNames = ["Hips", "HipsAlt", "Spine", "Head", "LeftArm", "LeftForeArm", "LeftHand",
                    "RightArm", "RightForeArm", "RightHand", "LeftUpLeg", "LeftLeg", "LeftFoot",
-                   "RightUpLeg", "RightLeg", "RightFoot"];
+                   "RightUpLeg", "RightLeg", "RightFoot",
+                   "LeftShoulder", "RightShoulder"];
 
   // [BIND POSE FIX] Snapshot each bone's world orientation NOW, while the rig
   // is still untouched (no sensor packets have updated bones yet, since this
@@ -124,6 +146,10 @@ function initGlobalLocalLast() {
       bObj.getWorldQuaternion(bindQ);
       bindQ.normalize();
       bindPoseQuaternions[bn] = bindQ;
+      // [STALE POD FIX] Snapshot the bone's LOCAL bind-pose quaternion too --
+      // this is what we need to write back to bObj.quaternion to reset the
+      // bone, since bone.quaternion is local-space.
+      bindPoseLocalQuaternions[bn] = new THREE.Quaternion().copy(bObj.quaternion);
     }
   }
 
@@ -156,11 +182,14 @@ function initGlobalLocalLast() {
   setLocal("Hips", bone.quaternion.x, bone.quaternion.y, bone.quaternion.z, bone.quaternion.w);
   initInitialPosition("Hips", bone.quaternion.x, bone.quaternion.y, bone.quaternion.z, bone.quaternion.w);
 
-  // [HipsAlt DISABLED] initialization block
-  // mac2Bones["HipsAlt"] = { calibration: { x: 0, y: 0, z: 0, w: 1 }, last: { x: 0, y: 0, z: 0, w: 1 }, global: { x: 0, y: 0, z: 0, w: 1 }, local: { x: 0, y: 0, z: 0, w: 1 }, bcalibration: { x: 0, y: 0, z: 0, w: 1 } };
-  // setGlobal("HipsAlt", bone.quaternion.x, bone.quaternion.y, bone.quaternion.z, bone.quaternion.w);
-  // setLocal("HipsAlt", bone.quaternion.x, bone.quaternion.y, bone.quaternion.z, bone.quaternion.w);
-  // initInitialPosition("HipsAlt", bone.quaternion.x, bone.quaternion.y, bone.quaternion.z, bone.quaternion.w);
+  // [HipsAlt RE-ENABLED] HipsAlt shares the Hips bone (see bone.replace("Alt","")
+  // logic in handleWSMessage). It has its own mac2Bones entry for calibration
+  // bookkeeping but writes orientation into mac2Bones["Hips"].global so all
+  // downstream bones see a single, consistent Hips reference frame.
+  mac2Bones["HipsAlt"] = { calibration: { x: 0, y: 0, z: 0, w: 1 }, last: { x: 0, y: 0, z: 0, w: 1 }, global: { x: 0, y: 0, z: 0, w: 1 }, local: { x: 0, y: 0, z: 0, w: 1 }, bcalibration: { x: 0, y: 0, z: 0, w: 1 } };
+  setGlobal("HipsAlt", bone.quaternion.x, bone.quaternion.y, bone.quaternion.z, bone.quaternion.w);
+  setLocal("HipsAlt", bone.quaternion.x, bone.quaternion.y, bone.quaternion.z, bone.quaternion.w);
+  initInitialPosition("HipsAlt", bone.quaternion.x, bone.quaternion.y, bone.quaternion.z, bone.quaternion.w);
 
 
   bone = model.getObjectByName(rigPrefix + "Spine");
@@ -247,15 +276,119 @@ function initGlobalLocalLast() {
   setLocal("RightHand", bone.quaternion.x, bone.quaternion.y, bone.quaternion.z, bone.quaternion.w);
   initInitialPosition("RightHand", bone.quaternion.x, bone.quaternion.y, bone.quaternion.z, bone.quaternion.w);
 
+  // Shoulders are optional rig bones. If `mmLeftShoulder` / `mmRightShoulder`
+  // exist on the loaded glTF, snapshot them. If not, we still create a
+  // mac2Bones entry so handleWSMessage doesn't crash on `mac2Bones[bone].last`,
+  // but the bone-driven slerp path will simply early-return because
+  // model.getObjectByName(...) returns null in handleWSMessage too.
+  ["LeftShoulder", "RightShoulder"].forEach(function (sn) {
+    mac2Bones[sn] = { calibration: { x: 0, y: 0, z: 0, w: 1 }, last: { x: 0, y: 0, z: 0, w: 1 }, global: { x: 0, y: 0, z: 0, w: 1 }, local: { x: 0, y: 0, z: 0, w: 1 }, bcalibration: { x: 0, y: 0, z: 0, w: 1 } };
+    var sb = model.getObjectByName(rigPrefix + sn);
+    if (sb) {
+      setGlobal(sn, sb.quaternion.x, sb.quaternion.y, sb.quaternion.z, sb.quaternion.w);
+      setLocal(sn, sb.quaternion.x, sb.quaternion.y, sb.quaternion.z, sb.quaternion.w);
+      initInitialPosition(sn, sb.quaternion.x, sb.quaternion.y, sb.quaternion.z, sb.quaternion.w);
+    }
+  });
+
+  // [GROUND FIX] Force the model onto the ground at first-packet time, before
+  // any sensor data has perturbed Hips position. Without this, hipsBone.y
+  // starts at 0 from the gltf load, the Hips phone's position lerp locks Y
+  // to that 0, and the feet end up rendering below Y=0 (mannequin underground).
+  // Calling this here means the rig is grounded as soon as it becomes visible,
+  // independent of whether the user has T-posed yet, and independent of which
+  // pods are or aren't connected.
+  var hipsBoneInit = model.getObjectByName(rigPrefix + "Hips");
+  if (hipsBoneInit) {
+    hipsBoneInit.position.set(0, 200, 0);
+  }
+  snapModelToGround();
 }
 
 
+// [STALE POD FIX] A pod is stale if it never sent a packet OR it stopped
+// sending recently. Both cases must behave the same at calibration time --
+// we cannot trust mac2Bones[bone].last if the pod is dead.
+function isPodStale(boneName) {
+  var b = mac2Bones[boneName];
+  if (!b) return true;
+  if (!b.lastSeenAt) return true;
+  return (Date.now() - b.lastSeenAt) > STALE_POD_MS;
+}
+
+// [STALE POD FIX] Snap a bone back to its bind-pose orientation and clear all
+// per-pod state, so the rig looks like the pod was never connected. Used by
+// the stale watchdog and by calibrate() when a pod is missing -- prevents a
+// dead pod's last frame from rendering as a crooked limb forever.
+function resetBoneToBind(boneName) {
+  var bObj = model.getObjectByName(rigPrefix + boneName.replace("Alt", ""));
+  if (!bObj) return;
+
+  var bindLocal = bindPoseLocalQuaternions[boneName];
+  if (bindLocal) {
+    bObj.quaternion.copy(bindLocal);
+  }
+
+  if (mac2Bones[boneName]) {
+    mac2Bones[boneName].last = { x: 0, y: 0, z: 0, w: 1 };
+    mac2Bones[boneName].calibration = { x: 0, y: 0, z: 0, w: 1 };
+
+    var bindWorld = bindPoseQuaternions[boneName];
+    if (bindWorld) {
+      mac2Bones[boneName].global = { x: bindWorld.x, y: bindWorld.y, z: bindWorld.z, w: bindWorld.w };
+    }
+    if (bindLocal) {
+      mac2Bones[boneName].local = { x: bindLocal.x, y: bindLocal.y, z: bindLocal.z, w: bindLocal.w };
+    } else {
+      mac2Bones[boneName].local = { x: 0, y: 0, z: 0, w: 1 };
+    }
+    // Mark not-connected so future calibrate() skips it and our watchdog
+    // doesn't keep retriggering on the same already-reset bone.
+    mac2Bones[boneName].lastSeenAt = 0;
+    mac2Bones[boneName].avgInterval = 0;
+    mac2Bones[boneName].observedFps = 0;
+  }
+}
+
+// [GROUND FIX] Force the model to scale 1, then shift it so the lowest point
+// of its bounding box lands on Y=0. Idempotent and safe to call any time --
+// extracted from calibrate() so other code paths (first packet, manual
+// re-snap) can call it too.
+function snapModelToGround() {
+  if (typeof model === 'undefined' || !model) return;
+  model.scale.set(1, 1, 1);
+  model.updateMatrixWorld(true);
+  var bbox = new THREE.Box3().setFromObject(model);
+  if (Number.isFinite(bbox.min.y)) {
+    model.position.y -= bbox.min.y;
+    model.updateMatrixWorld(true);
+  }
+}
+
 function calibrate() {
  // initialPosition = model.getObjectByName("mmHips").position;
+  // [STALE POD FIX] Before reading any pod's `last` into calibration, snap
+  // every stale pod back to bind pose. This both (a) clears the visual
+  // crookedness of a dead-pod limb and (b) ensures the loop below skips
+  // stale pods (their lastSeenAt was zeroed by resetBoneToBind).
+  var allKeys = Object.keys(mac2Bones);
+  for (var s = 0; s < allKeys.length; s++) {
+    if (isPodStale(allKeys[s])) {
+      resetBoneToBind(allKeys[s]);
+    }
+  }
+
   var keys = Object.keys(mac2Bones);
   for (var i = 0; i < keys.length; i++) {
     // Safety check - ensure entry exists and has last property
     if (!mac2Bones[keys[i]] || !mac2Bones[keys[i]].last) {
+      continue;
+    }
+
+    // [STALE POD FIX] Don't bake a stale/never-connected pod's last value
+    // into its calibration. resetBoneToBind() above already left calibration
+    // at identity; leave it that way until the pod actually starts sending.
+    if (isPodStale(keys[i])) {
       continue;
     }
 
@@ -357,24 +490,12 @@ function calibrate() {
       };
 
 
-    // [GROUND FIX v2] Order matters: model.scale.set(1,1,1) is called LATER
-    // in this function (was after this block). When the previous attempt
-    // measured foot Y, the model was still at the load-time scale (0.00001
-    // from threejsscene.js), so the measurement was effectively zero and the
-    // hip stayed at the hardcoded 170 -- mannequin floated.
-    // Now we (1) force model to full scale here, (2) place the hip provisionally,
-    // (3) measure the WHOLE rig's bounding box (covers any bone hierarchy
-    // quirks and works without the Hips pod connected),
-    // (4) shift the model so its lowest point lands on Y=0.
-    model.scale.set(1, 1, 1);
-    hipsBone.position.set(0, 170, 0);
-    model.updateMatrixWorld(true);
-
-    var bbox = new THREE.Box3().setFromObject(model);
-    if (Number.isFinite(bbox.min.y)) {
-      model.position.y -= bbox.min.y;
-      model.updateMatrixWorld(true);
-    }
+    // [GROUND FIX v3] We now do the ground snap via snapModelToGround() so
+    // the same logic runs at first-packet time too (see initGlobalLocalLast).
+    // Order matters: scale must be 1 before measuring bbox, and hipsBone
+    // needs a sane Y so the rig isn't collapsed at the origin when measured.
+    hipsBone.position.set(0, 200, 0);
+    snapModelToGround();
   }
   // Reset position to origin on T-pose calibration
   calibrated = true;
@@ -443,8 +564,26 @@ function mapRange(value, low1, high1, low2, high2) {
   return low2 + (high2 - low2) * (value - low1) / (high1 - low1);
 }
 
+// One-shot warning tracker so we don't spam the console at 32fps when a bone
+// has no mapping. We want the user to SEE the issue (the old code threw and
+// the throw was silently caught upstream), but we want to see it once.
+var _missingMappingWarned = {};
+
 function getTransformedQuaternion(transformedQ, bone) {
-  var mapping = trees[treeType][bone];
+  var mapping = trees[treeType] && trees[treeType][bone];
+  // Defensive: if this bone has no axis mapping for the active suite, return
+  // the input unchanged and warn ONCE so the symptom is visible. Without
+  // this, missing config used to crash handleWSMessage; the catch in
+  // webserialnative.js then swallowed the error and the bone looked like it
+  // "wasn't connected to the mapping". This is exactly the path that hid the
+  // HipsAlt-on-smooth bug.
+  if (!mapping || !mapping.axis || typeof mapping.axis.order !== 'string') {
+    if (!_missingMappingWarned[bone]) {
+      _missingMappingWarned[bone] = true;
+      console.warn('[mocap] No axis mapping for bone "' + bone + '" in tree "' + treeType + '". Pass-through (identity remap). Add an entry to trees/' + treeType + '/meta.json to fix.');
+    }
+    return new THREE.Quaternion(transformedQ.x, transformedQ.y, transformedQ.z, transformedQ.w).normalize();
+  }
   var axisOrder = mapping.axis.order.toLowerCase();
   var axisSign = mapping.axis.sign;
 
@@ -499,6 +638,8 @@ function getAdaptiveSlerp(bone) {
 }
 
 function handleWSMessage(obj) {
+
+  
   if (flag) {
     initGlobalLocalLast();
   }
@@ -506,7 +647,25 @@ function handleWSMessage(obj) {
   var x = model.getObjectByName(rigPrefix + bone.replace("Alt", ""));
 
   if (!bone || !x) {
+    // Visible diagnostic: the message arrived (so the wire is working) but
+    // either there's no bone string (bad packet) or the rig has no matching
+    // THREE.js bone (e.g. HipsAlt -> mmHips not present in this glTF).
+    if (typeof window._unmappedBoneLogged === 'undefined') window._unmappedBoneLogged = {};
+    var _ukey = String(bone || 'NULL');
+    if (!window._unmappedBoneLogged[_ukey]) {
+      window._unmappedBoneLogged[_ukey] = true;
+      console.warn('[mocap] handleWSMessage dropping packet: bone="' + _ukey + '", model bone "' + (bone ? rigPrefix + bone.replace("Alt", "") : '?') + '" not found.');
+    }
     return;
+  }
+
+  // One-shot success log per bone, so DevTools clearly shows the chain:
+  //   "[mocap] first packet for HipsAlt -> driving mmHips"
+  // Confirms binary parser, bone-id table, and rig bone resolution all line up.
+  if (typeof window._firstPacketLogged === 'undefined') window._firstPacketLogged = {};
+  if (!window._firstPacketLogged[bone]) {
+    window._firstPacketLogged[bone] = true;
+    console.log('[mocap] first packet for ' + bone + ' -> driving ' + rigPrefix + bone.replace("Alt", ""));
   }
 
   mac2Bones[bone].last.x = parseFloat(obj.x);
@@ -527,7 +686,11 @@ function handleWSMessage(obj) {
   }
   _b.lastSeenAt = _now;
 
-  statsObjs[lowerFirstLetter(bone)].update();
+  // Null-guard: a bone-id whose row hasn't been added to index.html (e.g. an
+  // optional Shoulder pod on a rig that has no LeftShoulder bone listed)
+  // would have no statsObjs entry, and .update() on undefined would throw.
+  var _statsKey = lowerFirstLetter(bone);
+  if (statsObjs[_statsKey]) statsObjs[_statsKey].update();
 
   var millis = parseInt(obj.millis || "-1");
   var count = parseInt(obj.count || "-1");
@@ -562,11 +725,14 @@ function handleWSMessage(obj) {
     battClass = "green-text";
   }
 
-  document.getElementById(lowerFirstLetter(bone) + "Status").innerHTML = "<b style='margin-right:5px;font-size:16px;text-shadow:0px 0px 1px' class='green white-text chip'>ON</b>" + millText + countText + "<span class='chip' style='font-size:12px;padding:2px;line-height:26px'>" + "<i style='transform:rotate(90deg);vertical-align:middle;text-shadow:0px 0px 1px black;margin-left:0' class='material-icons " + battClass + "'>battery_full</i> " +
-    newBatt + "%</span>";
-  $("#" + lowerFirstLetter(bone) + "Status").addClass("connected");
-
-  document.getElementById(lowerFirstLetter(bone) + "Status").dataset.last = new Date().getTime();
+  // Null-guard the status row in case the bone isn't represented in the UI.
+  var _statusEl = document.getElementById(lowerFirstLetter(bone) + "Status");
+  if (_statusEl) {
+    _statusEl.innerHTML = "<b style='margin-right:5px;font-size:16px;text-shadow:0px 0px 1px' class='green white-text chip'>ON</b>" + millText + countText + "<span class='chip' style='font-size:12px;padding:2px;line-height:26px'>" + "<i style='transform:rotate(90deg);vertical-align:middle;text-shadow:0px 0px 1px black;margin-left:0' class='material-icons " + battClass + "'>battery_full</i> " +
+      newBatt + "%</span>";
+    $(_statusEl).addClass("connected");
+    _statusEl.dataset.last = new Date().getTime();
+  }
 
 
   var rawQuaternion = new THREE.Quaternion(parseFloat(obj.x), parseFloat(obj.y), parseFloat(obj.z), parseFloat(obj.w));
@@ -587,35 +753,52 @@ function handleWSMessage(obj) {
   // const slerpFactor = .24;
 
 
-  // Hips orientation - phone is the sole Hips sensor (HipsAlt logic disabled)
-  // [HipsAlt DISABLED] removed `&& hipsAltLast + 1000 < new Date().getTime()` guard
-  if (bone == "Hips" /* && hipsAltLast + 1000 < new Date().getTime() */) {
+  // [HIPS ORIENTATION DECOUPLED] The Hips device is a phone running visual
+  // odometry, not an IMU. Its orientation reading does not return to baseline
+  // even when the user physically returns to T-pose -- SLAM frame drift makes
+  // the absolute quaternion unreliable as a "where is the body facing" signal.
+  // Empirically (300-packet capture, 5 second test): w slid from +0.44 to
+  // -0.25 across yaw+bend+return-to-rest, with no recovery on return.
+  //
+  // Symptom in the rig: when Hips is connected, every downstream bone's local
+  // is computed as Hips.global^-1 * child.global, so a drifty Hips global
+  // poisons the entire skeleton -- and turning Hips off didn't recover because
+  // the LAST bad value stayed in mac2Bones["Hips"].global forever.
+  //
+  // Fix: keep mac2Bones["Hips"].global at its bind-pose value (set by
+  // initGlobalLocalLast), so Hips contributes ONLY position to the rig.
+  // Phone Hips => translation; orientation comes from no-one (bone stays bind).
+  // The block below is preserved as a comment for future reference / re-enable.
+  /*
+  if (bone == "Hips") {
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
     var transformedQ = new THREE.Quaternion().multiplyQuaternions(rawQuaternion, refQInverse, bc);
 
     var alt = new THREE.Quaternion().multiplyQuaternions(rawQuaternion, refQInverse, bc);
     alt = getTransformedQuaternion(alt, bone).normalize();
-    alt = applyMountingOffset(alt, bone); // Apply mounting offset after tree transformation
+    alt = applyMountingOffset(alt, bone);
 
     var hipQ = getTransformedQuaternion(transformedQ, bone).normalize();
-    hipQ = applyMountingOffset(hipQ, bone); // Apply mounting offset after tree transformation
+    hipQ = applyMountingOffset(hipQ, bone);
 
     x.quaternion.slerp(hipQ, getAdaptiveSlerp(bone));
-
-    // [HipsAlt DISABLED] inner timeout guard removed - always commit Hips state
-    // if(hipsAltLast + 1000 < new Date().getTime()){
-      setLocal("Hips", alt.x, alt.y, alt.z, alt.w);
-      setGlobal(bone, hipQ.x, hipQ.y, hipQ.z, hipQ.w);
-    // }
-    // hipsLast = new Date().getTime();
+    setLocal("Hips", alt.x, alt.y, alt.z, alt.w);
+    setGlobal(bone, hipQ.x, hipQ.y, hipQ.z, hipQ.w);
   }
+  */
 
-  // [HipsAlt DISABLED] entire HipsAlt orientation block - phone is the only Hips sensor
-  /*
+  // [HipsAlt RE-ENABLED] HipsAlt drives the Hips bone's orientation. The Hips
+  // phone provides translation only (Hips block above is intentionally
+  // commented). When this packet arrives:
+  //   - x is already the Hips THREE.js bone (bone.replace("Alt","") in
+  //     handleWSMessage maps "HipsAlt" -> "mmHips")
+  //   - we transform the sensor quaternion through the same axis remap +
+  //     mounting offset pipeline as every other bone
+  //   - we write into mac2Bones["Hips"].global, NOT ["HipsAlt"], so children
+  //     (Spine, legs) read a unified Hips reference frame
   if (bone == "HipsAlt") {
     var refQInverse = new THREE.Quaternion().copy(refQuaternion).invert();
     var transformedQ = new THREE.Quaternion().multiplyQuaternions(rawQuaternion, refQInverse, bc);
-
 
     var hipQ = getTransformedQuaternion(transformedQ, bone).normalize();
     hipQ = applyMountingOffset(hipQ, bone);
@@ -625,7 +808,6 @@ function handleWSMessage(obj) {
     setGlobal("Hips", hipQ.x, hipQ.y, hipQ.z, hipQ.w);
     hipsAltLast = new Date().getTime();
   }
-  */
 
 
   if (bone == "LeftUpLeg") {
@@ -1263,6 +1445,24 @@ setInterval(function () {
       $(this).html("<b class='red-text'>DISCONNECTED</b>");
     }
   });
+
+  // [STALE POD FIX] Treat newly-disconnected pods identically to never-
+  // connected ones: snap their bone back to bind pose and clear their
+  // mac2Bones state. Only act on pods that WERE connected (lastSeenAt > 0)
+  // and have now gone quiet -- never-connected pods already have their bone
+  // at bind pose, so there's nothing to do for them. resetBoneToBind() zeroes
+  // lastSeenAt, so we won't keep reprocessing the same dead pod each tick.
+  if (typeof mac2Bones !== 'undefined' && mac2Bones) {
+    var staleNow = Date.now();
+    var staleKeys = Object.keys(mac2Bones);
+    for (var sk = 0; sk < staleKeys.length; sk++) {
+      var sb = mac2Bones[staleKeys[sk]];
+      if (!sb) continue;
+      if (sb.lastSeenAt && (staleNow - sb.lastSeenAt) > STALE_POD_MS) {
+        resetBoneToBind(staleKeys[sk]);
+      }
+    }
+  }
 
   var podCount = $("#deviceMapList td.connected").length;
   $(".podCount").text(podCount);

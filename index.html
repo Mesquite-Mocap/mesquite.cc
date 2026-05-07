@@ -137,7 +137,9 @@
 
 var slerpDict = {
     "Hips": 0.35,
-    // [HipsAlt DISABLED] "HipsAlt": 0.35,
+    "HipsAlt": 0.35,
+    "LeftShoulder": 0.4,
+    "RightShoulder": 0.4,
     "Spine": 0.4,
     "Head": 0.4,
     "LeftArm": 0.4,
@@ -232,11 +234,10 @@ var slerpDict = {
         "status": "Not Connected",
         "stats": null
       },
-      // [HipsAlt DISABLED]
-      // "hipsAlt": {
-      //   "status": "Not Connected",
-      //   "stats": null
-      // },
+      "hipsAlt": {
+        "status": "Not Connected",
+        "stats": null
+      },
       "leftArm": {
         "status": "Not Connected",
         "stats": null
@@ -274,6 +275,14 @@ var slerpDict = {
         "stats": null
       },
       "rightHand": {
+        "status": "Not Connected",
+        "stats": null
+      },
+      "leftShoulder": {
+        "status": "Not Connected",
+        "stats": null
+      },
+      "rightShoulder": {
         "status": "Not Connected",
         "stats": null
       },
@@ -514,14 +523,22 @@ var slerpDict = {
                 <td id="hipsStatus">Not Connected</td>
                 <td id="hipsStats"></td>
               </tr>
-              <!-- [HipsAlt DISABLED] phone is now the only Hips sensor; preserved for future revisit
               <tr>
                 <td>Hips (imu)</td>
                 <td id="hipsAltStatus">Not Connected</td>
                 <td id="hipsAltStats"></td>
               </tr>
-              -->
 
+              <tr>
+                <td>Left Shoulder</td>
+                <td id="leftShoulderStatus">Not Connected</td>
+                <td id="leftShoulderStats"></td>
+              </tr>
+              <tr>
+                <td>Right Shoulder</td>
+                <td id="rightShoulderStatus">Not Connected</td>
+                <td id="rightShoulderStats"></td>
+              </tr>
               <tr>
                 <td>Left Upper Arm</td>
                 <td id="leftArmStatus">Not Connected</td>
