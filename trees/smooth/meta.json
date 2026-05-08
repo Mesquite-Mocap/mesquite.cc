@@ -30,7 +30,7 @@
       "HipsAlt": {
         "axis": {
           "order": "YZX",
-          "sign": "---"
+          "sign": "-+-"
         },
         "posswap": {
           "order": "YXZ",
