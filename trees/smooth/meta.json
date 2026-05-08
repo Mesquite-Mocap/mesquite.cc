@@ -14,7 +14,7 @@
       },
       "Hips": {
         "axis": {
-          "order": "YZX",
+          "order": "XYZ",
           "sign": "-+-"
         },
         "posswap": {
