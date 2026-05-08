@@ -277,12 +277,12 @@ function calibrate() {
         
         // Determine flip axis based on bone type
         var flipAxis;
-        if (keys[i].indexOf("Arm") !== -1 || keys[i].indexOf("Hand") !== -1 || keys[i].indexOf("Foot") !== -1) {
-          // Arms, forearms, hands, feet: flip in Y
+        if (keys[i].indexOf("Arm") !== -1 || keys[i].indexOf("Hand") !== -1 ||
+            keys[i].indexOf("Leg") !== -1 || keys[i].indexOf("Foot") !== -1) {
+          // Arms, forearms, hands, legs (UpLeg/Leg), feet: flip in Y
           flipAxis = new THREE.Vector3(0, 1, 0);
-        } else if (keys[i].indexOf("Leg") !== -1 || 
-                   keys[i] === "Head" || keys[i] === "Spine" || keys[i].indexOf("Hips") !== -1) {
-          // Head, spine, hips, legs: flip in Z
+        } else if (keys[i] === "Head" || keys[i] === "Spine" || keys[i].indexOf("Hips") !== -1) {
+          // Head, spine, hips: flip in Z
           flipAxis = new THREE.Vector3(0, 0, 1);
         } else {
           // Default: no flip detection
@@ -337,7 +337,8 @@ function calibrate() {
       boneCount++;
       
       var threshold = 60;
-      if (boneName.indexOf("Arm") !== -1 || boneName.indexOf("Hand") !== -1) {
+      if (boneName.indexOf("Arm") !== -1 || boneName.indexOf("Hand") !== -1 ||
+          boneName.indexOf("Leg") !== -1 || boneName.indexOf("Foot") !== -1) {
         threshold = 90;
       }
       
@@ -622,7 +623,7 @@ function handleWSMessage(obj) {
 
     var leftuplegQ = getTransformedQuaternion(transformedQ, bone);
     leftuplegQ = applyMountingOffset(leftuplegQ, bone);
-    leftuplegQ = applySensorOffsetCompensation(leftuplegQ, bone);
+    //leftuplegQ = applySensorOffsetCompensation(leftuplegQ, bone);
 
     var obj = mac2Bones["Hips"].global;
     var hipsQ = new THREE.Quaternion(obj.x, obj.y, obj.z, obj.w).normalize();
@@ -644,7 +645,7 @@ function handleWSMessage(obj) {
     
     var rightuplegQ = getTransformedQuaternion(transformedQ, bone);
     rightuplegQ = applyMountingOffset(rightuplegQ, bone);
-    rightuplegQ = applySensorOffsetCompensation(rightuplegQ, bone);
+    //rightuplegQ = applySensorOffsetCompensation(rightuplegQ, bone);
 
     var obj = mac2Bones["Hips"].global;
     var hipsQ = new THREE.Quaternion(obj.x, obj.y, obj.z, obj.w).normalize();
