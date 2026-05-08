@@ -922,7 +922,7 @@ function handleWSMessage(obj) {
     obj.sensorPosition = { x: obj.px, y: obj.py, z: obj.pz};
     
     // Determine which posswap configuration to use based on HipsAlt activity
-    var posswapBone = (hipsAltLast + 1000 >= new Date().getTime()) ? "HipsAlt" : "Hips";
+    var posswapBone = "Hips";
     
     // Apply posswap transformation to raw position data
     // This handles axis reordering and sign flipping (like tree axis mapping for orientation)
