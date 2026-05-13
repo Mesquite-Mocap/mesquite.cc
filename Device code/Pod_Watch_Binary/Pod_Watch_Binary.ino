@@ -58,6 +58,11 @@ String boneName[][2] = {
 
 
 #include <esp_now.h>
+#include <esp_wifi.h>   // Needed for esp_wifi_set_channel / esp_wifi_set_ps /
+                        // esp_wifi_set_max_tx_power. Without these the radio
+                        // floats to whatever channel the environment pushes
+                        // it to, which is exactly how the Tempe->Boston
+                        // regression happened.
 #include <EEPROM.h>
 #include <Wire.h>
 #include <WiFi.h>
@@ -68,6 +73,18 @@ String boneName[][2] = {
 #include <ESPmDNS.h>
 #include "ICM_20948.h"  // Click here to get the library: http://librarymanager/All#SparkFun_ICM_20948_IMU
 #define AD0_VAL 0
+
+// ===========================================================================
+//  RADIO CONFIG -- MUST MATCH THE DONGLE
+//  Both pods and dongle must run on the same WiFi channel for ESP-NOW to
+//  deliver any packets. Without an explicit lock, the radio uses whatever
+//  channel WiFi.mode(WIFI_STA) defaulted to (usually 1), but the dongle's
+//  softAP can land on a different channel depending on local 2.4 GHz noise.
+//  Lock both sides to a single, fixed channel. Channel 1 is a safe default
+//  but if your client site has a heavy 2.4 GHz AP on ch 1, you can move to
+//  6 or 11 -- the value just has to match the dongle.
+// ===========================================================================
+#define ESPNOW_WIFI_CHANNEL 1
 
 //#include "soc/rtc_wdt.h"
 ICM_20948_I2C myICM;  // Otherwise create an ICM_20948_I2C object
@@ -189,8 +206,13 @@ void OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status) {
     dccount++;
     //digitalWrite(3, HIGH);
     //Serial.println(dccount);
-    // Dongle timeout: 2 minutes of consecutive failed sends (32 fps * 120s = 3840)
-    if (dccount > 960) {
+    // No-link auto-shutdown. Was 960 (~30 s @ 32 fps) which is brutal in a
+    // congested 2.4 GHz environment -- a brief WiFi storm could shut every
+    // pod down mid-capture. Raised to ~5 minutes; if the dongle is really
+    // gone the pod still shuts itself down to save the battery, but normal
+    // hiccups don't cascade into "the whole suit went dead". 32 fps * 300 s
+    // = 9600.
+    if (dccount > 9600) {
       //esp_deep_sleep_start();
       watch->shutdown();
     }
@@ -441,6 +463,20 @@ motorPulse(2);
 
   WiFi.mode(WIFI_STA);
 
+  // -- Radio hardening (root cause of the Tempe->Boston regression) --
+  //  1) Pin to a known channel so we are guaranteed to share airwaves with
+  //     the dongle no matter how noisy the local 2.4 GHz band is.
+  //  2) Disable WiFi power-save: in PS modes the radio sleeps between beacons
+  //     and ESP-NOW packets can be dropped during sleep windows. Pods are
+  //     mains-/battery-powered with a 60 mA budget; PS savings don't justify
+  //     the missing frames.
+  //  3) Set TX power to the regulatory max (80 = 20 dBm). With pods worn at
+  //     hip / arm height and the dongle 1-3 m away in a busy mocap volume,
+  //     every dB helps.
+  esp_wifi_set_channel(ESPNOW_WIFI_CHANNEL, WIFI_SECOND_CHAN_NONE);
+  esp_wifi_set_ps(WIFI_PS_NONE);
+  esp_wifi_set_max_tx_power(80);
+
   // esp_deep_sleep_enable_gpio_wakeup(BIT(36), ESP_GPIO_WAKEUP_GPIO_LOW);
 
 
@@ -458,9 +494,11 @@ motorPulse(2);
   esp_now_register_recv_cb(OnDataRecv);
 
 
-  // Register peer
+  // Register peer. `channel = 0` used to mean "use current channel" but that
+  // is fragile -- if the STA roams the peer's channel becomes stale and ESP-
+  // NOW silently drops sends. Be explicit.
   memcpy(peerInfo.peer_addr, broadcastAddress, 6);
-  peerInfo.channel = 0;
+  peerInfo.channel = ESPNOW_WIFI_CHANNEL;
   peerInfo.encrypt = false;
 
   // Add peer

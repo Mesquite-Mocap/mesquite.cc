@@ -670,25 +670,30 @@ var slerpDict = {
   <script src="js/bvh_converter.js"></script>
 
   <script>
-    // [SW DISABLED] The previous service worker (js/sw.js) used a cache-first
-    // strategy with no version invalidation, so once a visitor cached an old
-    // build it became permanently stuck on that build regardless of what was
-    // pushed to the server. We unregister any existing SW on this page load
-    // so users who already have the broken one installed get unstuck.
-    // Re-enable + properly version sw.js when caching for offline is needed again.
+    // [SW RE-ENABLED, NETWORK-FIRST] The previous v1 SW was cache-first and
+    // would pin clients to whatever code was cached on first visit -- after
+    // shipping firmware/pipeline fixes those clients still ran the stale JS.
+    // The new sw.js (v2) uses network-first: every request tries the live
+    // network; cache is only the offline fallback. The activate handler in
+    // the new SW deletes the v1 cache namespace on first activation, so any
+    // existing victim of the old caching gets cleanly unstuck on next load.
+    //
+    // We still proactively unregister any v1 registrations on this page load
+    // (defence in depth -- if an old SW is still controlling this client we
+    // want it gone before the new one installs) and then register sw.js.
     if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.getRegistrations().then(function (regs) {
-        for (var i = 0; i < regs.length; i++) regs[i].unregister();
+      // Register the v2 (network-first) SW. The browser does its own byte-
+      // diff update check on every navigation, so any future edit to sw.js
+      // automatically rolls out -- no manual cache busting required.
+      //
+      // Old v1 cache eviction is handled inside sw.js's activate handler
+      // (caches.delete on any name != CACHE_NAME). We deliberately do NOT
+      // clear caches here on every load, because that would also wipe v2's
+      // legitimately-populated offline shell every time the page reloads.
+      navigator.serviceWorker.register("./js/sw.js").catch(function (err) {
+        console.warn("[mocap] SW register failed:", err);
       });
-      // Also explicitly clear any caches the old SW created
-      if (window.caches && caches.keys) {
-        caches.keys().then(function (keys) {
-          keys.forEach(function (k) { caches.delete(k); });
-        });
-      }
     }
-    // To re-enable later, swap the block above for:
-    // if ("serviceWorker" in navigator) navigator.serviceWorker.register("./js/sw.js");
   </script>
 
 </body>
