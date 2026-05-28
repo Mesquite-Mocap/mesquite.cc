@@ -273,8 +273,7 @@ import { CCDIKSolver } from 'https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite
 // esm.sh's `?external=three` keeps THREE external; the import map in
 // index.html resolves the bare `three` specifier to our canonical URL,
 // so the gizmo shares the same THREE instance as the rest of the app.
-import { ViewportGizmo } from 'https://esm.sh/three-viewport-gizmo@0.1.5?external=three';
-// previous: import { ViewportGizmo } from 'https://cdn.jsdelivr.net/npm/three-viewport-gizmo@0.1.5/+esm'
+import { ViewportGizmo } from 'https://cdn.jsdelivr.net/gh/mesquite-mocap/mesquite.cc@latest/build-static/three-viewport-gizmo.js';
 //import { SkinnedMesh } from "three/src/Three.js";
 
 class InfiniteGridHelper extends THREE.GridHelper {

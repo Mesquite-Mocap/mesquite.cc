@@ -670,25 +670,13 @@ var slerpDict = {
   <script src="js/bvh_converter.js"></script>
 
   <script>
-    // [SW DISABLED] The previous service worker (js/sw.js) used a cache-first
-    // strategy with no version invalidation, so once a visitor cached an old
-    // build it became permanently stuck on that build regardless of what was
-    // pushed to the server. We unregister any existing SW on this page load
-    // so users who already have the broken one installed get unstuck.
-    // Re-enable + properly version sw.js when caching for offline is needed again.
+    // Register the service worker. sw.js uses skipWaiting + clients.claim so
+    // a newly deployed version activates immediately, and its activate handler
+    // deletes every cache entry from older versions.
+    // To deploy a new version: bump CACHE_VERSION in js/sw.js.
     if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.getRegistrations().then(function (regs) {
-        for (var i = 0; i < regs.length; i++) regs[i].unregister();
-      });
-      // Also explicitly clear any caches the old SW created
-      if (window.caches && caches.keys) {
-        caches.keys().then(function (keys) {
-          keys.forEach(function (k) { caches.delete(k); });
-        });
-      }
+      navigator.serviceWorker.register("./js/sw.js");
     }
-    // To re-enable later, swap the block above for:
-    // if ("serviceWorker" in navigator) navigator.serviceWorker.register("./js/sw.js");
   </script>
 
 </body>
