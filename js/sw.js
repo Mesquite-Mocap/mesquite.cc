@@ -23,7 +23,7 @@
 
 // Bump this on every release that touches client JS. The activate handler
 // uses the version mismatch as the signal to evict prior caches.
-const CACHE_NAME = 'mesquite-cc-v4';
+const CACHE_NAME = 'mesquite-cc-v5';
 
 // -------------------------------------------------------------------------
 //  App-shell precache list.
@@ -125,6 +125,8 @@ self.addEventListener('activate', (event) => {
 //   • Opaque responses (type 'opaque') are NOT cached – they have an unknown
 //     status and a size-inflated quota cost.
 //   • On network failure the cached copy is served (offline fallback).
+//   • Navigation requests (page loads) fall back to the cached /index.html
+//     shell so the app opens even when the server is completely unreachable.
 // -------------------------------------------------------------------------
 self.addEventListener('fetch', (event) => {
   const req = event.request;
@@ -144,11 +146,23 @@ self.addEventListener('fetch', (event) => {
         cache.put(req, fresh.clone()).catch(() => {});
       }
       return fresh;
-    } catch (err) {
+    } catch (_) {
       // Network unreachable – serve whatever the cache has.
+      // 1. Try exact URL match first.
       const cached = await caches.match(req);
       if (cached) return cached;
-      throw err;
+
+      // 2. For page navigations (e.g. the browser requesting "/" instead of
+      //    "/index.html"), fall back to the cached app shell so the PWA opens
+      //    instead of showing "This site can't be reached".
+      if (req.mode === 'navigate') {
+        const shell = await caches.match('/index.html');
+        if (shell) return shell;
+      }
+
+      // 3. Nothing in cache – surface a proper network-error response rather
+      //    than letting an unhandled throw kill the SW event loop.
+      return Response.error();
     }
   })());
 });
