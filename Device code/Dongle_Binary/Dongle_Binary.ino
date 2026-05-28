@@ -27,9 +27,23 @@
 
 #include "Arduino.h"
 #include <esp_now.h>
+#include <esp_wifi.h>     // for esp_wifi_set_channel / set_ps / set_max_tx_power
 #include "WiFi.h"
 #include "ESPAsyncWebServer.h"
 #include "AsyncTCP.h"
+
+// ============================================================
+//  RADIO CONFIG -- MUST MATCH THE POD FIRMWARE
+//  ESP-NOW only delivers packets when sender and receiver are on the same
+//  WiFi channel. The original code left the channel implicit, which meant
+//  the dongle's softAP would pick whatever the local 2.4 GHz environment
+//  allowed -- it landed on ch 1 in Tempe but could end up on a different
+//  channel in Boston, silently breaking the link.
+//
+//  Pinning to ch 1 here AND in the pod firmware (ESPNOW_WIFI_CHANNEL)
+//  guarantees co-channel operation independent of the deployment site.
+// ============================================================
+#define ESPNOW_WIFI_CHANNEL 1
 
 // ============================================================
 //  PINS  (display-only pins kept as defines but unused)
@@ -193,11 +207,14 @@ void OnDataRecv(const uint8_t *mac_addr, const uint8_t *incomingData, int len) {
     portEXIT_CRITICAL(&stateMux);
 
     // Register the pod as a unicast peer the first time we see it. Required
-    // so sendReset() can hit it back over ESP-NOW.
+    // so sendReset() can hit it back over ESP-NOW. Pin channel explicitly --
+    // peer.channel = 0 (the old value) means "current channel of the local
+    // radio", which races with WiFi reassociation and was a silent source
+    // of dropped reboots when the radio drifted.
     if (!peerMacsInit[id]) {
         peerMacsInit[id] = true;
         memcpy(peerMacs[id].peer_addr, mac_addr, 6);
-        peerMacs[id].channel = 0;
+        peerMacs[id].channel = ESPNOW_WIFI_CHANNEL;
         peerMacs[id].encrypt = false;
         esp_now_add_peer(&peerMacs[id]);
     }
@@ -268,10 +285,20 @@ void setup() {
     pinMode(BTN_MAC,    INPUT_PULLUP);
     pinMode(BTN_STATUS, INPUT_PULLUP);
 
-    // WiFi AP + WebSocket
+    // WiFi AP + WebSocket. The 3rd arg to softAP is the channel -- we lock
+    // it explicitly so the AP can't drift off ESPNOW_WIFI_CHANNEL when a
+    // client (phone) joins, and so two dongles at the same client site
+    // can't end up on different channels by accident.
     initWebSocket();
-    WiFi.softAP("MM-" + mac, "12345678");
+    WiFi.softAP("MM-" + mac, "12345678", ESPNOW_WIFI_CHANNEL, /*hidden=*/0);
     server.begin();
+
+    // Belt and suspenders: even after softAP() returns, force the radio
+    // onto our channel, disable power save, and crank TX power. These three
+    // calls are the actual fix for the Tempe -> Boston regression.
+    esp_wifi_set_channel(ESPNOW_WIFI_CHANNEL, WIFI_SECOND_CHAN_NONE);
+    esp_wifi_set_ps(WIFI_PS_NONE);
+    esp_wifi_set_max_tx_power(80);
 
     // ESP-NOW
     if (esp_now_init() != ESP_OK) {
@@ -281,6 +308,14 @@ void setup() {
     esp_now_register_send_cb(OnDataSent);
     esp_now_register_recv_cb(OnDataRecv);
 
+    // Make the broadcast peer explicit. Without this entry, the dongle could
+    // not previously have sent broadcasts -- and the pod-channel here also
+    // gets pinned so it cannot disagree with the radio's channel.
+    memset(&peerInfo, 0, sizeof(peerInfo));
+    static const uint8_t BCAST[6] = {0xFF,0xFF,0xFF,0xFF,0xFF,0xFF};
+    memcpy(peerInfo.peer_addr, BCAST, 6);
+    peerInfo.channel = ESPNOW_WIFI_CHANNEL;
+    peerInfo.encrypt = false;
     if (esp_now_add_peer(&peerInfo) != ESP_OK) {
         Serial.println("Failed to add broadcast peer");
     }

@@ -50,6 +50,7 @@ String boneName[][2] = {
 
 
 #include <esp_now.h>
+#include <esp_wifi.h>   // for channel lock / power-save off / max TX power
 #include <EEPROM.h>
 #include <Wire.h>
 #include <WiFi.h>
@@ -60,6 +61,9 @@ String boneName[][2] = {
 #include <ESPmDNS.h>
 #include "ICM_20948.h"  // Click here to get the library: http://librarymanager/All#SparkFun_ICM_20948_IMU
 #define AD0_VAL 0
+
+// MUST match dongle. See Pod_Watch_Binary.ino for the long-form explanation.
+#define ESPNOW_WIFI_CHANNEL 1
 
 //#include "soc/rtc_wdt.h"
 ICM_20948_I2C myICM;  // Otherwise create an ICM_20948_I2C object
@@ -139,7 +143,11 @@ void OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status) {
     dccount++;
     //digitalWrite(3, HIGH);
     //Serial.println(dccount);
-    if (dccount > 300) {
+    // ~5 minutes of unbroken send failures before we conclude the dongle
+    // is really gone. Was 300 (~10 s at 32 fps), which made the whole suit
+    // power-cycle whenever the 2.4 GHz band hiccupped -- a common cause of
+    // the "the suit just died in Boston" complaint. 32 fps * 300 s = 9600.
+    if (dccount > 9600) {
       //esp_deep_sleep_start();
       watch->shutdown();
     }
@@ -370,6 +378,12 @@ void setup() {
 
   WiFi.mode(WIFI_STA);
 
+  // Lock the radio (root-cause fix for cross-site regressions). See the
+  // matching block in Pod_Watch_Binary.ino for the full rationale.
+  esp_wifi_set_channel(ESPNOW_WIFI_CHANNEL, WIFI_SECOND_CHAN_NONE);
+  esp_wifi_set_ps(WIFI_PS_NONE);
+  esp_wifi_set_max_tx_power(80);
+
   // esp_deep_sleep_enable_gpio_wakeup(BIT(36), ESP_GPIO_WAKEUP_GPIO_LOW);
 
 
@@ -387,9 +401,10 @@ void setup() {
   esp_now_register_recv_cb(esp_now_recv_cb_t(OnDataRecv));
 
 
-  // Register peer
+  // Register peer with explicit channel (was 0 = "current channel" which
+  // races with the radio state machine).
   memcpy(peerInfo.peer_addr, broadcastAddress, 6);
-  peerInfo.channel = 0;
+  peerInfo.channel = ESPNOW_WIFI_CHANNEL;
   peerInfo.encrypt = false;
 
   // Add peer

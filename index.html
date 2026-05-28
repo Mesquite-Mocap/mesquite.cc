@@ -329,11 +329,6 @@ var slerpDict = {
 
   </script>
 
-  <!-- [DUPLICATE THREE FIX pt.2] Import map: forces every module that imports
-       "three" (bare specifier) to resolve to our canonical THREE URL. This
-       lets us pull peer-dependency-respecting builds (e.g. esm.sh's
-       ?external=three) without them bundling their own copy of THREE.
-       Must be declared before any <script type="module"> that uses it. -->
   <script type="importmap">
   {
     "imports": {

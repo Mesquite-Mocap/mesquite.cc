@@ -1,7 +1,11 @@
 #include "Arduino.h"
 #include <esp_now.h>
+#include <esp_wifi.h>    // for channel lock / power-save off / max TX power
 #include "WiFi.h"
 #include "ESPAsyncWebServer.h"
+
+// MUST match the pod firmware. See Pod_Watch_Binary.ino for full rationale.
+#define ESPNOW_WIFI_CHANNEL 1
 
 typedef struct struct_message
 {
