@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MESQUITE.cc</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #000;
+      color: #fff;
+      font-family: sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      text-align: center;
+      gap: 16px;
+    }
+    img {
+      width: 160px;
+      opacity: 0.85;
+    }
+    h1 { font-size: 1.6rem; letter-spacing: 0.05em; }
+    p  { font-size: 1rem; opacity: 0.7; max-width: 320px; line-height: 1.5; }
+    button {
+      margin-top: 8px;
+      padding: 10px 28px;
+      background: #fff;
+      color: #000;
+      border: none;
+      border-radius: 4px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    button:active { opacity: 0.8; }
+  </style>
+</head>
+<body>
+  <img src="icons/icon.png" alt="MESQUITE.cc icon" />
+  <h1>MESQUITE.cc</h1>
+  <p>You appear to be offline. Connect to the internet and try again.</p>
+  <button onclick="location.reload()">Retry</button>
+</body>
+</html>

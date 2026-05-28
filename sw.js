@@ -37,11 +37,11 @@ const APP_SHELL = [
   // local pages & assets
   '/index.html',
   '/player.html',
+  '/sw.js',
   '/js/main.css',
   '/js/mappings.js',
   '/js/quaternion.min.js',
   '/js/script.js',
-  '/js/sw.js',
   '/js/threejsscene.js',
   '/js/threejssceneplayer.js',
   '/js/webserial.js',

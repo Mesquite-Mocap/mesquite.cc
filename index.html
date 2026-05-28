@@ -670,7 +670,12 @@ var slerpDict = {
     // deletes every cache entry from older versions.
     // To deploy a new version: bump CACHE_VERSION in js/sw.js.
     if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("./js/sw.js");
+      // Unregister the old SW that was scoped to /js/ and couldn't serve
+      // offline navigation to the root page.
+      navigator.serviceWorker.getRegistrations().then(regs => {
+        regs.forEach(reg => { if (!reg.scope.endsWith('/') || reg.active && reg.active.scriptURL.includes('/js/sw.js')) reg.unregister(); });
+      });
+      navigator.serviceWorker.register("./sw.js");
     }
   </script>
 
